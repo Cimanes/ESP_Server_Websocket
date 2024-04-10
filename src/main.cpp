@@ -80,7 +80,7 @@ void notifyClients(String msg) { ws.textAll(msg); }
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
   // Pass argument by reference "&var", so we can change its value inside the function:
   String updateButton(const String &var) {
-    String feedback;
+   String feedback;
     if(var == "STATE") {
       if(digitalRead(statePin)) feedback = "ON";
       else feedback = "OFF";
