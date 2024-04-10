@@ -43,9 +43,10 @@ function initWebSocket() {
 // When the websocket is opened:
 // Send message "updateAll" to server using websocket:
 // (Server will reply message with state of ALL Buttons and Toggle Switches).
-function onOpen(event) {  
-  if(logger) console.log('WebSocket opened');
-  websocket.send('updateAll');    
+function onOpen(event) { 
+  const msg = `{"all": "update"}`;
+  if(logger) console.log('WebSocket opened: Update all');
+  websocket.send(msg);    
 }
 
 // Re-initiate the Websocket if the connection gets lost.

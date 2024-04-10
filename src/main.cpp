@@ -100,12 +100,12 @@ void notifyClients(String msg) { ws.textAll(msg); }
   // Define the Digital Outputs to be controlled via toggle switches
     #define numDOs 2
     const byte arrDO[numDOs] = {12, 14};
-  // Update SINGLE toggle switch: return JSON object {"dfb":"12", "state":"1"}
+  // Update toggle switch: return JSON object {"dfb":"12", "state":"1"}
   String updateDO(byte gpio){
-    JSONVar jsonDO;
-    jsonDO["dfb"] = String(gpio);                  // Number of the GPIO
-    jsonDO["state"] = String(digitalRead(gpio));   // "0" or "1"
-    return JSON.stringify(jsonDO);                 // JSON object converted into a String.
+    JSONVar jsonObj;
+    jsonObj["dfb"] = gpio;                  // Number of the GPIO
+    jsonObj["state"] = digitalRead(gpio);   // 0 or 1
+    return JSON.stringify(jsonObj);         // JSON object converted into a String.
   }
 
 #endif
@@ -123,10 +123,10 @@ void notifyClients(String msg) { ws.textAll(msg); }
 
   // Update analog feedback of PWM: return JSON object {"afb":"5", "value":"15"}
   String updatePWM(byte index){
-    JSONVar jsonPWM;                            // Create JSON object for A.O. PWM's
-    jsonPWM["afb"] = String(arrPWM[index][0]);  // Number of the PWM channel
-    jsonPWM["value"] = String(PWMval[index]);   // converted value fo the A.O. in that channel
-    return JSON.stringify(jsonPWM);             // JSON object converted into a String.
+    JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
+    jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
+    jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
+    return JSON.stringify(jsonObj);       // JSON object converted into a String.
   }
 #endif
 
@@ -136,15 +136,15 @@ void notifyClients(String msg) { ws.textAll(msg); }
 #ifdef useAVAR
   // Define the PWM output channels and ranges
   #define numAVARS 2
-  const String AVAR[numAVARS] = {"tSET", "rhSET"};       // array with variable names 
-  int AVARval[numAVARS] = {0, 0};                      // array to store variable values
+  const char* AVAR[numAVARS] = {"tSET", "rhSET"};     // array with variable names 
+  int AVARval[numAVARS] = {0, 0};                     // array to store variable values
 
   // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":"22"}
   String updateAVAR(byte index){
-    JSONVar jsonAVAR;                             // Create JSON object for Floating Variables
-    jsonAVAR["afb"] = String(AVAR[index]);        // Variable name
-    jsonAVAR["value"] = String(AVARval[index]);   // Variable value
-    return JSON.stringify(jsonAVAR);              // JSON object converted into a String.
+    JSONVar jsonObj;                      // Create JSON object for Floating Variables
+    jsonObj["afb"] = AVAR[index];         // Variable name
+    jsonObj["value"] = AVARval[index];    // Variable value
+    return JSON.stringify(jsonObj);       // JSON object converted into a String.
   }
 #endif
 
@@ -159,13 +159,18 @@ void notifyClients(String msg) { ws.textAll(msg); }
     AwsFrameInfo *info = (AwsFrameInfo*)arg;
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) { 
       data[len] = 0;
-      const char* msg = (char*)data;     //******
-      const String msgType = String(msg).substring(2, 5);
-      Serial.println(msgType);
+      const char* msg = (char*)data;
+      JSONVar jsonObj = JSON.parse(msg);
+      #ifdef debug 
+        Serial.print(F("key - "));      
+        Serial.print(jsonObj.keys()[0]); 
+      #endif
+
       //------------------------------------------------------
       // Refresh feedback for ALL BUTTONS & TOGGLE SWITCHES (requested by JS when the page is loaded):
       //------------------------------------------------------
-      if (strcmp(msg, "updateAll") == 0) {        // Update all feedbacks when page loads.
+      // JS function onOpen(event)  --> msg = `{"all": "update"}`
+      if (jsonObj.hasOwnProperty("all")) {        // Update all feedbacks when page loads.
         #ifdef useButton
           notifyClients(updateButton("STATE"));   // update Button field "state".
           notifyClients(updateButton("MODE"));    // update Button field "mode".
@@ -186,16 +191,14 @@ void notifyClients(String msg) { ws.textAll(msg); }
       //------------------------------------------------------
       // JS function press(element) --> msg {"but":"XXX"} (XXX is the button ID)
       #ifdef useButton
-        else if (msgType == "but") {
-          JSONVar jsonBUT = JSON.parse(msg);
-          String butName = jsonBUT["but"];
+        else if (jsonObj.hasOwnProperty("but")) {
+          const char* butName =  jsonObj["but"];
           Serial.println(butName);
-          if (butName == "bON")        digitalWrite(statePin, 1);
-          else if (butName == "bOFF")  digitalWrite(statePin, 0);
-          else if (butName == "bAUTO") digitalWrite(modePin, 1); 
-          else if (butName == "bMAN")  digitalWrite(modePin, 0);
-          butName.remove(0,1);
-          notifyClients(butName);
+          if (strcmp(butName, "bON") == 0)  digitalWrite(statePin, 1);
+          else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
+          else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
+          else if (strcmp(butName, "bMAN") == 0)   digitalWrite(modePin, 0);      
+          notifyClients(butName+1);
         }
       #endif
 
@@ -204,9 +207,8 @@ void notifyClients(String msg) { ws.textAll(msg); }
       //------------------------------------------------------
       // JS function toggle(element) --> msg {"d_o":"x"}
       #ifdef useToggle
-        else if (msgType == "d_o") {
-          JSONVar jsonTOG = JSON.parse(msg);
-          const byte DOchannel = byte(atoi(jsonTOG["d_o"]));
+        else if (jsonObj.hasOwnProperty("d_o")) {
+          const byte DOchannel = byte(atoi(jsonObj["d_o"]));
           digitalWrite(DOchannel, !digitalRead(DOchannel));
           notifyClients(updateDO(DOchannel));
         }
@@ -215,17 +217,16 @@ void notifyClients(String msg) { ws.textAll(msg); }
       //------------------------------------------------------
       // Tune PWM A.O. (tune output in ESP and feedback to JS):
       //------------------------------------------------------
+      // JS function tune(element, value) --> msg {"a_o":"x", "value":"xx"}
       #ifdef usePWM
-        // JS function tune(element, value) --> msg {"a_o":"x", "value":"xx"}
-        else if (msgType == "a_o") {
+        else if (jsonObj.hasOwnProperty("a_o")) {
           byte pwmIndex = 255;
-          JSONVar jsonPWM = JSON.parse(msg);
-          const byte pwmOutput = byte(atoi(jsonPWM["a_o"]));
+          const byte pwmOutput = byte(atoi(jsonObj["a_o"]));
           for (byte i=0; i<numPWMs; i++) {
             if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
           }
           if (pwmIndex == 255) return;
-          PWMval[pwmIndex] = atoi(jsonPWM["value"]);  // update array PWMval with new value (keep 1 decimal place only)
+          PWMval[pwmIndex] = atoi(jsonObj["value"]);  // update array PWMval with new value (keep 1 decimal place only)
           analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
           notifyClients(updatePWM(pwmIndex));         // Send feedback to JS.
         }
@@ -234,17 +235,16 @@ void notifyClients(String msg) { ws.textAll(msg); }
       //------------------------------------------------------
       // Set CONTROL ANALOG VARIABLE
       //------------------------------------------------------
+      // JS function set(element, value) --> msg {"set":"x", "value":"xx"}
       #ifdef useAVAR
-        // JS function set(element, value) --> msg {"set":"x", "value":"xx"}
-        else if (msgType == "set") {
+        else if (jsonObj.hasOwnProperty("set")) {
           byte varIndex = 255;
-          JSONVar jsonAVAR = JSON.parse(msg);
-          const String varName = jsonAVAR["set"];
+          const char* varName = jsonObj["set"];
           for (byte i=0; i<numPWMs; i++) {
-            if (varName == AVAR[i]) { varIndex = i; break; }
+            if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
           }
           if (varIndex == 255) return;
-          AVARval[varIndex] = atoi(jsonAVAR["value"]);
+          AVARval[varIndex] = atoi(jsonObj["value"]);
           notifyClients(updateAVAR(varIndex));
         }
       #endif
