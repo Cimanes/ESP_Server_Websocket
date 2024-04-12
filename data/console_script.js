@@ -7,26 +7,26 @@
 //===============================================================================
 // OPTIONS
 //===============================================================================
-const logger = 1;                                   // 1 if console log is desired / 0 if not
-const colorON = '#048';                             // Color for feedback text when "ACTIVE"
-const colorOFF = '#888';                            // Color for feedback text when "INACTIVE"
-const useButton = 1;                                // 1 if buttons are used / 0 if not
-const arrButton = ['ON', 'OFF', 'AUTO', 'MAN'];     // update with button commands
-const useToggle = 1;                                // 1 if toggle switches are used / 0 if not
-const arrToggle = ['12', '14'];                     // update with GPIO's used for toggles
-const usePWM = 1;                                   // 1 if PWM analog outputs are used / 0 if not
-const useAVAR = 1;                                  // 1 if control variables are used / 0 if not
-const decimals = 1;                                 // Define number of decimals for analog readings
-const aFactor = 10 ** decimals;                     // Factor for conversion of analog values (server uses int; factor = 10 -> one decimal place)
-
+const logger = 1,                                   // 1 if console log is desired / 0 if not
+      colorON = '#048',                             // Color for feedback text when "ACTIVE"
+      colorOFF = '#888',                            // Color for feedback text when "INACTIVE"
+      useButton = 1,                                // 1 if buttons are used / 0 if not
+      arrButton = ['ON', 'OFF', 'AUTO', 'MAN'],     // update with button commands
+      useToggle = 1,                                // 1 if toggle switches are used / 0 if not
+      arrToggle = ['12', '14'],                     // update with GPIO's used for toggles
+      usePWM = 1,                                   // 1 if PWM analog outputs are used / 0 if not
+      useAVAR = 1,                                  // 1 if analog control variables are used / 0 if not
+      useBVAR = 1,                                  // 1 if boolean control variables are used / 0 if not
+      decimals = 1,                                 // Define number of decimals for analog readings
+      aFactor = 10 ** decimals;                     // Factor for conversion of analog values (server uses int; factor = 10 -> one decimal place)
 
 //===============================================================================
 // MANAGE WEBSOCKET
 //===============================================================================
 // Define the gateway as the current URL using template literal with variable (the webserver IP address)
 // Initialize the WebSocket connection on that gateway:
-const gateway = `ws://${window.location.hostname}/ws`;
-const websocket = new WebSocket(gateway);
+const gateway = `ws://${window.location.hostname}/ws`,
+      websocket = new WebSocket(gateway);
 
 // Add an event listener to run function when the page loads:
 window.addEventListener('load',  onload());
@@ -44,7 +44,7 @@ function initWebSocket() {
 // Send message "updateAll" to server using websocket:
 // (Server will reply message with state of ALL Buttons and Toggle Switches).
 function onOpen(event) { 
-  const msg = `{"all": "update"}`;
+  const msg = `{"all": ""}`;
   if(logger) console.log('WebSocket opened: Update all');
   websocket.send(msg);    
 }
@@ -68,29 +68,38 @@ if (useButton) {
   }
 }
 // function toggle(element) is called by the HTML when one "D.O." element (toggle switch) is operated
-// Send message (object: {"d_o":"element.id"}) using websocket to the server to toggle D.O. channel number
+// Send message (object: {"tog":"element.id"}) using websocket to the server to toggle D.O. channel number
 if (useToggle) {
   function toggle(element) {
-    const msg = `{"d_o": "${element.id}"}`;
+    const msg = `{"tog": "${element.id}"}`;
     if (logger) console.log('toggle ' + element.id);
     websocket.send(msg);
   }
 }
-// function tune(element) is called by the HTML when one analog output (PWM) is adjusted
+// function bvar(element) is called by the HTML when one boolean variable is toggled by the user
+// Send message (object: {"var":"XX"}) using websocket to the server to toggle the value of that variable.
+if (useBVAR) {
+  function bvar(element) {
+    const msg = `{"bvar": "${element.id}"}`;
+    if (logger) console.log('bvar ' + element.id);
+    websocket.send(msg);
+  }
+}
+// function tune(element) is called by the HTML when one A.O. (PWM) is adjusted
 if (usePWM) {
   function tune(element, value) {
     // const tuneValue = document.getElementById(element.id).value;
-    const msg = `{"a_o": "${element.id}", "value":"${value * aFactor}"}`;
+    const msg = `{"pwm": "${element.id}", "value":"${value * aFactor}"}`;
     if (logger) console.log('tune ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
 }
-// function set(element) is called by the HTML when one analog setpoint is sent
-// Send message (object: {"set":"x", "value":"xx"}) using websocket to the server to change value of that variable.
+// function avar(element) is called by the HTML when one analog variable is set by the user
+// Send message (object: {"avar":"x", "value":"xx"}) using websocket to the server to change value of that variable.
 if (useAVAR) {
-  function set(element, value) {
-    const msg = `{"set": "${element.id}", "value":"${value * aFactor}"}`;
-    if (logger) console.log('set ' + element.id + ' - ' + value);
+  function avar(element, value) {
+    const msg = `{"avar": "${element.id}", "value":"${value * aFactor}"}`;
+    if (logger) console.log('avar ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
 }
@@ -119,10 +128,10 @@ function onMessage(event) {
   //------------------------------------------------------
   // Update one toggle switch using JSON object with its current Output State:
   // { "dfb":"12", "state":"0" }
-  else if (useToggle && 'dfb' in JSON.parse(event.data)) {
-    const objGPIO = JSON.parse(event.data);
-    element = objGPIO.dfb;
-    if (objGPIO.state == "1") {
+  else if ((useBVAR || useToggle) && 'dfb' in JSON.parse(event.data)) {
+    const jsonObj = JSON.parse(event.data);
+    element = jsonObj.dfb;
+    if (jsonObj.state == "1") {
       document.getElementById(element).checked = true;
       document.getElementById(element+"_state").textContent = "ON";
       document.getElementById(element+"_state").style.color = colorON;    
@@ -140,10 +149,10 @@ function onMessage(event) {
   // Update analog feedback for PWM or Control variable (slider bar or text input) using JSON object with its current value:
   // { "afb":"TSET", "value":"22" } or { "afb":"5", "value":"50" }
   else if ((useAVAR || usePWM) && 'afb' in JSON.parse(event.data)) {
-    const objVAR = JSON.parse(event.data);
-    element = objVAR.afb;
-    document.getElementById(element).value = objVAR.value / aFactor;
-    document.getElementById(element+"_value").textContent = objVAR.value / aFactor;
+    const jsonObj = JSON.parse(event.data);
+    element = jsonObj.afb;
+    document.getElementById(element).value = jsonObj.value / aFactor;
+    document.getElementById(element+"_value").textContent = jsonObj.value / aFactor;
   } 
 }
 

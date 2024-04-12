@@ -36,7 +36,7 @@
       </div>
 
       <!-- ===================================================  -->
-      <!-- One card with toggle switches                        -->
+      <!-- One card with toggle switches (PWM dig. outputs)     -->
       <!-- https://www.w3schools.com/howto/howto_css_switch.asp -->
       <!-- ===================================================  -->
       <!-- the id's of the elements are used in JS -->
@@ -54,6 +54,27 @@
           <span class="toggle"></span>
         </label>  
       </div>
+
+      <!-- ===================================================  -->
+      <!-- One card with toggle switches (boolean variables)    -->
+      <!-- https://www.w3schools.com/howto/howto_css_switch.asp -->
+      <!-- ===================================================  -->
+      <!-- the id's of the elements are used in JS -->
+      <div class="card">
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> bVAR-1:</p>
+        <p class="feedback"><span id="bVAR1_state">%STATE%</span></p>                
+        <label class="toggleSwitch">
+          <input type="checkbox" id="bVAR1" onchange="bvar(this)">   
+          <span class="toggle"></span>
+        </label>  
+        <p class="card-title"><i class="fa-solid fa-hand" style="color: #922;"></i> bVAR-2:</p>
+        <p class="feedback"><span id="bVAR2_state">%STATE%</span></p>  
+        <label class="toggleSwitch">
+          <input type="checkbox" id="bVAR2" onchange="bvar(this)">
+          <span class="toggle"></span>
+        </label>  
+      </div>
+
       <!-- ===================================================  -->
       <!-- One card with sliders (PWM's analog control)         -->
       <!-- ===================================================  -->
@@ -78,13 +99,13 @@
         <p class="card-title"><i class="fa-solid fa-gauge-high" style="color: #922;"></i> Temp set (ºC): </p>
         <p class="feedback"><number id="tSET_value">%TSET%</number></p>
         <div class="sliderBox">
-          <input type="range" id="tSET" onchange="set(this, this.value)" class="slider">
+          <input type="range" id="tSET" onchange="avar(this, this.value)" class="slider">
           <div class="ticks" id="tSET_axis"></div>
         </div>
         <p class="card-title"><i class="fa-solid fa-gauge-high" style="color: #922;"></i> RH set (%): </p>
         <p class="feedback"><number id="rhSET_value">%RHSET%</number></p>
         <div class="sliderBox">
-          <input type="range" id="rhSET" onchange="set(this, this.value)" class="slider">
+          <input type="range" id="rhSET" onchange="avar(this, this.value)" class="slider">
           <div class="ticks" id="rhSET_axis"></div>
         </div> 
       </div>
