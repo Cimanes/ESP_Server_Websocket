@@ -2,6 +2,7 @@
 // LIBRARIES
 // ===============================================================================
 #include <Arduino.h>
+#include <SimpleTimer.h>
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
 // #define ESP8266            // OPTIONAL: define type board family: [ESP8266, ESP32]
@@ -34,7 +35,9 @@
 // Create AsyncWebServer object on port 80 and WebSocket object:
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
-int cleanTimer = 0UL;
+int cleanTimer = 2000UL;
+SimpleTimer timer;
+void clean() { ws.cleanupClients();}
 
 // Function to Initialize Wifi
 void initWiFi() {
@@ -99,7 +102,7 @@ void notifyClients(String msg) { ws.textAll(msg); }
   // Define the Digital Outputs to be controlled via toggle switches
     #define numDOs 2
     const byte arrDO[numDOs] = {12, 14};
-  // Update toggle switch: return JSON object {"dfb":"12", "state":"1"}
+  // Update toggle switch: return JSON object {"dfb":12, "state":1}
   String updateDO(byte gpio){
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
@@ -117,7 +120,7 @@ void notifyClients(String msg) { ws.textAll(msg); }
   const char* BVAR[numBVARS] = {"bVAR1", "bVAR2"};    // Array with boolean variable names 
   bool BVARval[numBVARS] = {0, 0};                    // Array to store boolean variable values
 
-  // Update boolean feedback of control variable: return JSON object {"dfb":"tSET", "value":"22"}
+  // Update boolean feedback of control variable: return JSON object {"dfb":"bVAR1", "state":0}
   String updateBVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Floating Variables
     jsonObj["dfb"] = BVAR[index];         // Variable name
@@ -137,7 +140,7 @@ void notifyClients(String msg) { ws.textAll(msg); }
   const int arrPWM[numPWMs][4] = {{5, 0, 1000}, {15, 50, 350}};
   int PWMval[numPWMs] = {0, 0};
 
-  // Update analog feedback of PWM: return JSON object {"afb":"5", "value":"15"}
+  // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
   String updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
     jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
@@ -155,7 +158,7 @@ void notifyClients(String msg) { ws.textAll(msg); }
   const char* AVAR[numAVARS] = {"tSET", "rhSET"};     // array with analog variable names 
   int AVARval[numAVARS] = {0, 0};                     // array to store analog variable values
 
-  // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":"22"}
+  // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":22}
   String updateAVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Analog Variables
     jsonObj["afb"] = AVAR[index];         // Analog Variable name
@@ -163,7 +166,26 @@ void notifyClients(String msg) { ws.textAll(msg); }
     return JSON.stringify(jsonObj);       // JSON object converted into a String.
   }
 #endif
-
+void updateOuts() {
+  #ifdef useButton
+    notifyClients(updateButton("STATE"));   // update Button field "state".
+    notifyClients(updateButton("MODE"));    // update Button field "mode".
+  #endif             
+  #ifdef usePWM
+    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
+  #endif
+  #ifdef useToggle
+    for (byte i:arrDO) { notifyClients(updateDO(i)); }
+  #endif
+}
+void updateVars() {
+  #ifdef useAVAR
+    for (byte i = 0; i < numAVARS; i++) { notifyClients(updateAVAR(i)); }
+  #endif
+  #ifdef useBVAR
+    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
+  #endif
+}
 // ===============================================================================
 // MANAGE MESSAGES FROM CLIENTS (via WebSocket)
 // ===============================================================================
@@ -175,30 +197,16 @@ void notifyClients(String msg) { ws.textAll(msg); }
     AwsFrameInfo *info = (AwsFrameInfo*)arg;
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) { 
       data[len] = 0;
-      const char* msg = (char*)data;
-      JSONVar jsonObj = JSON.parse(msg);
+      // const char* msg = (char*)data;
+      JSONVar jsonObj = JSON.parse((char*)data);
 
       //------------------------------------------------------
       // Refresh feedback for ALL BUTTONS & TOGGLE SWITCHES (requested by JS when the page is loaded):
       //------------------------------------------------------
-      // JS function onOpen(event)  --> msg = `{"all": ""}`
-      if (jsonObj.hasOwnProperty("all")) {        // Update all feedbacks when page loads.
-        #ifdef useButton
-          notifyClients(updateButton("STATE"));   // update Button field "state".
-          notifyClients(updateButton("MODE"));    // update Button field "mode".
-        #endif             
-        #ifdef usePWM
-          for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
-        #endif        
-        #ifdef useAVAR
-          for (byte i = 0; i < numAVARS; i++) { notifyClients(updateAVAR(i)); }
-        #endif            
-        #ifdef useToggle
-          for (byte i:arrDO) { notifyClients(updateDO(i)); }
-        #endif
-        #ifdef useBVAR
-          for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
-        #endif   
+      // JS function onOpen(event)  --> msg = `{"all": ""}`  --> Error: the last type is not received by JS. need to split in two separate steps
+      if (jsonObj.hasOwnProperty("all")) {
+        updateOuts();                         // Update feedback from all outputs when page loads.
+        timer.setTimeout(500, updateVars);   // Update feedback from all variables when page loads. (timer to avoid error)
       }
 
       //------------------------------------------------------
@@ -332,6 +340,7 @@ void setup() {
   initWiFi();
   initFS();
   initWebSocket();
+  timer.setInterval(cleanTimer, clean);
 
   // Load index page when the server is called (on root "/")
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -344,8 +353,5 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - cleanTimer > 2000) {
-    cleanTimer = millis();
-    ws.cleanupClients();
-  }
+  timer.run();
 }
