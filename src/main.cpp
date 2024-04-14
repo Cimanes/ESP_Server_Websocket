@@ -35,6 +35,8 @@
 // Create AsyncWebServer object on port 80 and WebSocket object:
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
+
+// Setup periodic "cleanClients":
 int cleanTimer = 2000UL;
 SimpleTimer timer;
 void clean() { ws.cleanupClients();}
@@ -171,21 +173,22 @@ void updateOuts() {
     notifyClients(updateButton("STATE"));   // update Button field "state".
     notifyClients(updateButton("MODE"));    // update Button field "mode".
   #endif             
-  #ifdef usePWM
-    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
-  #endif
   #ifdef useToggle
     for (byte i:arrDO) { notifyClients(updateDO(i)); }
   #endif
+  #ifdef usePWM
+    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
+  #endif
 }
 void updateVars() {
+  #ifdef useBVAR
+    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
+  #endif  
   #ifdef useAVAR
     for (byte i = 0; i < numAVARS; i++) { notifyClients(updateAVAR(i)); }
   #endif
-  #ifdef useBVAR
-    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
-  #endif
 }
+
 // ===============================================================================
 // MANAGE MESSAGES FROM CLIENTS (via WebSocket)
 // ===============================================================================
@@ -246,10 +249,7 @@ void updateVars() {
             if (strcmp(varName, BVAR[i]) == 0) { varIndex = i; break; }
           }
           if (varIndex == 255) return;
-          Serial.print("BVAR: ");
-          Serial.print(BVARval[varIndex]); Serial.print(" - ");
           BVARval[varIndex] = !BVARval[varIndex];
-          Serial.println(BVARval[varIndex] );
           notifyClients(updateBVAR(varIndex));
         }
       #endif  
