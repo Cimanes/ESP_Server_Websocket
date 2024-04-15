@@ -219,7 +219,6 @@ void updateVars() {
       #ifdef useButton
         else if (jsonObj.hasOwnProperty("but")) {
           const char* butName =  jsonObj["but"];
-          Serial.println(butName);
           if (strcmp(butName, "bON") == 0)  digitalWrite(statePin, 1);
           else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
           else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
