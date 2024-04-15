@@ -36,6 +36,8 @@
 // Create AsyncWebServer object on port 80 and WebSocket object:
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
+
+// Setup periodic "cleanClients":
 int cleanTimer = 2000UL;
 SimpleTimer timer;
 void clean() { ws.cleanupClients();}
@@ -172,21 +174,22 @@ void updateOuts() {
     notifyClients(updateButton("STATE"));   // update Button field "state".
     notifyClients(updateButton("MODE"));    // update Button field "mode".
   #endif             
-  #ifdef usePWM
-    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
-  #endif
   #ifdef useToggle
     for (byte i:arrDO) { notifyClients(updateDO(i)); }
   #endif
+  #ifdef usePWM
+    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
+  #endif
 }
 void updateVars() {
+  #ifdef useBVAR
+    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
+  #endif  
   #ifdef useAVAR
     for (byte i = 0; i < numAVARS; i++) { notifyClients(updateAVAR(i)); }
   #endif
-  #ifdef useBVAR
-    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
-  #endif
 }
+
 // ===============================================================================
 // MANAGE MESSAGES FROM CLIENTS (via WebSocket)
 // ===============================================================================
@@ -217,7 +220,6 @@ void updateVars() {
       #ifdef useButton
         else if (jsonObj.hasOwnProperty("but")) {
           const char* butName =  jsonObj["but"];
-          Serial.println(butName);
           if (strcmp(butName, "bON") == 0)  digitalWrite(statePin, 1);
           else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
           else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
@@ -232,7 +234,7 @@ void updateVars() {
       // Digital output: JS function toggle(element) --> msg {"tog":"x"}
       #ifdef useToggle
         else if (jsonObj.hasOwnProperty("tog")) {
-          const byte DOchannel = byte(atoi(jsonObj["tog"]));
+          const byte DOchannel = byte(jsonObj["tog"]);
           digitalWrite(DOchannel, !digitalRead(DOchannel));
           notifyClients(updateDO(DOchannel));
         }
@@ -247,10 +249,7 @@ void updateVars() {
             if (strcmp(varName, BVAR[i]) == 0) { varIndex = i; break; }
           }
           if (varIndex == 255) return;
-          Serial.print("BVAR: ");
-          Serial.print(BVARval[varIndex]); Serial.print(" - ");
           BVARval[varIndex] = !BVARval[varIndex];
-          Serial.println(BVARval[varIndex] );
           notifyClients(updateBVAR(varIndex));
         }
       #endif  
@@ -262,12 +261,12 @@ void updateVars() {
       #ifdef usePWM
         else if (jsonObj.hasOwnProperty("pwm")) {
           byte pwmIndex = 255;
-          const byte pwmOutput = byte(atoi(jsonObj["pwm"]));
+          const byte pwmOutput = byte(jsonObj["pwm"]);
           for (byte i=0; i<numPWMs; i++) {
             if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
           }
           if (pwmIndex == 255) return;
-          PWMval[pwmIndex] = atoi(jsonObj["value"]);  // update array PWMval with new value (keep 1 decimal place only)
+          PWMval[pwmIndex] = jsonObj["value"];  // update array PWMval with new value (keep 1 decimal place only)
           analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
           notifyClients(updatePWM(pwmIndex));         // Send feedback to JS.
         }
@@ -285,7 +284,7 @@ void updateVars() {
             if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
           }
           if (varIndex == 255) return;
-          AVARval[varIndex] = atoi(jsonObj["value"]);
+          AVARval[varIndex] = jsonObj["value"];
           notifyClients(updateAVAR(varIndex));
         }
       #endif
