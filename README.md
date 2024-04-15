@@ -6,3 +6,5 @@ Javascript functions will handle the user actions and send "WebSocket" messages 
 The server will operate the outputs or change variables as requested by the messages received. 
 The server will send feedback messages to the Javascript file. 
 The Javascript file will update the content of the web page with the feedback received from the server.
+
+This version is created using the official library Arduino_JSON. 

@@ -130,11 +130,11 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
 
   // Update boolean feedback of control variable: return JSON object {"dfb":"bVAR1", "state":0}
   const char* updateBVAR(byte index){
-    JSONVar jsonObj;                      // Create JSON object for Floating Variables
+    JSONVar jsonObj;                      // Create JSON object for boolean Variables
     jsonObj["dfb"] = BVAR[index];         // Variable name
     jsonObj["state"] = BVARval[index];    // Variable value
     JSON.stringify(jsonObj).toCharArray(feedback, 50);
-    return feedback;         // JSON object converted into a String.
+    return feedback;                      // Return JSON object converted into a String.
   }
 #endif
 
@@ -155,7 +155,7 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
     jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
     JSON.stringify(jsonObj).toCharArray(feedback, 50);
-    return feedback;         // JSON object converted into a String.
+    return feedback;                      // Return JSON object converted into a String.
   }
 #endif
 
@@ -174,7 +174,7 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
     jsonObj["afb"] = AVAR[index];         // Analog Variable name
     jsonObj["value"] = AVARval[index];    // Analog Variable value
     JSON.stringify(jsonObj).toCharArray(feedback, 50);
-    return feedback;         // JSON object converted into a String.
+    return feedback;                      // Return JSON object converted into a String.
   }
 
 #endif
@@ -210,7 +210,6 @@ void updateVars() {
     AwsFrameInfo *info = (AwsFrameInfo*)arg;
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) { 
       data[len] = 0;
-      // const char* msg = (char*)data;
       JSONVar jsonObj = JSON.parse((char*)data);
 
       //------------------------------------------------------
