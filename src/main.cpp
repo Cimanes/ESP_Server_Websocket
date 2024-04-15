@@ -70,8 +70,10 @@ void initFS() {
   else Serial.println(F("File System mounted OK"));
 }
 
-// Function to notify all clients with a message containing the argument
-void notifyClients(String msg) { ws.textAll(msg); }
+// Function to notify all clients with a message (JSON object)
+const byte fbkLength = 50;            // Max length of feedback message
+char feedback[fbkLength];             // Char array to store the JSON object
+void notifyClients(const char* msg) { ws.textAll(msg); }
 
 // ===============================================================================
 // Variables and functions defined to deal with buttons
@@ -83,16 +85,19 @@ void notifyClients(String msg) { ws.textAll(msg); }
  
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
   // Pass argument by reference "&var", so we can change its value inside the function:
-  String updateButton(const String &var) {
-   String feedback;
+  const char* updateButton(const String &var) {
+  //  String feedback;
+    String fbkString;
     if(var == "STATE") {
-      if(digitalRead(statePin)) feedback = "ON";
-      else feedback = "OFF";
+      
+      if(digitalRead(statePin)) fbkString = "ON";
+      else fbkString = "OFF";
     }
     else if (var == "MODE") {
-      if(digitalRead(modePin)) feedback = "AUTO";
-      else feedback = "MAN";
+      if(digitalRead(modePin)) fbkString = "AUTO";
+      else fbkString = "MAN";
     }
+    fbkString.toCharArray(feedback, fbkLength);
     return feedback;
   }
 #endif
@@ -105,11 +110,12 @@ void notifyClients(String msg) { ws.textAll(msg); }
     #define numDOs 2
     const byte arrDO[numDOs] = {12, 14};
   // Update toggle switch: return JSON object {"dfb":12, "state":1}
-  String updateDO(byte gpio){
+  const char* updateDO(byte gpio){
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
-    return JSON.stringify(jsonObj);         // JSON object converted into a String.
+    JSON.stringify(jsonObj).toCharArray(feedback, 50);
+    return feedback;         // JSON object converted into a String.
   }
 #endif
 
@@ -123,11 +129,12 @@ void notifyClients(String msg) { ws.textAll(msg); }
   bool BVARval[numBVARS] = {0, 0};                    // Array to store boolean variable values
 
   // Update boolean feedback of control variable: return JSON object {"dfb":"bVAR1", "state":0}
-  String updateBVAR(byte index){
+  const char* updateBVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Floating Variables
     jsonObj["dfb"] = BVAR[index];         // Variable name
     jsonObj["state"] = BVARval[index];    // Variable value
-    return JSON.stringify(jsonObj);       // JSON object converted into a String.
+    JSON.stringify(jsonObj).toCharArray(feedback, 50);
+    return feedback;         // JSON object converted into a String.
   }
 #endif
 
@@ -143,11 +150,12 @@ void notifyClients(String msg) { ws.textAll(msg); }
   int PWMval[numPWMs] = {0, 0};
 
   // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
-  String updatePWM(byte index){
+  const char* updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
     jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
-    return JSON.stringify(jsonObj);       // JSON object converted into a String.
+    JSON.stringify(jsonObj).toCharArray(feedback, 50);
+    return feedback;         // JSON object converted into a String.
   }
 #endif
 
@@ -161,12 +169,14 @@ void notifyClients(String msg) { ws.textAll(msg); }
   int AVARval[numAVARS] = {0, 0};                     // array to store analog variable values
 
   // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":22}
-  String updateAVAR(byte index){
+  const char* updateAVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Analog Variables
     jsonObj["afb"] = AVAR[index];         // Analog Variable name
     jsonObj["value"] = AVARval[index];    // Analog Variable value
-    return JSON.stringify(jsonObj);       // JSON object converted into a String.
+    JSON.stringify(jsonObj).toCharArray(feedback, 50);
+    return feedback;         // JSON object converted into a String.
   }
+
 #endif
 void updateOuts() {
   #ifdef useButton
