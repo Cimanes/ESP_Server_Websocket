@@ -70,7 +70,7 @@ if (useButton) {
 // Send message (object: {"tog":"element.id"}) using websocket to the server to toggle D.O. channel number
 if (useToggle) {
   function toggle(element) {
-    const msg = `{"tog": "${element.id}"}`;
+    const msg = `{"tog": ${element.id}}`;
     if (logger) console.log('toggle ' + element.id);
     websocket.send(msg);
   }
@@ -88,7 +88,7 @@ if (useBVAR) {
 if (usePWM) {
   function tune(element, value) {
     // const tuneValue = document.getElementById(element.id).value;
-    const msg = `{"pwm": "${element.id}", "value":"${value * aFactor}"}`;
+    const msg = `{"pwm": ${element.id}, "value":${value * aFactor}}`;
     if (logger) console.log('tune ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
@@ -97,7 +97,7 @@ if (usePWM) {
 // Send message (object: {"avar":"x", "value":"xx"}) using websocket to the server to change value of that variable.
 if (useAVAR) {
   function avar(element, value) {
-    const msg = `{"avar": "${element.id}", "value":"${value * aFactor}"}`;
+    const msg = `{"avar": "${element.id}", "value":${value * aFactor}}`;
     if (logger) console.log('avar ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
