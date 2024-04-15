@@ -234,7 +234,7 @@ void updateVars() {
       // Digital output: JS function toggle(element) --> msg {"tog":"x"}
       #ifdef useToggle
         else if (jsonObj.hasOwnProperty("tog")) {
-          const byte DOchannel = byte(atoi(jsonObj["tog"]));
+          const byte DOchannel = byte(jsonObj["tog"]);
           digitalWrite(DOchannel, !digitalRead(DOchannel));
           notifyClients(updateDO(DOchannel));
         }
@@ -261,12 +261,12 @@ void updateVars() {
       #ifdef usePWM
         else if (jsonObj.hasOwnProperty("pwm")) {
           byte pwmIndex = 255;
-          const byte pwmOutput = byte(atoi(jsonObj["pwm"]));
+          const byte pwmOutput = byte(jsonObj["pwm"]);
           for (byte i=0; i<numPWMs; i++) {
             if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
           }
           if (pwmIndex == 255) return;
-          PWMval[pwmIndex] = atoi(jsonObj["value"]);  // update array PWMval with new value (keep 1 decimal place only)
+          PWMval[pwmIndex] = jsonObj["value"];  // update array PWMval with new value (keep 1 decimal place only)
           analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
           notifyClients(updatePWM(pwmIndex));         // Send feedback to JS.
         }
@@ -284,7 +284,7 @@ void updateVars() {
             if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
           }
           if (varIndex == 255) return;
-          AVARval[varIndex] = atoi(jsonObj["value"]);
+          AVARval[varIndex] = jsonObj["value"];
           notifyClients(updateAVAR(varIndex));
         }
       #endif
