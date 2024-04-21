@@ -27,13 +27,13 @@
       <!-- =============================  -->
       <!-- button id's are used in JS file -->
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> GPIO 2 (State): </p>
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> GPIO 0 (State): </p>
         <p class="feedback"><span id="state">%STATE%</span></p>  
         <div>
           <button class="button-on" id="bON" onclick="press(this)">ON</button>   
           <button class="button-off" id="bOFF" onclick="press(this)">OFF</button>     
         </div>
-        <p class="card-title"><i class="fa-solid fa-hand" style="color: #922;"></i> GPIO 4 (Mode): </p>
+        <p class="card-title"><i class="fa-solid fa-hand" style="color: #922;"></i> GPIO 2 (Mode): </p>
         <p class="feedback"><span id="mode">%MODE%</span></p>
         <div>
           <button class="button-on" id="bAUTO" onclick="press(this)">AUTO</button>
@@ -47,13 +47,13 @@
       <!-- ===================================================  -->
       <!-- the id's of the elements are used in JS -->
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> GPIO 12 (Run):</p>
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> GPIO 12 (D.O.):</p>
         <p class="feedback"><span id="12_state">%STATE%</span></p>                
         <label class="toggleSwitch">
           <input type="checkbox" id="12" onchange="toggle(this)">   
           <span class="toggle"></span>
         </label>  
-        <p class="card-title"><i class="fa-solid fa-hand" style="color: #922;"></i> GPIO 14 (Auto):</p>
+        <p class="card-title"><i class="fa-solid fa-hand" style="color: #922;"></i> GPIO 14 (D.O.):</p>
         <p class="feedback"><span id="14_state">%STATE%</span></p>  
         <label class="toggleSwitch">
           <input type="checkbox" id="14" onchange="toggle(this)">
@@ -85,13 +85,13 @@
       <!-- One card with sliders (PWM's analog outputs)         -->
       <!-- ===================================================  -->
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-sliders" style="color: #922;"></i> GPIO 05 (intens.): </p>
+        <p class="card-title"><i class="fa-solid fa-sliders" style="color: #922;"></i> GPIO 05 (PWM): </p>
         <p class="feedback"><number id="5_value">%VALUE%</number></p>
         <div class="sliderBox">
           <input type="range" id="5" onchange="tune(this, this.value)" class="slider">
           <div class="ticks" id="5_axis"></div>
         </div>
-        <p class="card-title"><i class="fa-solid fa-sliders" style="color: #922;"></i> GPIO 06 (intens.): </p>
+        <p class="card-title"><i class="fa-solid fa-sliders" style="color: #922;"></i> GPIO 06 (PWM): </p>
         <p class="feedback"><number id="15_value">%VALUE%</number></p>
         <div class="sliderBox">
           <input type="range" id="15" onchange="tune(this, this.value)" class="slider">

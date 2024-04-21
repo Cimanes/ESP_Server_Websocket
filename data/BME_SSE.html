@@ -22,6 +22,32 @@
     <h1>BME Readings</h1>
   </div>
 
+  <div class="content">
+    <div class="card-grid">
+      <div class="card">
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> Temp (ºC): </p>
+        <p class="feedback"><span id="tBME">%TEMP%</span></p>
+        <div>
+          <button class="button-on" id="bON" onclick="press(this)">ON</button>   
+        </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> Temp (ºC): </p>
+        <p class="feedback"><span id="rhBME">%TEMP%</span></p>
+        <div>
+          <button class="button-on" id="bON" onclick="press(this)">ON</button>   
+        </div>
+    </div> 
+    <div class="card-grid">
+      <div class="card">
+        <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade" style="color: #922;"></i> Temp (ºC): </p>
+        <p class="feedback"><span id="pBME">%TEMP%</span></p>
+        <div>
+          <button class="button-on" id="bON" onclick="press(this)">ON</button>   
+        </div>
+    </div>       
+  </div>
 
 <script src="BME_SSE_script.js"></script>
 

@@ -1,6 +1,5 @@
-body {  
-  background-color: #444;
-}
+@import "main_style.css";
+
 .box{
   background-color: rgb(94, 182, 204);
   margin: 20px auto;

@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div class="topnav">
-    <ul>
-      <a href="index.html"><li>Index</li></a>
-      <a href="inputs.html"><li>Inputs</li></a>
-      <a href="BME_SSE.html"><li>BME Sensor</li></a>
-      <a href="console.html"><li>Console</li></a>
-      <a href="grid.html"><li>Grid</li></a>
-    </ul>
-    <h1>Index</h1>
-  </div>
-  <form action="/get" method="GET">
-    <label for="setpoint">Temp. Setpoint: </label>
-    <input type="text" id='setpoint' name="setpoint" placeholder="Enter value (ºC)"><br>
-    <label for="setpoint">Temp. Setpoint: </label>
-    <input type="range" name="" id=""><input type="text" id='setpoint' name="setpoint" placeholder="MIn to max"><br>
-    <br>    
-    <input type="submit" value="submit">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="index_style.css">
+  </head>
+  <body>
+    <div class="topnav">
+      <ul>
+        <a href="index.html"><li>Index</li></a>
+        <a href="inputs.html"><li>Inputs</li></a>
+        <a href="BME_SSE.html"><li>BME Sensor</li></a>
+        <a href="console.html"><li>Console</li></a>
+        <a href="grid.html"><li>Grid</li></a>
+      </ul>
+      <h1>Input form</h1>
+    </div>
+    <div class="content">
 
-  </form>
-</body>
+      <form action="/get" method="GET">
+        <label for="setpoint">Temp. Setpoint: </label>
+        <input type="text" id='setpoint' name="setpoint" placeholder="Enter value (ºC)">
+        <br><label for="setpoint">Temp. Setpoint: </label>
+        <input type="range" name="" id="">
+        <br><input type="text" id='setpoint' name="setpoint" placeholder="MIn to max"><br>
+        <br><input type="submit" value="submit">
+      </form>
+    </div>
+  </body>
 </html>

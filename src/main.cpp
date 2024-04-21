@@ -1,95 +1,15 @@
-// ===============================================================================
-// LIBRARIES
-// ===============================================================================
-#include <Arduino.h>
-#include <SimpleTimer.h>
-#include <ESPAsyncWebServer.h>
-#include <Arduino_JSON.h>
-// #define ESP8266            // OPTIONAL: define type board family: [ESP8266, ESP32]
-#if defined(ESP32)
-  #include <WiFi.h>
-  #include <AsyncTCP.h>
-  #include "SPIFFS.h"         // OPTIONAL: available for SPIFFS in ESP32 only
-#elif defined(ESP8266)
-  #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
-  #include <LittleFS.h>       // OPTIONAL: Little file system for ESP8266
-#endif
+#include "config.hpp"
 
 // ===============================================================================
-// OPTIONS 
-// ===============================================================================
-#define useButton       // Use buttons
-#define useBVAR         // Use Boolean control variables
-#define useToggle       // Use toggle switches (ON - OFF)
-#define usePWM          // Use analog output channels (PWM's)
-#define useAVAR         // Use floating control variables
-#define debug           // for debugging purpose only. Remove for final version.
-#define Toledo          // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
-#define aFactor 10      // Factor for range of analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
-
-
-// ===============================================================================
-// MANAGE FILE SYSTEM AND COMMUNICATIONS 
-// ===============================================================================
-// Create AsyncWebServer object on port 80 and WebSocket object:
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-
-// Setup periodic "cleanClients":
-int cleanTimer = 2000UL;
-SimpleTimer timer;
-void clean() { ws.cleanupClients();}
-
-// Function to Initialize Wifi
-void initWiFi() {
-  #if defined(Cimanes)
-    const char ssid[] = "Pepe_Cimanes";
-    const char pass[] = "Cimanes7581" ;
-  #elif defined(Toledo)
-    const char ssid[] = "MIWIFI_HtR7" ;
-    const char pass[] = "TdQTDf3H"    ;
-  #elif defined(apartment)
-    const char ssid[] = "HH71VM_309B_2.4G" ;
-    const char pass[] = "Ey6DKct3"    ;
-  #endif
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, pass);
-  Serial.print(F("Connecting to WiFi .."));
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
-    delay(1000);
-  }
-  Serial.println(WiFi.localIP());
-}
-
-// Function to Initialize File System
-void initFS() {
-  if (!LittleFS.begin()) Serial.println(F("Error mounting File System"));
-  // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
-  else Serial.println(F("File System mounted OK"));
-}
-
-// Function to notify all clients with a message (JSON object)
-const byte fbkLength = 50;            // Max length of feedback message
-char feedback[fbkLength];             // Char array to store the JSON object
-void notifyClients(const char* msg) { ws.textAll(msg); }
-
-// ===============================================================================
-// Variables and functions defined to deal with buttons
+// BUTTONS:
 // ===============================================================================
 #ifdef useButton
-  // Set output GPIO's used by the buttons (ON/OFF = GPIO2, AUTO/MAN = GPIO4 )
-  #define statePin 2
-  #define modePin 4
- 
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
   // Pass argument by reference "&var", so we can change its value inside the function:
   const char* updateButton(const String &var) {
   //  String feedback;
     String fbkString;
     if(var == "STATE") {
-      
       if(digitalRead(statePin)) fbkString = "ON";
       else fbkString = "OFF";
     }
@@ -103,12 +23,9 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
 #endif
 
 // ===============================================================================
-// TOGGLE SWITCHES (Digital outputs): Variables and functions
+// TOGGLE SWITCHES (Digital outputs):
 // ===============================================================================
 #ifdef useToggle
-  // Define the Digital Outputs to be controlled via toggle switches
-    #define numDOs 2
-    const byte arrDO[numDOs] = {12, 14};
   // Update toggle switch: return JSON object {"dfb":12, "state":1}
   const char* updateDO(byte gpio){
     JSONVar jsonObj;
@@ -120,14 +37,9 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
 #endif
 
 // ===============================================================================
-// CONTROL BOOLEAN VARIABLES: Variables and functions
+// CONTROL BOOLEAN VARIABLES:
 // ===============================================================================
 #ifdef useBVAR
-  // Define the PWM output channels and ranges
-  #define numBVARS 2
-  const char* BVAR[numBVARS] = {"bVAR1", "bVAR2"};    // Array with boolean variable names 
-  bool BVARval[numBVARS] = {0, 0};                    // Array to store boolean variable values
-
   // Update boolean feedback of control variable: return JSON object {"dfb":"bVAR1", "state":0}
   const char* updateBVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for boolean Variables
@@ -139,16 +51,9 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
 #endif
 
 // ===============================================================================
-// ANALOG OUTPUTS (PWM): Variables and functions
+// ANALOG OUTPUTS (PWM):
 // ===============================================================================
 #ifdef usePWM
-  // Define the PWM output channels and ranges
-  #define numPWMs 2
-  // const array with PWM config. in format "{channel, rangeMin, rangeMax}"
-  // array to store and report PWM values
-  const int arrPWM[numPWMs][4] = {{5, 0, 1000}, {15, 50, 350}};
-  int PWMval[numPWMs] = {0, 0};
-
   // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
   const char* updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
@@ -160,14 +65,9 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
 #endif
 
 // ===============================================================================
-// CONTROL ANALOG VARIABLES: Variables and functions
+// CONTROL ANALOG VARIABLES:
 // ===============================================================================
 #ifdef useAVAR
-  // Define the PWM output channels and ranges
-  #define numAVARS 2
-  const char* AVAR[numAVARS] = {"tSET", "rhSET"};     // array with analog variable names 
-  int AVARval[numAVARS] = {0, 0};                     // array to store analog variable values
-
   // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":22}
   const char* updateAVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Analog Variables
@@ -176,8 +76,11 @@ void notifyClients(const char* msg) { ws.textAll(msg); }
     JSON.stringify(jsonObj).toCharArray(feedback, 50);
     return feedback;                      // Return JSON object converted into a String.
   }
-
 #endif
+
+// ===============================================================================
+// FUNCTIONS TO UPDATE VALUES OF VARIABLES AND OUTPUTS
+// ===============================================================================
 void updateOuts() {
   #ifdef useButton
     notifyClients(updateButton("STATE"));   // update Button field "state".
@@ -248,7 +151,10 @@ void updateVars() {
         }
       #endif
 
-      // Boolean variable: JS function bvar(element) --> msg {"bvar":"x"}
+      //------------------------------------------------------
+      // Set BOOLEAN VARIABLE
+      //------------------------------------------------------
+      // JS function bvar(element) --> msg {"bvar":"x"}
       #ifdef useBVAR
         else if (jsonObj.hasOwnProperty("bvar")) {
           byte varIndex = 255;
@@ -281,7 +187,7 @@ void updateVars() {
       #endif
 
       //------------------------------------------------------
-      // Set CONTROL ANALOG VARIABLE
+      // Set ANALOG VARIABLE
       //------------------------------------------------------
       // JS function avar(element, value) --> msg {"avar":"x", "value":"xx"}
       #ifdef useAVAR
@@ -326,7 +232,7 @@ void initWebSocket() {
 void setup() {
   Serial.begin(115200);
 
-  // Set GPIOs as outputs (buttons and switches)
+  // Set GPIO modes and initial values
   #ifdef useButton
     pinMode(statePin, OUTPUT);
     pinMode(modePin, OUTPUT);
@@ -344,7 +250,7 @@ void setup() {
   #endif
 
 
-  // Initialize wifi, file system and WebSocket: 
+  // Initialize wifi, file system, WebSocket and setup timer: 
   initWiFi();
   initFS();
   initWebSocket();
