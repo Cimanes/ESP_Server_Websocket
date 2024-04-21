@@ -159,9 +159,9 @@ function onMessage(event) {
   // { "dfb":"12", "state":"0" }
   else if ((useBVAR || useToggle) && 'dfb' in JSON.parse(event.data)) {
     const jsonObj = JSON.parse(event.data);
-    document.getElementById(jsonObj.dfb).checked = jsonObj.state === "1";
-    document.getElementById(jsonObj.dfb+"_state").textContent = jsonObj.state === "1" ? "ON" : "OFF";
-    document.getElementById(jsonObj.dfb+"_state").style.color = jsonObj.state === "1" ? colorON : colorOFF;    
+    document.getElementById(jsonObj.dfb).checked = jsonObj.state == "1";
+    document.getElementById(jsonObj.dfb+"_state").textContent = jsonObj.state == "1" ? "ON" : "OFF";
+    document.getElementById(jsonObj.dfb+"_state").style.color = jsonObj.state == "1" ? colorON : colorOFF;    
   }
 
   //------------------------------------------------------

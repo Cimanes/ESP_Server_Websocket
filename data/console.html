@@ -102,13 +102,13 @@
       <!-- One card with sliders (analog variables)            -->
       <!-- ===================================================  -->
       <div class="card">         
-        <p class="card-title"><i class="fa-solid fa-arrows-up-down"></i> Temp set (ºC): </p>
+        <p class="card-title"><i class="fa-solid fa-temperature-half"></i><i class="fa-solid fa-arrows-up-down"></i> Temp set (ºC): </p>
         <p class="feedback"><number id="tSET_value">%TSET%</number></p>
         <div class="sliderBox">
           <input type="range" id="tSET" onchange="avar(this, this.value)" class="slider">
           <div class="ticks" id="tSET_axis"></div>
         </div>
-        <p class="card-title"><i class="fa-solid fa-arrows-up-down"></i> RH set (%): </p>
+        <p class="card-title"><i class="fa-solid fa-droplet"></i><i class="fa-solid fa-arrows-up-down"></i> RH set (%): </p>
         <p class="feedback"><number id="rhSET_value">%RHSET%</number></p>
         <div class="sliderBox">
           <input type="range" id="rhSET" onchange="avar(this, this.value)" class="slider">
