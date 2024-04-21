@@ -1,10 +1,12 @@
 :root {
+  --colorBack: #000;
   --colorNav: #359;
-  --colorON: #359;
-  --colorOFF: #888;
-  --hoverON: #116;
-  --hoverOFF: #333;
   --colorCard: #ccc;
+  --colorIcon: #811;
+  --colorON: #359;
+  --hoverON: #116;
+  --colorOFF: #888;
+  --hoverOFF: #333;
   --unit: 10px;
 }
 
@@ -14,8 +16,8 @@ html {
 }
 
 body {  
-  background-color: #444;
-  align-items: left;
+  background-color: var(--colorBack);
+  background-image: url("background.png");
   margin: 0;
 }
 

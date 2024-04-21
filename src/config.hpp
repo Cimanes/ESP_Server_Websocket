@@ -46,7 +46,6 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 #endif
 
 
-
 // =============================================
 // PIN DEFINITIONS 
 // =============================================
@@ -153,15 +152,15 @@ AsyncEventSource events("/events");
 
 // Setup timers for periodic tasks (websocket clean and take BME readings):
 SimpleTimer timer;
-int cleanTimer = 2000UL;
+const int cleanTimer = 2000UL;
 #ifdef useBME
-  int BMETimer = 30000UL;
+  const int BMETimer = 30000UL;
 #endif
 
 // Configure feedback messages for console  and BME sensor (Websocket and SSE):
-const byte fbkLength = 50;    // Max length of feedback message
-char feedbackWS[fbkLength];   // Char array to store the JSON object
+const byte fbkLength = 50;        // Max length of feedback message
+char feedbackWS[fbkLength];       // Char array to store the JSON object
 #ifdef useBME
-  const byte BMElength = 50;  // Max length of BME readings message
+  const byte BMElength = 50;      // Max length of BME readings message
   char feedbackBME[BMElength];    // Char array to store the JSON object
 #endif

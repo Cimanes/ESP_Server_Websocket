@@ -11,18 +11,9 @@
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
   // Pass argument by reference "&var", so we can change its value inside the function:
   const char* updateButton(const String &var) {
-  //  String feedback;
-    String fbkString;
-    if(var == "STATE") {
-      if(digitalRead(statePin)) fbkString = "ON";
-      else fbkString = "OFF";
-    }
-    else if (var == "MODE") {
-      if(digitalRead(modePin)) fbkString = "AUTO";
-      else fbkString = "MAN";
-    }
-    fbkString.toCharArray(feedbackWS, fbkLength);
-    return feedbackWS;
+    if(var == "STATE")  return digitalRead(statePin) ? "ON" : "OFF";
+    else if (var == "MODE") return digitalRead(modePin) ? "AUTO" : "MAN";
+    return nullptr;
   }
 #endif
 
@@ -36,7 +27,7 @@
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
     JSON.stringify(jsonObj).toCharArray(feedbackWS, 50);
-    return feedbackWS;         // JSON object converted into a String.
+    return feedbackWS;                      // JSON object converted into a String.
   }
 #endif
 

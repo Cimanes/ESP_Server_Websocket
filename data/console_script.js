@@ -25,29 +25,29 @@ const logger = 1,                                   // 1 if console log is desir
 // Define and style the slide bars (add ticks and tick values)
 //===============================================================================
 const arrSliders = [
-  { "id":13, "range": [0, 100], "num": 5},
-  { "id":15, "range": [5, 35], "num": 6},
-  { "id":"tSET", "range": [0, 40], "num": 8},
-  { "id":"rhSET", "range": [0, 100], "num": 5}   
-]
+  { id: 13, range: [0, 100], num: 5 },
+  { id: 15, range: [5, 35], num: 6 },
+  { id: "tSET", range: [0, 40], num: 8 },
+  { id: "rhSET", range: [0, 100], num: 5 }
+];
 
-for (i = 0; i < arrSliders.length; i++) {
-  const min = (arrSliders[i].range[0]), 
-        max = (arrSliders[i].range[1]),
-        step = (max - min) / 100; 
-        numTicks = (arrSliders[i].num);
-  const slider = document.getElementById(arrSliders[i].id);
+for (const item of arrSliders) {
+  const {id, range, num} = item;              // destructuring each object.
+  const slider = document.getElementById(id),
+        min = range[0], 
+        max = range[1],
+        step = (max - min) / 100;
   slider.setAttribute("min", min);
   slider.setAttribute("max", max);
   slider.setAttribute("step", step);
   slider.setAttribute("value", min);
 
-  const axis = document.getElementById(arrSliders[i].id + "_axis");
-  for(j = 0; j <= numTicks; j++) {
+  const axis = document.getElementById(id + "_axis");
+  for(let j = 0; j <= num; j++) {
     const tick = document.createElement("span");
     axis.appendChild(tick);
-    tick.classList.add("tick");
-    tick.textContent = min + j * (max - min) / numTicks;
+    tick.className = "tick";
+    tick.textContent = min + j * (max - min) / num;
     tick.style.transform = "translateY(-10px)";
   }
 }
@@ -58,11 +58,11 @@ for (i = 0; i < arrSliders.length; i++) {
 // Define the gateway as the current URL using template literal with variable (the webserver IP address)
 // Initialize the WebSocket connection on that gateway:
 const gateway = `ws://${window.location.hostname}/ws`,
-      websocket = new WebSocket(gateway);
+    websocket = new WebSocket(gateway);
 
 // Add an event listener to run function when the page loads:
 window.addEventListener('load',  onload());
-function  onload(event) {  initWebSocket();  }
+function  onload(event) { initWebSocket(); }
 
 // Assign callback functions used when the WebSocket connection is opened, closed or when a message is received: 
 function initWebSocket() {
@@ -117,16 +117,17 @@ if (useBVAR) {
   }
 }
 // function tune(element) is called by the HTML when one A.O. (PWM) is adjusted
+// Send message (object: {"pwm":element.id, "value":##}) using websocket to the server to change value of that variable.
+
 if (usePWM) {
   function tune(element, value) {
-    // const tuneValue = document.getElementById(element.id).value;
     const msg = `{"pwm": ${element.id}, "value":${value * aFactor}}`;
     if (logger) console.log('tune ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
 }
 // function avar(element) is called by the HTML when one analog variable is set by the user
-// Send message (object: {"avar":"x", "value":"xx"}) using websocket to the server to change value of that variable.
+// Send message (object: {"avar":"x", "value":##}) using websocket to the server to change value of that variable.
 if (useAVAR) {
   function avar(element, value) {
     const msg = `{"avar": "${element.id}", "value":${value * aFactor}}`;
@@ -141,17 +142,14 @@ if (useAVAR) {
 // Update feedback of affected element:
 function onMessage(event) {
   if (logger) { console.log('feedback ' + event.data); }
-  let element = '';  
   //------------------------------------------------------
   // BUTTONS "element.id"
   //------------------------------------------------------
   // message received: "ON" / "OFF" / "AUTO" / "MAN"
   if (useButton && arrButton.includes(event.data)) {
-    if (event.data == 'ON' || event.data == 'OFF')  element = 'state';
-    else element = 'mode';
+    const element = (event.data === 'ON' || event.data === 'OFF') ? 'state' : 'mode';
     document.getElementById(element).textContent = event.data;
-    if (event.data == 'ON' || event.data == 'AUTO')  document.getElementById(element).style.color = colorON;
-    else document.getElementById(element).style.color = colorOFF;
+    document.getElementById(element).style.color = (event.data === 'ON' || event.data === 'AUTO') ? colorON : colorOFF;
   }
 
   //------------------------------------------------------
@@ -161,29 +159,20 @@ function onMessage(event) {
   // { "dfb":"12", "state":"0" }
   else if ((useBVAR || useToggle) && 'dfb' in JSON.parse(event.data)) {
     const jsonObj = JSON.parse(event.data);
-    element = jsonObj.dfb;
-    if (jsonObj.state == "1") {
-      document.getElementById(element).checked = true;
-      document.getElementById(element+"_state").textContent = "ON";
-      document.getElementById(element+"_state").style.color = colorON;    
-    }
-    else {
-      document.getElementById(element).checked = false;
-      document.getElementById(element+"_state").textContent = "OFF";
-      document.getElementById(element+"_state").style.color = colorOFF;
-    }
+    document.getElementById(jsonObj.dfb).checked = jsonObj.state === "1";
+    document.getElementById(jsonObj.dfb+"_state").textContent = jsonObj.state === "1" ? "ON" : "OFF";
+    document.getElementById(jsonObj.dfb+"_state").style.color = jsonObj.state === "1" ? colorON : colorOFF;    
   }
 
   //------------------------------------------------------
   // ANALOG FEEDBACK "afb" from PWM's and Control Variables
   //------------------------------------------------------
   // Update analog feedback for PWM or Control variable (slider bar or text input) using JSON object with its current value:
-  // { "afb":"TSET", "value":"22" } or { "afb":"5", "value":"50" }
+  // { "afb":"TSET", "value":22 } or { "afb":5, "value":50 }
   else if ((useAVAR || usePWM) && 'afb' in JSON.parse(event.data)) {
     const jsonObj = JSON.parse(event.data);
-    element = jsonObj.afb;
-    document.getElementById(element).value = jsonObj.value / aFactor;
-    document.getElementById(element+"_value").textContent = jsonObj.value / aFactor;
+    document.getElementById(jsonObj.afb).value = jsonObj.value / aFactor;
+    document.getElementById(jsonObj.afb+"_value").textContent = jsonObj.value / aFactor;
   } 
 }
 
