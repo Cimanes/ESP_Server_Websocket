@@ -20,6 +20,38 @@ const logger = 1,                                   // 1 if console log is desir
       decimals = 1,                                 // Define number of decimals for analog readings
       aFactor = 10 ** decimals;                     // Factor for conversion of analog values (server uses int; factor = 10 -> one decimal place)
 
+      
+//===============================================================================
+// Define and style the slide bars (add ticks and tick values)
+//===============================================================================
+const arrSliders = [
+  { "id":13, "range": [0, 100], "num": 5},
+  { "id":15, "range": [5, 35], "num": 6},
+  { "id":"tSET", "range": [0, 40], "num": 8},
+  { "id":"rhSET", "range": [0, 100], "num": 5}   
+]
+
+for (i = 0; i < arrSliders.length; i++) {
+  const min = (arrSliders[i].range[0]), 
+        max = (arrSliders[i].range[1]),
+        step = (max - min) / 100; 
+        numTicks = (arrSliders[i].num);
+  const slider = document.getElementById(arrSliders[i].id);
+  slider.setAttribute("min", min);
+  slider.setAttribute("max", max);
+  slider.setAttribute("step", step);
+  slider.setAttribute("value", min);
+
+  const axis = document.getElementById(arrSliders[i].id + "_axis");
+  for(j = 0; j <= numTicks; j++) {
+    const tick = document.createElement("span");
+    axis.appendChild(tick);
+    tick.classList.add("tick");
+    tick.textContent = min + j * (max - min) / numTicks;
+    tick.style.transform = "translateY(-10px)";
+  }
+}
+
 //===============================================================================
 // MANAGE WEBSOCKET
 //===============================================================================
@@ -155,33 +187,3 @@ function onMessage(event) {
   } 
 }
 
-//===============================================================================
-// Define and style the slide bars (add ticks and tick values)
-//===============================================================================
-const arrSliders = [
-  { "id":"5", "range": [0, 100], "num": 5},
-  { "id":"15", "range": [5, 35], "num": 6},
-  { "id":"tSET", "range": [0, 40], "num": 8},
-  { "id":"rhSET", "range": [0, 100], "num": 5}   
-]
-
-for (i = 0; i < arrSliders.length; i++) {
-  const min = (arrSliders[i].range[0]), 
-        max = (arrSliders[i].range[1]),
-        step = (max - min) / 100; 
-        numTicks = (arrSliders[i].num);
-  const slider = document.getElementById(arrSliders[i].id);
-  slider.setAttribute("min", min);
-  slider.setAttribute("max", max);
-  slider.setAttribute("step", step);
-  slider.setAttribute("value", min);
-
-  const axis = document.getElementById(arrSliders[i].id + "_axis");
-  for(j = 0; j <= numTicks; j++) {
-    const tick = document.createElement("span");
-    axis.appendChild(tick);
-    tick.classList.add("tick");
-    tick.textContent = min + j * (max - min) / numTicks;
-    tick.style.transform = "translateY(-10px)";
-  }
-}

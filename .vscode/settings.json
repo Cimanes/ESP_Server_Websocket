@@ -5,8 +5,10 @@
     "BVAR",
     "BVARS",
     "gpio",
+    "mbar",
     "MIWIFI",
     "RHSET",
+    "topnav",
     "TSET"
   ]
 }

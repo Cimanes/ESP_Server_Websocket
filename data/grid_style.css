@@ -1,20 +1,48 @@
 @import "main_style.css";
 
-.box{
-  background-color: rgb(94, 182, 204);
+/* .box{
+  background-color: var(--colorOFF);
   margin: 20px auto;
   padding: 10px;
   width: 100px;
   text-align: center;
 	border-radius: 15px;
-}
+} */
 
-#frame {
-  margin: 30px;
+.card {
+  margin: 2rem;
   padding-left: 20px;
   padding-right: 20px;
-  border: dashed 2px rgb(19, 156, 156);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-	border-radius: 25px;
+  border-radius: 10px;
+  background-color: var(--colorCard); 
+  box-shadow: 2px 2px 12px 1px black;
+  max-width: 1000px; 
+  grid-gap: 1rem; 
 }
+
+/* =====================  */
+/* Style the button       */
+/* =====================  */
+
+/* =====================  */
+/* Style the buttons      */
+/* =====================  */
+Button {
+  border: none;
+  color: #eee;
+  padding: 8px 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  width: 40%;
+  border-radius: 12px;
+  transition-duration: 0.4s;
+  margin: 5% auto;
+}
+
+.button-on { background-color: var(--colorON); }
+.button-on:hover { background-color: var(--hoverON); cursor: pointer;}
+.button-off { background-color: var(--colorOFF); }
+.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;} 
