@@ -12,7 +12,7 @@ for (let i = 1; i <= number; i++) {
 }
 
 // =====================================
-// OPTION 1: Update status --> background color
+// OPTION 1: Update status --> change background color
 // =====================================
 // function update(array, index, element) {
 // 	if (array[index].status == 'off') {
@@ -26,7 +26,6 @@ for (let i = 1; i <= number; i++) {
 // 	element.textContent = array[index].status;
 // 	console.log(array[index]);
 // }
-
 // for (let i = 0; i < number; i++) {
 // 	const target = document.getElementById(buttons[i].index);
 // 	target.onclick = function() {update(buttons, i, target)}
@@ -36,7 +35,6 @@ for (let i = 1; i <= number; i++) {
 // OPTION 2: Update status --> class
 // (style is linked to class)
 // =====================================
-
 function update(array, index, element) {
 	if (array[index].status == 'off') {
 		array[index].status = 'on';
@@ -48,7 +46,6 @@ function update(array, index, element) {
 	element.textContent = array[index].status;
 	console.log(array[index]);
 }
-
 for (let i = 0; i < number; i++) {
 	const target = document.getElementById(buttons[i].index);
 	target.onclick = function() {update(buttons, i, target)}

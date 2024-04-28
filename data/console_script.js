@@ -22,32 +22,38 @@ const logger = 1,                                   // 1 if console log is desir
 
       
 //===============================================================================
-// Define and style the slide bars (add ticks and tick values)
+// Define and style the slide bars (set initial low value, add ticks and tick values)
 //===============================================================================
 const arrSliders = [
-  { id: 13, range: [0, 100], num: 5 },
-  { id: 15, range: [5, 35], num: 6 },
-  { id: "tSET", range: [0, 40], num: 8 },
-  { id: "rhSET", range: [0, 100], num: 5 }
+  { id: 13, val: [0, 100], hue: [180, 0], num: 5 },
+  { id: 15, val: [200, 0], hue: [180, 0], num: 5 },
+  { id: "tSET", val: [5, 35], hue: [180, 0], num: 6},
+  { id: "rhSET", val: [0, 100], hue: [180, 0], num: 5 }
 ];
 
-for (const item of arrSliders) {
-  const {id, range, num} = item;              // destructuring each object.
-  const slider = document.getElementById(id),
-        min = range[0], 
-        max = range[1],
-        step = (max - min) / 100;
-  slider.setAttribute("min", min);
-  slider.setAttribute("max", max);
-  slider.setAttribute("step", step);
-  slider.setAttribute("value", min);
+// Function to range "hsl" angle (hue color) as proportion between slider values and color values.
+// Used to dinamically change slider color as a function of slider value
+function angle(a, hueLow, hueHigh, valLow, valHigh) {
+  return hueLow + (a - valLow) * (hueHigh - hueLow) / (valHigh - valLow);
+}
 
-  const axis = document.getElementById(id + "_axis");
+for (const item of arrSliders) {
+  const {id, val, hue, num} = item;              // destructuring each object.
+ 
+  const slider = document.getElementById(id),
+        step = (Math.max(...val) - Math.min(...val)) / 100;
+  slider.setAttribute("min", Math.min(...val));
+  slider.setAttribute("max", Math.max(...val));
+  slider.setAttribute("step", step);
+  slider.setAttribute("value", Math.min(...val));
+  slider.style.background = "hsl("+ angle(val[0], hue[0], hue[1], val[0], val[1])+", 40%, 50%)";
+  if(val[0] > val[1]) slider.style.transform = "rotateY(180deg)";
+
   for(let j = 0; j <= num; j++) {
     const tick = document.createElement("span");
-    axis.appendChild(tick);
+    document.getElementById(id + "_axis").appendChild(tick);
     tick.className = "tick";
-    tick.textContent = min + j * (max - min) / num;
+    tick.textContent = Math.round(10 *(val[0] + j * (val[1] - val[0]) / num))/10;
     tick.style.transform = "translateY(-10px)";
   }
 }
@@ -161,7 +167,7 @@ function onMessage(event) {
     const jsonObj = JSON.parse(event.data);
     document.getElementById(jsonObj.dfb).checked = jsonObj.state == "1";
     document.getElementById(jsonObj.dfb+"_state").textContent = jsonObj.state == "1" ? "ON" : "OFF";
-    document.getElementById(jsonObj.dfb+"_state").style.color = jsonObj.state == "1" ? colorON : colorOFF;    
+    document.getElementById(jsonObj.dfb+"_state").style.color = jsonObj.state == "1" ? colorON : colorOFF;
   }
 
   //------------------------------------------------------
@@ -170,9 +176,22 @@ function onMessage(event) {
   // Update analog feedback for PWM or Control variable (slider bar or text input) using JSON object with its current value:
   // { "afb":"TSET", "value":22 } or { "afb":5, "value":50 }
   else if ((useAVAR || usePWM) && 'afb' in JSON.parse(event.data)) {
-    const jsonObj = JSON.parse(event.data);
-    document.getElementById(jsonObj.afb).value = jsonObj.value / aFactor;
-    document.getElementById(jsonObj.afb+"_value").textContent = jsonObj.value / aFactor;
+    const jsonObj = JSON.parse(event.data),
+          value = jsonObj.value/aFactor;
+    
+    document.getElementById(jsonObj.afb).value = value;
+    document.getElementById(jsonObj.afb+"_value").textContent = value;
+    
+    const checkId = (item) => item.id == jsonObj.afb;
+    const {id, val, hue, num} = arrSliders.find(checkId);
+    document.getElementById(id).style.background = "hsl("+ angle(value, hue[0], hue[1], val[0], val[1])+", 40%, 50%)";
+
+    // for (const item of arrSliders) {
+    //   const {id, val, hue, num} = item;              // destructuring each object.
+    //   if (id == jsonObj.afb) {
+    //     document.getElementById(id).style.background = "hsl("+ angle(value, hue[0], hue[1], val[0], val[1])+", 20%, 50%)";
+    //     break;
+    //   }
+    // }
   } 
 }
-

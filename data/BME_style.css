@@ -27,6 +27,33 @@
   display: inline-block;
   font-weight: bold;
   margin: 0 ;
+  color: var(--colorFeedback);
+}
+
+/* =====================  */
+/* Style the table       */
+/* =====================  */
+table {
+  margin: 0 auto;
+  width: 90%;
+}
+th, td {
+  text-align: center;
+  padding: 8px;
+  width: 50%;
+  border-radius: .5rem;
+}
+tr {
+  background-color: var(--colorOFF);
+  color: #eee;
+}
+tr:hover {
+  background-color: var(--hoverOFF);
+}  
+th {
+  font-style: italic;
+  background-color: var(--colorON);
+  color: var(--colorCard);
 }
 
 /* =====================  */
@@ -36,21 +63,21 @@
   margin: 3rem auto;
   background-color: var(--colorCard); 
   box-shadow: 2px 2px 12px 1px black;
-  border-radius: 10px;
+  border-radius: 1rem;
   max-width: 40%;
-  min-width: 150px;
+  min-width: 160px;
 }
 
 Button {
   border: none;
-  color: #eee;
+  color: var(--colorCard);
   padding: 0.5rem 1rem;
   text-align: center;
   text-decoration: none;
   font-size: 16px;
   width: 50%;
-  min-width: 100px;
-  border-radius: 4px;
+  min-width: 120px;
+  border-radius: .5rem;
   transition-duration: 0.4s;
   margin: 1rem auto;
   background-color: var(--colorON); 

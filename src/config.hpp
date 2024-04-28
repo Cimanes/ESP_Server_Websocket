@@ -83,8 +83,8 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
     #define numPWMs 2                    // Number of toggle switches
-    // Config PWM. Format "{channel, rangeMin, rangeMax}"
-    const int arrPWM[numPWMs][4] = {{13, 0, 1000}, {15, 50, 350}};
+    // Config PWM. Format "{channel, rangeMin, rangeMax}" (match ranges with JS and )
+    const int arrPWM[numPWMs][4] = {{13, 0, 1000}, {15, 0, 2000}};
     int PWMval[numPWMs] = {0, 0};   // Store and report PWM values
   #endif
 #endif
@@ -92,32 +92,28 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 // =============================================
 // VARIABLE DEFINITIONS 
 // =============================================
-#ifdef useBVAR                                        // Config. boolean variables
-  #define numBVARS 2                                  // Number of boolean variables
-  const char* BVAR[numBVARS] = {"bVAR1", "bVAR2"};    // Boolean variable names 
-  bool BVARval[numBVARS] = {0, 0};                    // Store boolean variable values
+// Config. boolean variables
+#ifdef useBVAR                                      
+  #define numBVARS 2                                // Number of boolean variables
+  const char* BVAR[numBVARS] = {"bVAR1", "bVAR2"};  // Boolean variable names 
+  bool BVARval[numBVARS] = {0, 0};                  // Store boolean variable initial values
 #endif
 
-#ifdef useAVAR                                        // Config. analog variables
-  #define numAVARS 2                                  // Number of analog variables
-  const char* AVAR[numAVARS] = {"tSET", "rhSET"};     // Analog variable names 
-  int AVARval[numAVARS] = {0, 0};                     // Analog variable values  
+// Config. analog variables (match initial value with JS range)
+#ifdef useAVAR                                        
+  #define numAVARS 2                                // Number of analog variables
+  const char* AVAR[numAVARS] = {"tSET", "rhSET"};   // Analog variable names 
+  int AVARval[numAVARS] = {50, 0};                   // Analog variable initial values  
 #endif  
 
 #ifdef useBME
-  // Create BME sensor object
-  Adafruit_BME280 bme; //BME280 connect to ESP32 I2C (GPIO 21 = SDA, GPIO 22 = SCL)
-
-  // Json Variable to store Sensor Readings
-  JSONVar BMEreading;
+  // Create BME sensor object; connect to ESP I2C (GPIO 21 = SDA, GPIO 22 = SCL)
+  Adafruit_BME280 bme;
 
   // Function to initialize BME280 sensor
   void initBME(){
-    if (!bme.begin(0x76)) {
-      Serial.println(F("BME280 sensor not Found"));
-      while (1);
-    }
-    else Serial.println(F("BME280 sensor found"));
+    if (!bme.begin(0x76)) { Serial.println(F("BME280 not Found")); while (1);}
+    else Serial.println(F("BME280 found"));
   }
 #endif
 
@@ -127,7 +123,7 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 void initFS() {
   if (!LittleFS.begin()) Serial.println(F("Error mounting File System"));
   // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
-  else Serial.println(F("File System mounted OK"));
+  else Serial.println(F("File System mounted"));
 }
 
 // =============================================
@@ -147,8 +143,8 @@ void initWiFi() {
 
 // Create AsyncWebServer object on port 80, a WebSocket object ("/ws") and an Event Source ("/events"):
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-AsyncEventSource events("/events");
+AsyncWebSocket ws("/ws");             // Required for WEBSOCKETS
+AsyncEventSource events("/events");   // Required for SERVER SENT EVENTS
 
 // Setup timers for periodic tasks (websocket clean and take BME readings):
 SimpleTimer timer;
@@ -157,10 +153,6 @@ const int cleanTimer = 2000UL;
   const int BMETimer = 30000UL;
 #endif
 
-// Configure feedback messages for console  and BME sensor (Websocket and SSE):
+// Configure feedback messages for console and BME sensor (Websocket and SSE):
 const byte fbkLength = 50;        // Max length of feedback message
-char feedbackWS[fbkLength];       // Char array to store the JSON object
-#ifdef useBME
-  const byte BMElength = 50;      // Max length of BME readings message
-  char feedbackBME[BMElength];    // Char array to store the JSON object
-#endif
+char feedbackChar[fbkLength];     // Char array to store the JSON object

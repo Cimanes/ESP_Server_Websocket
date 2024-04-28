@@ -1,8 +1,10 @@
 #include "config.hpp"
 
-/*******************
-**** 1) CONSOLE ****
-********************/
+/***************************************************
+****************************************************
+1) CONSOLE (WEBSOCKET)
+****************************************************
+***************************************************/
 
 // ===============================================================================
 // BUTTONS: update "feedback" to send to customer
@@ -10,10 +12,10 @@
 #ifdef useButton
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
   // Pass argument by reference "&var", so we can change its value inside the function:
-  const char* updateButton(const String &var) {
-    if(var == "STATE")  return digitalRead(statePin) ? "ON" : "OFF";
-    else if (var == "MODE") return digitalRead(modePin) ? "AUTO" : "MAN";
-    return nullptr;
+  void updateButton(const String &var) {
+    if(var == "STATE") String(digitalRead(statePin) ? "ON" : "OFF").toCharArray(feedbackChar, 50); 
+    else if (var == "MODE") String(digitalRead(modePin) ? "AUTO" : "MAN").toCharArray(feedbackChar, 50);
+    else String("").toCharArray(feedbackChar, 50);
   }
 #endif
 
@@ -22,12 +24,19 @@
 // ===============================================================================
 #ifdef useToggle
   // Update toggle switch: return JSON object {"dfb":12, "state":1}
-  const char* updateDO(byte gpio){
+  //  const char* updateBVAR(byte index){   // const char* function and return pointer
+    // JSONVar jsonObj;
+    // jsonObj["dfb"] = gpio;                  // Number of the GPIO
+    // jsonObj["state"] = digitalRead(gpio);   // 0 or 1
+    // JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
+    // return feedbackChar;                    // JSON object converted into a String.
+  // }    
+  void updateDO(byte gpio){                 // void function and send feedback
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
-    JSON.stringify(jsonObj).toCharArray(feedbackWS, 50);
-    return feedbackWS;                      // JSON object converted into a String.
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
+    ws.textAll(feedbackChar);
   }
 #endif
 
@@ -36,12 +45,12 @@
 // ===============================================================================
 #ifdef useBVAR
   // Update boolean feedback of control variable: return JSON object {"dfb":"bVAR1", "state":0}
-  const char* updateBVAR(byte index){
+  void updateBVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for boolean Variables
     jsonObj["dfb"] = BVAR[index];         // Variable name
     jsonObj["state"] = BVARval[index];    // Variable value
-    JSON.stringify(jsonObj).toCharArray(feedbackWS, 50);
-    return feedbackWS;                    // Return JSON object as char array.
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
+    ws.textAll(feedbackChar);
   }
 #endif
 
@@ -50,12 +59,12 @@
 // ===============================================================================
 #ifdef usePWM
   // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
-  const char* updatePWM(byte index){
+  void updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
     jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
-    JSON.stringify(jsonObj).toCharArray(feedbackWS, 50);
-    return feedbackWS;                    // Return JSON object as char array.
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
+    ws.textAll(feedbackChar);
   }
 #endif
 
@@ -64,12 +73,12 @@
 // ===============================================================================
 #ifdef useAVAR
   // Update analog feedback of control variable: return JSON object {"afb":"tSET", "value":22}
-  const char* updateAVAR(byte index){
+  void updateAVAR(byte index){
     JSONVar jsonObj;                      // Create JSON object for Analog Variables
     jsonObj["afb"] = AVAR[index];         // Analog Variable name
     jsonObj["value"] = AVARval[index];    // Analog Variable value
-    JSON.stringify(jsonObj).toCharArray(feedbackWS, 50);
-    return feedbackWS;                    // Return JSON object as char array.
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
+    ws.textAll(feedbackChar);
   }
 #endif
 
@@ -77,26 +86,27 @@
 // FUNCTIONS TO UPDATE VALUES OF VARIABLES AND OUTPUTS
 // ===============================================================================
 // Function to notify all clients with a message (JSON object)
-void notifyClients(const char* msg) { ws.textAll(msg); }
+// void notifyClients(const char* msg) { ws.textAll(msg); }
 
 void updateOuts() {
   #ifdef useButton
-    notifyClients(updateButton("STATE"));   // update Button field "state".
-    notifyClients(updateButton("MODE"));    // update Button field "mode".
+    updateButton("STATE");   // update Button field "state".
+    updateButton("MODE");    // update Button field "mode".
   #endif             
   #ifdef useToggle
-    for (byte i:arrDO) { notifyClients(updateDO(i)); }
+    // for (byte i:arrDO) { notifyClients(updateDO(i)); } // --> using "const char* function" updateDO
+    for (byte i:arrDO) { updateDO(i); }                   // using "void function" updateDO
   #endif
   #ifdef usePWM
-    for (byte i = 0; i < numPWMs; i++) { notifyClients(updatePWM(i)); }
+    for (byte i = 0; i < numPWMs; i++) { updatePWM(i); }
   #endif
 }
 void updateVars() {
   #ifdef useBVAR
-    for (byte i = 0; i < numBVARS; i++) { notifyClients(updateBVAR(i)); }
+    for (byte i = 0; i < numBVARS; i++) { updateBVAR(i); }
   #endif  
   #ifdef useAVAR
-    for (byte i = 0; i < numAVARS; i++) { notifyClients(updateAVAR(i)); }
+    for (byte i = 0; i < numAVARS; i++) { updateAVAR(i); }
   #endif
 }
 
@@ -133,25 +143,26 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
         else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
         else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
         else if (strcmp(butName, "bMAN") == 0)   digitalWrite(modePin, 0);      
-        notifyClients(butName+1);
+        ws.textAll(butName+1);
       }
     #endif
 
-    //------------------------------------------------------
-    // Operate TOGGLE SWITCH (output in ESP and feedback to JS):
-    //------------------------------------------------------
+    /*-------------------------------------------------------
+    Operate TOGGLE SWITCH (output in ESP and feedback to JS):
+    --------------------------------------------------------*/
     // Digital output: JS function toggle(element) --> msg {"tog":"x"}
     #ifdef useToggle
       else if (jsonObj.hasOwnProperty("tog")) {
         const byte DOchannel = byte(jsonObj["tog"]);
         digitalWrite(DOchannel, !digitalRead(DOchannel));
-        notifyClients(updateDO(DOchannel));
+        // notifyClients(updateDO(DOchannel));
+        updateDO(DOchannel);
       }
     #endif
 
-    //------------------------------------------------------
-    // Set BOOLEAN VARIABLE
-    //------------------------------------------------------
+    /*-------------------------------------------------------
+    Set BOOLEAN VARIABLE (state in ESP and feedback to JS)
+    --------------------------------------------------------*/
     // JS function bvar(element) --> msg {"bvar":"x"}
     #ifdef useBVAR
       else if (jsonObj.hasOwnProperty("bvar")) {
@@ -162,13 +173,13 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
         }
         if (varIndex == 255) return;
         BVARval[varIndex] = !BVARval[varIndex];
-        notifyClients(updateBVAR(varIndex));
+        updateBVAR(varIndex);
       }
     #endif  
 
-    //------------------------------------------------------
-    // Tune PWM A.O. (tune output in ESP and feedback to JS):
-    //------------------------------------------------------
+    /*-------------------------------------------------------
+    Tune PWM A.O. (tune output in ESP and feedback to JS):
+    --------------------------------------------------------*/
     // JS function tune(element, value) --> msg {"pwm":"x", "value":"xx"}
     #ifdef usePWM
       else if (jsonObj.hasOwnProperty("pwm")) {
@@ -180,13 +191,13 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
         if (pwmIndex == 255) return;
         PWMval[pwmIndex] = jsonObj["value"];  // update array PWMval with new value (keep 1 decimal place only)
         analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
-        notifyClients(updatePWM(pwmIndex));         // Send feedback to JS.
+        updatePWM(pwmIndex);         // Send feedback to JS.
       }
     #endif
 
-    //------------------------------------------------------
-    // Set ANALOG VARIABLE
-    //------------------------------------------------------
+    /*-------------------------------------------------------
+    Set ANALOG VARIABLE (value in ESP and feedback to JS)
+    --------------------------------------------------------*/
     // JS function avar(element, value) --> msg {"avar":"x", "value":"xx"}
     #ifdef useAVAR
       else if (jsonObj.hasOwnProperty("avar")) {
@@ -197,7 +208,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
         }
         if (varIndex == 255) return;
         AVARval[varIndex] = jsonObj["value"];
-        notifyClients(updateAVAR(varIndex));
+        updateAVAR(varIndex);
       }
     #endif
   }
@@ -235,24 +246,27 @@ void initWebSocket() {
 }
 
 
-/*******************
-**** 2) BME280 *****
-********************/
+/***************************************************
+****************************************************
+2) BME280 (SSE: realtime update or event stream )
+****************************************************
+****************************************************/
 #ifdef useBME
   // Callback function to periodically retrieve BME data:
-  // Update object BMEread. return JSON object {"t":5, "rh":15, "p":995}
-  const char* readBME(){
+  // Update object BMEread. return JSON object {"t":5, "rh":15, "p":1023}
+  void readBME(){
     JSONVar jsonObj;                                      // Create JSON object for bme readings
     jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
     jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
     jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to DPascals)
-    JSON.stringify(jsonObj).toCharArray(feedbackBME, 50); // Return JSON object as char array.
-    return feedbackBME; 
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);// Return JSON object as char array.
   }
 
+  // Periodic update of BME values --> send event "new_readings"
   void updateBME() {
+    readBME();
     events.send("ping", NULL, millis());
-    events.send(readBME(), "new_readings", millis());
+    events.send(feedbackChar, "new_readings", millis());
   }
 #endif
 
@@ -292,10 +306,10 @@ void setup() {
   });
 
   #ifdef useBME
-    // Request received for latest sensor readings
+    // Request received for latest sensor readings  --> Response HTTP to request received "/readings"
     server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request) {
-      const char* json = readBME();
-      request->send(200, "application/json", json);
+      readBME();
+      request->send(200, "application/json", feedbackChar);
     });
 
     events.onConnect([](AsyncEventSourceClient *client){
