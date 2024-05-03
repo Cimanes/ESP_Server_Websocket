@@ -57,6 +57,13 @@ th {
 }
 
 /* =====================  */
+/* Style the Chart        */
+/* =====================  */
+.chart-container {
+  padding: 0 5% 5% 5%;
+} 
+
+/* =====================  */
 /* Style the button       */
 /* =====================  */
 .button-card {
@@ -84,4 +91,3 @@ Button {
 }
 
 Button:hover { background-color: var(--hoverON); cursor: pointer;} 
-

@@ -11,12 +11,17 @@
 // ===============================================================================
 #ifdef useButton
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
-  // Pass argument by reference "&var", so we can change its value inside the function:
-  void updateButton(const String &var) {
-    if(var == "STATE") String(digitalRead(statePin) ? "ON" : "OFF").toCharArray(feedbackChar, 50); 
-    else if (var == "MODE") String(digitalRead(modePin) ? "AUTO" : "MAN").toCharArray(feedbackChar, 50);
-    else String("").toCharArray(feedbackChar, 50);
-  }
+
+void updateButton(const char var[]) {
+    if (strcmp(var, "STATE") == 0) {
+        strcpy(feedbackChar, digitalRead(statePin) ? "ON" : "OFF");
+    }
+    else if (strcmp(var, "MODE") == 0) {
+        strcpy(feedbackChar, digitalRead(modePin) ? "AUTO" : "MAN");
+    }
+    else feedbackChar[0] = '\0';    
+    ws.textAll(feedbackChar);
+}
 #endif
 
 // ===============================================================================
@@ -24,14 +29,14 @@
 // ===============================================================================
 #ifdef useToggle
   // Update toggle switch: return JSON object {"dfb":12, "state":1}
-  //  const char* updateBVAR(byte index){   // const char* function and return pointer
+  // const char* updateDO(byte gpio){   // const char* function and return pointer
     // JSONVar jsonObj;
     // jsonObj["dfb"] = gpio;                  // Number of the GPIO
     // jsonObj["state"] = digitalRead(gpio);   // 0 or 1
     // JSON.stringify(jsonObj).toCharArray(feedbackChar, 50);
     // return feedbackChar;                    // JSON object converted into a String.
   // }    
-  void updateDO(byte gpio){                 // void function and send feedback
+    void updateDO(byte gpio){               // void function and send feedback
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1

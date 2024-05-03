@@ -32,7 +32,7 @@ const arrSliders = [
 ];
 
 // Function to range "hsl" angle (hue color) as proportion between slider values and color values.
-// Used to dinamically change slider color as a function of slider value
+// Used to dynamically change slider color as a function of slider value
 function angle(a, hueLow, hueHigh, valLow, valHigh) {
   return hueLow + (a - valLow) * (hueHigh - hueLow) / (valHigh - valLow);
 }
