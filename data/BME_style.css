@@ -1,4 +1,13 @@
 @import "main_style.css";
+
+:root {
+  --tColor: #922;
+  --rhColor: #173;
+  --pColor: #169;
+  --timeColor: #c71;
+  --bgColor: #999;
+}
+
 /* ================================== */
 /* Style the cards and the card-grid  */
 /* ================================== */
@@ -16,7 +25,7 @@
 .card{ 
   background-color: var(--colorCard); 
   box-shadow: 2px 2px 12px 1px black;
-  border-radius: 10px;
+  border-radius: 1rem;
 }
 .card-title { 
   display: inline-block;
@@ -29,6 +38,14 @@
   margin: 0 ;
   color: var(--colorFeedback);
 }
+
+/* =====================  */
+/* Style the table       */
+/* =====================  */
+.temperature { color: var(--tColor); }
+.humidity { color: var(--rhColor); }
+.pressure { color: var(--pColor); }
+.time { color: var(--timeColor); }
 
 /* =====================  */
 /* Style the table       */
@@ -60,8 +77,15 @@ th {
 /* Style the Chart        */
 /* =====================  */
 .chart-container {
-  padding: 0 5% 5% 5%;
+  margin: 0 2% 2% 2%;
+  border-radius: 1rem;
 } 
+
+/* Required only for canvas chart with Charts.js:  */
+#bmeChartJS {
+  background-color: var(--bgColor);
+  border-radius: 1rem;
+}
 
 /* =====================  */
 /* Style the button       */

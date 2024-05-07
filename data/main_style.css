@@ -1,14 +1,12 @@
 :root {
   --colorBack: #000;
   --colorNav: #359;
-  --colorCard: #bbb;
-  --colorIcon: #700;
-  --colorFeedback: #333;
   --colorON: #359;
   --hoverON: #116;
   --colorOFF: #777;
   --hoverOFF: #333;
-  --unit: 10px;
+  --colorCard: #bbb;
+  --colorFeedback: #333;
 }
 
 html {

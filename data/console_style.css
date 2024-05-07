@@ -1,7 +1,13 @@
 @import "main_style.css";
+:root {
+  --colorIcon: #700;
+  --colorSwitch: #eee;
+}
+
 /* ================================== */
 /* Style the cards and the card-grid  */
 /* ================================== */
+
 .content { 
   padding: 30px;
 } 
@@ -82,7 +88,7 @@ Button {
   width: 40px; 
   left: 5px; 
   bottom: 5px; 
-  background-color: #eee; 
+  background-color: var(--colorSwitch); 
   transition: .4s;
   border-radius: 15px;
 }

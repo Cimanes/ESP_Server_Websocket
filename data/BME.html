@@ -6,8 +6,21 @@
   <title>ESP server - BME Readings</title>
   <link rel="icon" type="image/png" href="BME_icon.png">
   <link rel="stylesheet" type="text/css" href="BME_style.css">
+  
+  <!-- Fonts Awsome for icons in cards -->
   <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
+
+  <!-- Highcharts -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+  <!-- Charts.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+
 </head>
 
 <body>
@@ -22,27 +35,30 @@
     <h1>BME Sensor</h1>
   </div>
 
+  <!-- Display readings in individual cards  -->
   <div class="content">
     <div class="card-grid">
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-temperature-half" style="color: #922;"></i> Temp: </p>
+        <p class="card-title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
         <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
       </div>
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-droplet" style="color: #173;"></i> Rel. Hum: </p>
+        <p class="card-title"><i class="fa-solid fa-droplet humidity"></i> Rel. Hum: </p>
         <p class="feedback"><span id="rhBME">%RH%</span> &percnt;</p>
       </div>  
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-gauge-high" style="color: #169"></i> Press: </p>
+        <p class="card-title"><i class="fa-solid fa-gauge-high pressure"></i> Press: </p>
         <p class="feedback"><span id="pBME">%PRESS%</span> mbar</p>
       </div>
       <div class="card">
-        <p class="card-title"><i class="fa-solid fa-clock" style="color: #c71"></i> Updated: </p>
+        <p class="card-title"><i class="fa-solid fa-clock time"></i> Updated: </p>
         <p class="feedback"><span id="timeBME">%TIME%</span></p>
       </div>  
     </div>
     <br>
 
+
+  <!-- Display readings in a table  -->
     <div class="card-grid">
       <div class="card">
         <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p><br>
@@ -53,19 +69,19 @@
               <th>VALUE</th>
             </tr>
             <tr>
-              <td><i class="fa-solid fa-temperature-half" style="color: #922;"></i> Temperature</td>
+              <td><i class="fa-solid fa-temperature-half temperature"></i> Temperature</td>
               <td><span id="tBMEtable">%TEMP%</span> &deg;C</td>
             </tr>
             <tr>
-              <td><i class="fa-solid fa-droplet" style="color: #173;"></i> Humidity</td>
+              <td><i class="fa-solid fa-droplet humidity"></i> Humidity</td>
               <td><span id="rhBMEtable">%RH%</span> &percnt;</td>
             </tr>
             <tr>
-              <td><i class="fa-solid fa-gauge-high" style="color: #169"></i> Pressure</td>
+              <td><i class="fa-solid fa-gauge-high pressure"></i> Pressure</td>
               <td><span id="pBMEtable">%PRESS%</span> mbar</td>
             </tr>
             <tr>
-              <td><i class="fa-solid fa-clock" style="color: #c71"></i> Updated</td>
+              <td><i class="fa-solid fa-clock time"></i> Updated</td>
               <td><span id="timeBMEtable">%TIME%</span></td>
             </tr>            
           </table>
@@ -74,22 +90,23 @@
     </div>
     <br>
     
+    <!-- Display historical readings in charts using Highcharts (SVG based)-->
     <div class="card-grid">
-      <!-- <div class="card">
-        <p class="card-title">Temperature Chart</p>
-        <div id="tChart" class="chart-container"></div>
+      <div class="card">
+        <p class="card-title">BME HighCharts</p>
+        <div id="bmeHighchart" class="chart-container"></div>
       </div>
+    </div>
+    <br>
+
+    <!-- Display historical readings in charts using Charts.js (canvas based)-->
+    <div class="card-grid">
       <div class="card">
-        <p class="card-title">Humidity Chart</p>
-        <div id="rhChart" class="chart-container"></div>
-      </div>
-      <div class="card">
-        <p class="card-title">Pressure Chart</p>
-        <div id="pChart" class="chart-container"></div>
-      </div> -->
-      <div class="card">
-        <p class="card-title">BME Chart</p>
-        <div id="bmeChart" class="chart-container"></div>
+        <p class="card-title">BME Charts.js</p>
+        <!-- The canvas needs to be within a div with following style: -->
+        <div class="chart-container" style="position: relative; height:98%; width:96%">
+          <canvas id="bmeChartJS"></canvas>
+        </div>
       </div>
     </div>
 
@@ -98,6 +115,6 @@
     </div> 
   </div>
 
-<script src="BME_script.js"></script>
+  <script src="BME_script.js"></script>
 </body>
 </html>
