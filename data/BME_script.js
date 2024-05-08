@@ -61,21 +61,20 @@ const highChart = new Highcharts.Chart({
 });
 
 // Plot received object on chart (Highcharts)
-function highChartPlot(value, ser) {
-  const x = (new Date()).getTime();
-  const y = Number(value);
-  if(highChart.series[ser].data.length > 100) {
-    highChart.series[ser].addPoint([x, y], true, true, true);
-  } 
-  else { highChart.series[ser].addPoint([x, y], true, false, true); }
+function highChartPlot(arr, time) {
+  const x = time.getTime();
+  for (let i = 0; i < arr.length; i++) {
+    const y = Number(arr[i]);
+    if(highChart.series[i].data.length > 100) {
+      highChart.series[i].addPoint([x, y], true, true, true);
+    } 
+    else { highChart.series[i].addPoint([x, y], true, false, true); }
+  }
 }
 
 // ===============================================================================
 // OPTION: CHARTS.JS --> Create single chart with all values / different timestamp
 // ===============================================================================
-// Note: Charts.js uses canvas. Canvas does not resize automatically 
-// We need the following function to resize when window is resized.
-
 // Define rounders for each of the lines (t, p, rh) and round factor: 
 const tRound = 3, 
       rhRound = 5,
@@ -83,7 +82,8 @@ const tRound = 3,
       roundFactor = 0.5,
 			numTicks = 7;
 
-const data = {
+// Define series (data sets)
+const dataChartJS = {
   datasets: [
     { label: 'Temperature (ºC)',
       data: [],              // each element will be {x: ## , y: ## } or [x, y]
@@ -108,55 +108,53 @@ const data = {
 
 // Functions to find rounded min and max values for a series:
 function minVal(ser, round) {
-  if (data.datasets[ser].data.length == 0) return 0;
-  const yArr = data.datasets[ser].data.map((item) => item[1]);          // keep only the "y" values
+  if (dataChartJS.datasets[ser].data.length == 0) return 0;
+  const yArr = dataChartJS.datasets[ser].data.map((item) => item[1]);          // keep only the "y" values
   return round * Math.floor( (Math.min(...yArr) - round * roundFactor ) / round);
 }
 function maxVal(ser, round) {
-  if (data.datasets[ser].data.length == 0) return 1;
-  const yArr = data.datasets[ser].data.map((item) => item[1]);  // keep only the "y" values
+  if (dataChartJS.datasets[ser].data.length == 0) return 1;
+  const yArr = dataChartJS.datasets[ser].data.map((item) => item[1]);  // keep only the "y" values
   return round * Math.ceil( (Math.max(...yArr) + round * roundFactor ) / round);
 }
 
+// Define chart configuration
 const options = { 
-  responsive: true,
+  // responsive: true,          // Not required (is default). Needed to allow resizing of the canvas
+  // showLine: true,            // Not required (is default).
+  legend: { display: false },   // Card title defined in HTML instead.
   backgroundColor: bgColor,
-  showLine: true,
-  legend: { display: false }, 
   scales: {
     x: { 
-      type: 'time',
-      maxTicksLimit: 10,
+      type: 'time',             // Requires Charts.js date "adapter"
       border: { color: '#111' },
-      ticks: { color: '#111' }
+      ticks: { maxTicksLimit: 16, color: '#111' }
     },
     y0: {
       title: { display: true, text: 'Temperature (ºC)', color: tColor},
       type: 'linear',
-      display: true,
+      // display: true,            // Not required (is default).
       position: 'left',
-      min: minVal(0, tRound),
-      max: maxVal(0, tRound),
+      min: minVal(0, tRound),      // Optional: round min/max values
+      max: maxVal(0, tRound),      // Optional: round min/max values
       border: { color: tColor },
       ticks: { color: tColor, count: numTicks }
     },
     y1: {
       title: { display: true, text: 'Rel. Humidity (%)', color: rhColor},
       type: 'linear',
-      display: true,
       position: 'left',
-      min: minVal(1, rhRound),
-      max: maxVal(1, rhRound),
+      min: minVal(1, rhRound),           // Optional: round min/max values
+      max: maxVal(1, rhRound),           // Optional: round min/max values
       border: { color: rhColor },
       ticks: { color: rhColor, count: numTicks }
     },
     y2: {
       title: { display: true, text: 'Pressure (mbar)', color: pColor},
       type: 'linear',
-      display: true,
       position: 'right',
-      min: minVal(2, pRound),
-      max: maxVal(2, pRound),
+      min: minVal(2, pRound),           // Optional: round min/max values
+      max: maxVal(2, pRound),           // Optional: round min/max values
       border: { color: pColor },
       ticks: { color: pColor, count: numTicks }
     },
@@ -166,34 +164,46 @@ const options = {
 const chartJS = new Chart(
   document.getElementById("bmeChartJS"), 
   { type: 'line', 
-    data: data, 
+    data: dataChartJS, 
     options: options
   }
 );
 
 // Plot received object on chart (Charts.js)
-function chartJSPlot(value, ser) {
-  const xVal = (new Date()).getTime();
-  const yVal = Number(value);
-  if(chartJS.data.datasets[ser].data.length > 100) {
-    chartJS.data.datasets[ser].data.shift();
-  } 
-  chartJS.data.datasets[ser].data.push([xVal, yVal]);
+function chartJSPlot(arr, time) {
+  const x = time.getTime();
+  for (let i = 0; i < arr.length; i++) {
+    const y = arr[i];
+    if (chartJS.data.datasets[i].data.length > 100) {
+      chartJS.data.datasets[i].data.shift();
+    }
+    chartJS.data.datasets[i].data.push([x, y]);  
+  }
 }
 
 // Function to get formatted current time and date
 function updateTime() {
-  const time = new Date();
-  const timeString = time.toLocaleString('es-ES', {timeZone: 'Europe/Madrid', day: 'numeric', month: "2-digit", hour: 'numeric', minute: 'numeric', second: '2-digit'});
+  const config = {
+    timeZone: 'Europe/Madrid', 
+    day: 'numeric', 
+    month: '2-digit', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    second: '2-digit'
+  }
+  const date = new Date();
+  const timeString = date.toLocaleString('es-ES', config);
   document.getElementById('timeBME').textContent = timeString;
   document.getElementById('timeBMEtable').textContent = timeString;
+  return date;
 }
 
 // Function to retrieve data from the JSON received and assign those values to HTML elements
-function updateBME(str, objBME) {
+function updateBME(objBME, date) {
   const t = (objBME.t / 10).toFixed(1),
         rh = (objBME.rh / 10).toFixed(1),
-        p = (objBME.p / 10).toFixed(0);
+        p = (objBME.p / 10).toFixed(0),
+        time = new Date(date);
 
   // Update data cards
   document.getElementById('tBME').textContent = t;
@@ -206,16 +216,12 @@ function updateBME(str, objBME) {
   document.getElementById('pBMEtable').textContent = p;
 
   // Update chart (Highcharts)
-  highChartPlot(t, 0);
-  highChartPlot(rh, 1);
-  highChartPlot(p, 2);
+  highChartPlot([t, rh, p], time)
 
-  // Update chart (Charts.js)
-  // Plot the new points
-  chartJSPlot(t, 0);
-  chartJSPlot(rh, 1);
-  chartJSPlot(p, 2);
-  // optional: update the new limits for Y Axis
+  // Update chart (Charts.js):
+  // 1) define the new points
+  chartJSPlot([t, rh, p], time)
+  // optional: define the new limits for Y Axis
   chartJS.options.scales.y0.min = minVal(0, tRound);
   chartJS.options.scales.y1.min = minVal(1, rhRound);
   chartJS.options.scales.y2.min = minVal(2, pRound);
@@ -238,10 +244,10 @@ function getReadings() {
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       const objBME = JSON.parse(this.responseText);
-      updateTime();
-      updateBME('load', objBME);
-    } 
-  }; 
+      const time = updateTime();
+      updateBME(objBME, time);
+    }
+  };
   xhr.open('GET', '/readings', true);
   xhr.send();
 }
@@ -266,7 +272,7 @@ if (!!window.EventSource) {
   // Update charts when new readings are received
   source.addEventListener('new_readings', function(e) {
     const objBME = JSON.parse(e.data);
-    updateTime();
-    updateBME('new_reading', objBME);
+    const date = updateTime();
+    updateBME(objBME, date);
   }, false);
 }

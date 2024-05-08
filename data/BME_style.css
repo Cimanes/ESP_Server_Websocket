@@ -54,11 +54,12 @@
 table {
   margin: 0 auto;
   width: 90%;
+  table-layout: auto;
 }
 th, td {
   text-align: center;
   padding: 8px;
-  width: 50%;
+  width: auto;
   border-radius: .5rem;
 }
 tr {
