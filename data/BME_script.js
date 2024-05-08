@@ -1,10 +1,10 @@
-// Retrieve color variables from defined in CSS:
+// Configuration: Retrieve color variables from defined in CSS:
 const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tColor"),
       rhColor = getComputedStyle(document.documentElement).getPropertyValue("--rhColor"),
       pColor = getComputedStyle(document.documentElement).getPropertyValue("--pColor"),
       timeColor = getComputedStyle(document.documentElement).getPropertyValue("--timeColor"),
       bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
-      gridColor = '#666',
+      gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
       gridWidth = 0.5;
     
 // ===============================================================================
@@ -76,65 +76,92 @@ function highChartPlot(value, ser) {
 // Note: Charts.js uses canvas. Canvas does not resize automatically 
 // We need the following function to resize when window is resized.
 
-const options = { 
-  responsive: true,
-  backgroundColor: bgColor,
-  showLine: true, 
-  legend: { display: false }, 
-  scales: {
-    x: { 
-      type: 'time',
-      maxTicksLimit: 10
-    },
-    y1: {
-      type: 'linear',
-      display: true,
-      position: 'left',
-      min: 5,
-      max: 35,
-      ticks: { stepSize: 5 }
-    },
-    y2: {
-      type: 'linear',
-      display: true,
-      position: 'left',
-      min: 10,
-      max: 100,
-      ticks: { stepSize: 15 }
-    },
-    y3: {
-      type: 'linear',
-      display: true,
-      position: 'right',
-      min: 950,
-      max: 1040,
-      ticks: { stepSize: 15 }
-    },
-  }
-}
+// Define rounders for each of the lines (t, p, rh) and round factor: 
+const tRound = 3, 
+      rhRound = 5,
+      pRound = 1, 
+      roundFactor = 0.5,
+			numTicks = 7;
 
 const data = {
   datasets: [
     { label: 'Temperature (ºC)',
-      data: [],                   // {x: ## , y: ## }
+      data: [],              // each element will be {x: ## , y: ## } or [x, y]
       borderColor: tColor,
-      yAxisID: 'y1',
+      yAxisID: 'y0',
       // fill: false
     },
     { label: 'Rel. Humidity (%)',
-    data: [],                   // {x: ## , y: ## }
-    borderColor: rhColor,
-      yAxisID: 'y2',
+      data: [],             // {x: ## , y: ## } or [x, y]
+      borderColor: rhColor,
+      yAxisID: 'y1',
       // fill: false
     },
     { label: 'Pressure (mbar)',
-    data: [],                   // {x: ## , y: ## }
-    borderColor: pColor,
-      yAxisID: 'y3',
+      data: [],              // {x: ## , y: ## } or [x, y]
+      borderColor: pColor,
+      yAxisID: 'y2',
       // fill: false
     }
   ]
 };
+
+// Functions to find rounded min and max values for a series:
+function minVal(ser, round) {
+  if (data.datasets[ser].data.length == 0) return 0;
+  const yArr = data.datasets[ser].data.map((item) => item[1]);          // keep only the "y" values
+  return round * Math.floor( (Math.min(...yArr) - round * roundFactor ) / round);
+}
+function maxVal(ser, round) {
+  if (data.datasets[ser].data.length == 0) return 1;
+  const yArr = data.datasets[ser].data.map((item) => item[1]);  // keep only the "y" values
+  return round * Math.ceil( (Math.max(...yArr) + round * roundFactor ) / round);
+}
+
+const options = { 
+  responsive: true,
+  backgroundColor: bgColor,
+  showLine: true,
+  legend: { display: false }, 
+  scales: {
+    x: { 
+      type: 'time',
+      maxTicksLimit: 10,
+      border: { color: '#111' },
+      ticks: { color: '#111' }
+    },
+    y0: {
+      title: { display: true, text: 'Temperature (ºC)', color: tColor},
+      type: 'linear',
+      display: true,
+      position: 'left',
+      min: minVal(0, tRound),
+      max: maxVal(0, tRound),
+      border: { color: tColor },
+      ticks: { color: tColor, count: numTicks }
+    },
+    y1: {
+      title: { display: true, text: 'Rel. Humidity (%)', color: rhColor},
+      type: 'linear',
+      display: true,
+      position: 'left',
+      min: minVal(1, rhRound),
+      max: maxVal(1, rhRound),
+      border: { color: rhColor },
+      ticks: { color: rhColor, count: numTicks }
+    },
+    y2: {
+      title: { display: true, text: 'Pressure (mbar)', color: pColor},
+      type: 'linear',
+      display: true,
+      position: 'right',
+      min: minVal(2, pRound),
+      max: maxVal(2, pRound),
+      border: { color: pColor },
+      ticks: { color: pColor, count: numTicks }
+    },
+  }
+}
 
 const chartJS = new Chart(
   document.getElementById("bmeChartJS"), 
@@ -152,8 +179,6 @@ function chartJSPlot(value, ser) {
     chartJS.data.datasets[ser].data.shift();
   } 
   chartJS.data.datasets[ser].data.push([xVal, yVal]);
-  console.log(xVal, yVal);
-  console.log(chartJS.data.datasets[ser].data);
 }
 
 // Function to get formatted current time and date
@@ -186,9 +211,18 @@ function updateBME(str, objBME) {
   highChartPlot(p, 2);
 
   // Update chart (Charts.js)
+  // Plot the new points
   chartJSPlot(t, 0);
   chartJSPlot(rh, 1);
   chartJSPlot(p, 2);
+  // optional: update the new limits for Y Axis
+  chartJS.options.scales.y0.min = minVal(0, tRound);
+  chartJS.options.scales.y1.min = minVal(1, rhRound);
+  chartJS.options.scales.y2.min = minVal(2, pRound);
+  chartJS.options.scales.y0.max = maxVal(0, tRound);
+  chartJS.options.scales.y1.max = maxVal(1, rhRound);
+  chartJS.options.scales.y2.max = maxVal(2, pRound);
+  // Update the chart
   chartJS.update();
 }
 
@@ -200,9 +234,6 @@ function updateBME(str, objBME) {
 window.addEventListener('load', getReadings);
 
 function getReadings() {
-  console.log(tColor, rhColor, pColor, timeColor, bgColor);
-
-
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -218,7 +249,7 @@ function getReadings() {
 // ===============================================================================
 // Handle data received periodically
 // ===============================================================================
-// Create an Event Source to listen for events
+// Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
 if (!!window.EventSource) {
   const source = new EventSource('/events');
@@ -232,12 +263,10 @@ if (!!window.EventSource) {
     }
   }, false);
 
-// ===============================================================================
-// Update charts when new readings are received
-// ===============================================================================
-source.addEventListener('new_readings', function(e) {
-  const objBME = JSON.parse(e.data);
-  updateTime();
-  updateBME('new_reading', objBME);
-}, false);
+  // Update charts when new readings are received
+  source.addEventListener('new_readings', function(e) {
+    const objBME = JSON.parse(e.data);
+    updateTime();
+    updateBME('new_reading', objBME);
+  }, false);
 }
