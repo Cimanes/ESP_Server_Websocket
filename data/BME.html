@@ -120,9 +120,13 @@
       </div>
     </div>
 
-    <div class="button-card">
-      <button onclick="getReadings()"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button> 
-    </div> 
+    <div class="card-grid">
+      <div class="button-card">
+        <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
+        <a href="delete-data"><button id="delete-data"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
+      </div>
+    </div>
   </div>
 
   <script src="BME_script.js"></script>

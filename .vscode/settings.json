@@ -2,19 +2,31 @@
   "cSpell.words": [
     "AVARS",
     "Awsome",
+    "bgcolor",
     "BVAR",
     "BVARS",
     "datetime",
+    "epochtime",
     "gpio",
     "Highchart",
     "Highcharts",
     "Hunidity",
+    "linecolor",
     "mbar",
     "MIWIFI",
     "Plotly",
     "RHSET",
+    "showline",
+    "tickfont",
+    "tickmode",
     "topnav",
     "TSET",
-    "WEBSOCKETS"
-  ]
+    "WEBSOCKETS",
+    "xanchor",
+    "xaxis",
+    "yaxis"
+  ],
+  "files.associations": {
+    "new": "cpp"
+  }
 }

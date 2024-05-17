@@ -30,6 +30,8 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 #include <SimpleTimer.h>
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #ifdef useBME
   #include <Adafruit_BME280.h>
   #include <Adafruit_Sensor.h>
@@ -90,8 +92,12 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 #endif
 
 // =============================================
-// VARIABLE DEFINITIONS 
+// GLOBAL VARIABLES 
 // =============================================
+// Configure feedback messages for console and BME sensor (Websocket and SSE):
+const byte fbkLength = 60;        // Max length of feedback message
+char feedbackChar[fbkLength];     // Char array to store the JSON object
+
 // Config. boolean variables
 #ifdef useBVAR                                      
   #define numBVARS 2                                // Number of boolean variables
@@ -104,11 +110,19 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
   #define numAVARS 2                                // Number of analog variables
   const char* AVAR[numAVARS] = {"tSET", "rhSET"};   // Analog variable names 
   int AVARval[numAVARS] = {50, 0};                   // Analog variable initial values  
-#endif  
+#endif
 
 #ifdef useBME
   // Create BME sensor object; connect to ESP I2C (GPIO 21 = SDA, GPIO 22 = SCL)
   Adafruit_BME280 bme;
+  
+  // Define NTP Client to get time (used in data file)
+  WiFiUDP ntpUDP;
+  NTPClient timeClient(ntpUDP, "pool.ntp.org");  
+  
+  // File name where readings will be saved, and maximum size (bytes)
+  const char* dataPath = "/data.txt";
+  const int fileLength = 4000U;
 
   // Function to initialize BME280 sensor
   void initBME(){
@@ -153,6 +167,3 @@ const int cleanTimer = 2000UL;
   const int BMETimer = 30000UL;
 #endif
 
-// Configure feedback messages for console and BME sensor (Websocket and SSE):
-const byte fbkLength = 50;        // Max length of feedback message
-char feedbackChar[fbkLength];     // Char array to store the JSON object

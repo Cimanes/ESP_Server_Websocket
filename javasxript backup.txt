@@ -6,7 +6,7 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
       bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
       gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
       gridWidth = 0.5,
-      numPoints = 60;
+      numPoints = 40;
     
 // ===============================================================================
 // OPTION: HIGHCHARTS --> Create single chart with all values
@@ -20,7 +20,7 @@ const highChart = new Highcharts.Chart({
     renderTo:'bmeHighchart', 
     borderRadius: 20,
   },
-  series: [
+  series: [ 
     { name: 'Temperature (ºC)', color: tColor },  
     { name: 'Rel. Humidity (%)', color: rhColor, yAxis: 1 } ,  
     { name: 'Pressure (mbar)', color: pColor, yAxis: 2 }  
@@ -62,14 +62,14 @@ const highChart = new Highcharts.Chart({
 });
 
 // Plot received object on chart (Highcharts)
-function highChartPlot(arr) {
-  const x = arr[0];
-  for (let i = 1; i < arr.length; i++) {
+function highChartPlot(arr, time) {
+  const x = time.getTime();
+  for (let i = 0; i < arr.length; i++) {
     const y = Number(arr[i]);
-    if (highChart.series[i-1].data.length > numPoints) {
-      highChart.series[i-1].addPoint([x, y], true, true, true);
+    if(highChart.series[i].data.length > 100) {
+      highChart.series[i].addPoint([x, y], true, true, true);
     } 
-    else { highChart.series[i-1].addPoint([x, y], true, false, true); }
+    else { highChart.series[i].addPoint([x, y], true, false, true); }
   }
 }
 
@@ -159,14 +159,14 @@ const chartJS = new Chart(
 );
 
 // Plot received object on chart (Charts.js)
-function chartJSPlot(arr) {
-  const x = arr[0];
-  for (let i = 1; i < arr.length; i++) {
+function chartJSPlot(arr, time) {
+  const x = time.getTime();
+  for (let i = 0; i < arr.length; i++) {
     const y = arr[i];
-    if (chartJS.data.datasets[i-1].data.length > numPoints) {
-      chartJS.data.datasets[i-1].data.shift();
+    if (chartJS.data.datasets[i].data.length > 100) {
+      chartJS.data.datasets[i].data.shift();
     }
-    chartJS.data.datasets[i-1].data.push([x, y]);  
+    chartJS.data.datasets[i].data.push([x, y]);  
   }
 }
 
@@ -174,7 +174,7 @@ function chartJSPlot(arr) {
 // OPTION: PLOTLY --> Create single chart with all values / different timestamp
 // ===============================================================================
 const plotly = document.getElementById('bmePlotly');
-const x0 = 80 / (plotly.offsetWidth + 50);
+const x0 = 80 / plotly.offsetWidth;
 const dataPlotly = [
   { x: [], y: [],
     name: "Temperature (ºC)",
@@ -209,7 +209,7 @@ const layout = {
     tickfont: {color: rhColor, size: 10},
     tickmode: 'sync',
 		overlaying: 'y',
-    position: 0.01,
+    position: 0,
 		anchor: 'free',
     showline: true, 
     linecolor: rhColor
@@ -239,48 +239,56 @@ var config = {
 Plotly.newPlot('bmePlotly', dataPlotly, layout, config);
 
 // Plot received object on chart (Plotly)
-function plotlyPlot(arr) {
-  // const xVal = arr[0];
-  for (let i = 1; i < arr.length; i++) {
-    Plotly.extendTraces('bmePlotly',
-    { x: [[arr[0]]], y: [[arr[i]]] },      // Point to be added
-    [i-1] );                            // Series to get the point
-  }
+function plotlyPlot(arr, time) {
+  const xVal = time.getTime();
+  Plotly.extendTraces('bmePlotly',
+    { x: [[xVal], [xVal], [xVal]],
+      y: [[arr[0]], [arr[1]], [arr[2]]]
+    }, 
+    [0, 1, 2]
+  );
 }
 
-// Function to apply format to time values to be displayed:
-function formatTime(time) {
+// Function to get formatted current time and date
+function updateTime() {
   const config = {
-    // timeZone: 'Europe/Madrid', 
-    day: 'numeric', month: '2-digit', year: '2-digit', 
-    hour: 'numeric', minute: 'numeric', second: '2-digit'
+    timeZone: 'Europe/Madrid', 
+    day: 'numeric', 
+    month: '2-digit', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    second: '2-digit'
   }
-  return new Date(time).toLocaleString('es-ES', config);
+  const date = new Date();
+  const timeString = date.toLocaleString('es-ES', config);
+  document.getElementById('timeBME').textContent = timeString;
+  document.getElementById('timeBMEtable').textContent = timeString;
+  return date;
 }
 
-// Function to update values (arr = [time, t, rh, p])
-function updateBME(arr) {
+// Function to retrieve single data from the JSON received and update those values on the HTML elements (grid, table, charts)
+function updateBME(objBME, date) {
+  const t = (objBME.t / 10).toFixed(1),
+        rh = (objBME.rh / 10).toFixed(1),
+        p = (objBME.p / 10).toFixed(1),
+        time = new Date(date);
+
   // Update data cards
-  document.getElementById('timeBME').textContent = formatTime(arr[0]);
-  document.getElementById('tBME').textContent = arr[1];
-  document.getElementById('rhBME').textContent = arr[2];
-  document.getElementById('pBME').textContent = arr[3];
+  document.getElementById('tBME').textContent = t;
+  document.getElementById('rhBME').textContent = rh;
+  document.getElementById('pBME').textContent = p;
 
   // Update Table
-  document.getElementById('timeBMEtable').textContent = formatTime(arr[0]);
-  document.getElementById('tBMEtable').textContent = arr[1];
-  document.getElementById('rhBMEtable').textContent = arr[2];
-  document.getElementById('pBMEtable').textContent = arr[3];
-}
+  document.getElementById('tBMEtable').textContent = t;
+  document.getElementById('rhBMEtable').textContent = rh;
+  document.getElementById('pBMEtable').textContent = p;
 
-// Function to add a new point (arr = [time, t, rh, p]) on the charts
-function plotBME(arr) {
-  highChartPlot(arr);   // Update chart (Highcharts)
-  plotlyPlot(arr);      // Update chart (Plotly)
+  // Update chart (Highcharts)
+  highChartPlot([t, rh, p], time)
 
   // Update chart (Charts.js):
   // 1) define the new points
-  chartJSPlot(arr)
+  chartJSPlot([t, rh, p], time)
 
   // optional: define the new limits for Y Axis in Charts.js
   chartJS.options.scales.y0.min = minVal(0, tRound);
@@ -291,75 +299,46 @@ function plotBME(arr) {
   chartJS.options.scales.y2.max = maxVal(2, pRound);
   // Update the chart
   chartJS.update();
+
+  plotlyPlot([t, rh, p], time);
 }
-numPoints
+
 // Function to load values from file to charts
 
 // ===============================================================================
 // Get current sensor readings when the page loads:
 // ===============================================================================
-// We send a "GET" request with URL= '/data-file' --> get the complete file
-// And process response to update values and charts
-window.addEventListener('load', BMEfile);
+// We send a "GET" request with URL= '/readings'
+// And process response with "updateBME" to update values
+window.addEventListener('load', getReadings);
 
-function BMEfile() {
+function getReadings() {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      const objBME = JSON.parse("["+this.responseText.slice(0, -1)+"]"),
-            len = objBME.length,
-            i0 = Math.max(0, len - numPoints);
-      for (let i = i0; i < len; i++){
-        const time = objBME[i].time *1000,            // seconds to miliseconds
-              t = (objBME[i].t / 10).toFixed(1),
-              rh = (objBME[i].rh / 10).toFixed(1),
-              p = (objBME[i].p / 10).toFixed(1);
-
-        plotBME([time, t, rh, p]);
-        if(i == len-1) updateBME([time, t, rh, p]);
+      const objBME = JSON.parse(this.responseText);
+      const i0 = Math.max(0, objBME.length-numPoints);
+      for(var i = 0; i<len; i++){
+        highChartPlot([t, rh, p], time);
+        plotHumidity(myObj[i].time, myObj[i].humidity);
       }
-      // optional: define the new limits for Y Axis in Charts.js
-      chartJS.options.scales.y0.min = minVal(0, tRound);
-      chartJS.options.scales.y1.min = minVal(1, rhRound);
-      chartJS.options.scales.y2.min = minVal(2, pRound);
-      chartJS.options.scales.y0.max = maxVal(0, tRound);
-      chartJS.options.scales.y1.max = maxVal(1, rhRound);
-      chartJS.options.scales.y2.max = maxVal(2, pRound);
-      // Update the chart
-      chartJS.update();
+
     }
   };
-  xhr.open('GET', '/data-file', true);
+  xhr.open('GET', '/readings', true);
   xhr.send();
 }
 
-// function BMErefresh(str) {
-//   const objBME = JSON.parse(str),
-//         time = new Date(objBME.time * 1000),
-//         t = (objBME.t / 10).toFixed(1),
-//         rh = (objBME.rh / 10).toFixed(1),
-//         p = (objBME.p / 10).toFixed(1);
-//   refresh([time, t, rh, p]);
-//   plotBME([time, t, rh, p]);
-// }
-
-// We send a "GET" request with URL= '/refresh' --> get single point
-// And process response with "refresh" + "plot" to update values and charts
-function refresh() {
+function addReading() {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-    //   BMErefresh(this.responseText);
-    //   const objBME = JSON.parse(this.responseText),
-    //         time = new Date(objBME.time * 1000),
-    //         t = (objBME.t / 10).toFixed(1),
-    //         rh = (objBME.rh / 10).toFixed(1),
-    //         p = (objBME.p / 10).toFixed(1);
-    //   updateBME([time, t, rh, p]);
-    //   plotBME([time, t, rh, p]);
+      const objBME = JSON.parse(this.responseText);
+      const time = updateTime();
+      updateBME(objBME, time);
     }
   };
-  xhr.open('GET', '/refresh', true);
+  xhr.open('GET', '/readings', true);
   xhr.send();
 }
 
@@ -380,16 +359,10 @@ if (!!window.EventSource) {
     }
   }, false);
 
-  // Update charts when new periodic readings are received (timerBME)
-  source.addEventListener('BMEreading', function(e) {
-      // BMErefresh(e.data);
-      const objBME = JSON.parse(e.data),
-            time = objBME.time * 1000,
-            t = (objBME.t / 10).toFixed(1),
-            rh = (objBME.rh / 10).toFixed(1),
-            p = (objBME.p / 10).toFixed(1);
-      updateBME([time, t, rh, p]);
-      plotBME([time, t, rh, p]);
-    }, false
-  );
+  // Update charts when new readings are received
+  source.addEventListener('new_readings', function(e) {
+    const objBME = JSON.parse(e.data);
+    const date = updateTime();
+    updateBME(objBME, date);
+  }, false);
 }
