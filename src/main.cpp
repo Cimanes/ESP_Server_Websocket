@@ -251,7 +251,6 @@ void initWebSocket() {
   server.addHandler(&ws);
 }
 
-
 /***************************************************
 ****************************************************
 2) BME280 (SSE: realtime update or event stream )
@@ -259,54 +258,56 @@ void initWebSocket() {
 ****************************************************/
 #ifdef useBME
   // ===============================================================================
-  // Callback function to periodically retrieve BME data:
-  // Update object BMEread. return JSON object {"time":xxxxxxxxxxxxx, "t":250, "rh":450, "p":1023}
+  // Read file from LittleFS (only used for debug in Serial.print)
   // ===============================================================================
-  void readBME(){
-    JSONVar jsonObj;                                      // Create JSON object 
-    timeClient.update();                                  // Update time from NTP
-    jsonObj["time"] = timeClient.getEpochTime();          // time key-value (epochtime in seconds)
-    jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
-    jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
-    jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to DPascals)
-    JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);// Return JSON object as char array.
-  }
-  // ===============================================================================
-  // Read file from LittleFS
-  // ===============================================================================
-  const char* readFile(fs::FS &fs, const char * path) {
-    #ifdef debug
+  #ifdef debug
+   const char* readFile(fs::FS &fs, const char * path) {
       Serial.printf("Reading file: %s\r\n", path);
-    #endif
     File file = fs.open(path, "r");
     if(!file || file.isDirectory()){
-      #ifdef debug
         Serial.println(F("- file not found"));
-      #endif
       return nullptr;
     }
     // Allocate memory for the file content + null terminator
     char* fileContent = new char[file.size() + 1]; 
     // Read the file content
     if (file.readBytes(fileContent, file.size()) != file.size()) {
-      #ifdef debug
         Serial.println(F("- error reading file"));
-      #endif
       delete[] fileContent; // Free memory
       file.close();
       return nullptr;
     }
-    
     fileContent[file.size()] = '\0';  // Null-terminate the string
     file.close();
     return fileContent;
+  }
+  #endif 
+
+  // ===============================================================================
+  // Get size from file in LittleFS
+  // ===============================================================================
+  const unsigned int getFileSize(fs::FS &fs, const char * path){
+    File file = fs.open(path, "r");
+    if(!file){
+      #ifdef debug
+        Serial.println(F("Failed to open file for checking size"));
+      #endif
+      return 0;
+    }
+    #ifdef debug
+      Serial.print(F("File size: "));
+      Serial.println(file.size());
+    #endif
+    return file.size();
   }
 
   // ===============================================================================
   // Append data to file in LittleFS
   // ===============================================================================
-  void appendFile(fs::FS &fs, const char * path, const char * message){
-    Serial.printf("Appending to file: %s\r\n", path);
+  void BMEtoFile(fs::FS &fs, const char * path){
+    #ifdef debug
+      Serial.printf("Appending to file: %s\r\n", path);
+    #endif
     File file = fs.open(path, "a");
     if(!file){
       #ifdef debug 
@@ -314,21 +315,23 @@ void initWebSocket() {
       #endif
       return;
     }
-    if(file.print(message)) {
+    strncat(feedbackChar, ",", 1);    // Add "," at the end of "feedbackChar"
+    if(file.print(feedbackChar)) {
       #ifdef debug
         Serial.println(F("- msg. appended"));
       #endif
     }
-    else {
-      #ifdef debug
-        Serial.println(F("- append failed"));
-      #endif    
-    }
+    // Remove the comma by replacing it with a null terminator    
+    const byte len = strlen(feedbackChar);
+    if (len > 0 && feedbackChar[len - 1] == ',') { feedbackChar[len - 1] = '\0'; }
+    #ifdef debug
+      else Serial.println(F("- append failed"));  
+    #endif    
     file.close();
   }
 
   // ===============================================================================
-  // Delete File
+  // Delete File from LittleFS
   // ===============================================================================
   void deleteFile(fs::FS &fs, const char * path){
     #ifdef debug
@@ -346,50 +349,43 @@ void initWebSocket() {
     }  
   }
 
-  // ===============================================================================
-  // Get file size
-  // ===============================================================================
-  int getFileSize(fs::FS &fs, const char * path){
-    File file = fs.open(path, "r");
 
-    if(!file){
-      #ifdef debug
-        Serial.println(F("Failed to open file for checking size"));
-      #endif
-      return 0;
-    }
-    #ifdef debug
-      Serial.print(F("File size: "));
-      Serial.println(file.size());
-    #endif
-    return file.size();
+  // ===============================================================================
+  // Store data from BME sensor in char* "feedbackChar"; JSON format.
+  // ===============================================================================
+  void readBME(){
+    JSONVar jsonObj;                                      // Create JSON object 
+    timeClient.update();                                  // Update time from NTP
+    jsonObj["time"] = timeClient.getEpochTime();          // time key-value (epochtime in seconds)
+    jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
+    jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
+    jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to DPascals)
+    JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);// Return JSON object as char array.
   }
+
   // ===============================================================================
-  // Periodic update of BME values --> send event "BMEreading"
+  // Callback function to be done periodically:
   // ===============================================================================
-  void updateBME() {
-    readBME();                              // Update "feedbackChar" with new readings
-    events.send("ping", NULL, millis());
-    events.send(feedbackChar, "BMEreading", millis());
-    
-    strncat(feedbackChar, ",", 1);          // Add "," at the end of "feedbackChar"
+  void updateBME() { 
+    readBME();                                          // Read data from BME sensor
+    events.send("ping", NULL, millis());                // send ping to client
+    events.send(feedbackChar, "BMEreading", millis());  // Send event "BMEreading" with last data to client
     if (getFileSize(LittleFS, dataPath) >= fileLength) {
       #ifdef debug 
         Serial.println(F("Deleting big file..."));
       #endif
-      deleteFile(LittleFS, dataPath);
+      deleteFile(LittleFS, dataPath);       // Delete file if too large.
     }
-    appendFile(LittleFS, dataPath, feedbackChar);   // Append new data to file
-    #ifdef debug
-      Serial.println(readFile(LittleFS, dataPath));
-    #endif
+    BMEtoFile(LittleFS, dataPath);          // Append new data "feedbackChar" to file 
   }
 #endif
 
 void setup() {
   Serial.begin(115200);
 
+  // ===============================================================================
   // Set GPIO modes and initial values
+  // ===============================================================================
   #ifdef useButton
     pinMode(statePin, OUTPUT);
     pinMode(modePin, OUTPUT);
@@ -406,41 +402,48 @@ void setup() {
     }
   #endif
 
+  // ===============================================================================
   // Initialize wifi, file system, WebSocket and setup timer: 
+  // ===============================================================================
   initWiFi();
   initFS();
   initWebSocket();
   timer.setInterval(cleanTimer, clean);
 
-  #ifdef useBME
+  // ===============================================================================
+  // Load index page when the server is called (on root "/")
+  // ===============================================================================
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html", "text/html",false);
+  });
+  
+  // ===============================================================================
+  // Tasks related with BME sensor
+  // ===============================================================================
+  #ifdef useBME       
     initBME();
     // Create file and add one point if not existing:
     if (!LittleFS.exists(dataPath)) {
       #ifdef debug
         Serial.println(F("Creating file..."));
       #endif
-      readBME();                      // Update "feedbackChar" with new readings
-      strncat(feedbackChar, ",", 1);  // Add "," at the end of "feedbackChar"
-      appendFile(LittleFS, dataPath, feedbackChar);   // Append new data to file
+      readBME();                        // Update "feedbackChar" with new readings
+      BMEtoFile(LittleFS, dataPath);    // Append new data to file
     }
     else {
       #ifdef debug
         Serial.println(F("File exists"));
       #endif
-    }  
+    }
     timer.setInterval(BMETimer, updateBME);
-  #endif 
 
-  // Load index page when the server is called (on root "/")
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html",false);
-  });
-
-  #ifdef useBME
-    // Receive request for latest sensor readings --> Response HTTP to request received "/reading"
+    // Receive request for latest sensor readings --> Response HTTP to request received "/refresh"
     server.on("/refresh", HTTP_GET, [](AsyncWebServerRequest *request) {
-      request->send(200);      
-      updateBME();
+      readBME();
+      
+      request->send(200, "application/json", feedbackChar);
+      // request->send(200);
+      // updateBME();
     });
 
     // Receive request for complete file --> Response HTTP to request received "/data-file"
@@ -467,10 +470,13 @@ void setup() {
 
     server.addHandler(&events);
   #endif
-  
+
+  // ===============================================================================
+
   // Serve files (JS, CSS and favicon) in a directory when requested by the root URL. 
   server.serveStatic("/", LittleFS, "/");
-  server.begin();     // Start the server.
+  // Start the server.
+  server.begin();   
 }
 
 void loop() {

@@ -273,24 +273,22 @@ function updateBME(arr) {
   document.getElementById('pBMEtable').textContent = arr[3];
 }
 
-// Function to add a new point (arr = [time, t, rh, p]) on the charts
-function plotBME(arr) {
-  highChartPlot(arr);   // Update chart (Highcharts)
-  plotlyPlot(arr);      // Update chart (Plotly)
-
-  // Update chart (Charts.js):
-  // 1) define the new points
-  chartJSPlot(arr)
-
-  // optional: define the new limits for Y Axis in Charts.js
+function resizeChartJS() {
   chartJS.options.scales.y0.min = minVal(0, tRound);
   chartJS.options.scales.y1.min = minVal(1, rhRound);
   chartJS.options.scales.y2.min = minVal(2, pRound);
   chartJS.options.scales.y0.max = maxVal(0, tRound);
   chartJS.options.scales.y1.max = maxVal(1, rhRound);
   chartJS.options.scales.y2.max = maxVal(2, pRound);
-  // Update the chart
-  chartJS.update();
+}
+
+// Function to add a new point (arr = [time, t, rh, p]) on the charts
+function plotBME(arr) {
+  highChartPlot(arr);   // Update chart (Highcharts)
+  plotlyPlot(arr);      // Update chart (Plotly)
+  chartJSPlot(arr);     // Update chart (Charts.js):
+  resizeChartJS();        // Update y scales
+ chartJS.update();      // Update the chart
 }
 numPoints
 // Function to load values from file to charts
@@ -309,7 +307,7 @@ function BMEfile() {
       const objBME = JSON.parse("["+this.responseText.slice(0, -1)+"]"),
             len = objBME.length,
             i0 = Math.max(0, len - numPoints);
-      for (let i = i0; i < len; i++){
+      for (let i = i0; i < len; i++){                   
         const time = objBME[i].time *1000,            // seconds to miliseconds
               t = (objBME[i].t / 10).toFixed(1),
               rh = (objBME[i].rh / 10).toFixed(1),
@@ -318,30 +316,24 @@ function BMEfile() {
         plotBME([time, t, rh, p]);
         if(i == len-1) updateBME([time, t, rh, p]);
       }
-      // optional: define the new limits for Y Axis in Charts.js
-      chartJS.options.scales.y0.min = minVal(0, tRound);
-      chartJS.options.scales.y1.min = minVal(1, rhRound);
-      chartJS.options.scales.y2.min = minVal(2, pRound);
-      chartJS.options.scales.y0.max = maxVal(0, tRound);
-      chartJS.options.scales.y1.max = maxVal(1, rhRound);
-      chartJS.options.scales.y2.max = maxVal(2, pRound);
-      // Update the chart
-      chartJS.update();
+
+      resizeChartJS();    // Re-scale Y axis      
+      chartJS.update();   // Update the chart
     }
   };
   xhr.open('GET', '/data-file', true);
   xhr.send();
 }
 
-// function BMErefresh(str) {
-//   const objBME = JSON.parse(str),
-//         time = new Date(objBME.time * 1000),
-//         t = (objBME.t / 10).toFixed(1),
-//         rh = (objBME.rh / 10).toFixed(1),
-//         p = (objBME.p / 10).toFixed(1);
-//   refresh([time, t, rh, p]);
-//   plotBME([time, t, rh, p]);
-// }
+function BMErefresh(reading) {
+  const objBME = JSON.parse(reading);
+  const time = new Date(objBME.time * 1000),
+        t = (objBME.t / 10).toFixed(1),
+        rh = (objBME.rh / 10).toFixed(1),
+        p = (objBME.p / 10).toFixed(1);
+  updateBME([time, t, rh, p]);
+  plotBME([time, t, rh, p]);
+}
 
 // We send a "GET" request with URL= '/refresh' --> get single point
 // And process response with "refresh" + "plot" to update values and charts
@@ -349,14 +341,7 @@ function refresh() {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-    //   BMErefresh(this.responseText);
-    //   const objBME = JSON.parse(this.responseText),
-    //         time = new Date(objBME.time * 1000),
-    //         t = (objBME.t / 10).toFixed(1),
-    //         rh = (objBME.rh / 10).toFixed(1),
-    //         p = (objBME.p / 10).toFixed(1);
-    //   updateBME([time, t, rh, p]);
-    //   plotBME([time, t, rh, p]);
+      BMErefresh(this.responseText);
     }
   };
   xhr.open('GET', '/refresh', true);
@@ -382,14 +367,7 @@ if (!!window.EventSource) {
 
   // Update charts when new periodic readings are received (timerBME)
   source.addEventListener('BMEreading', function(e) {
-      // BMErefresh(e.data);
-      const objBME = JSON.parse(e.data),
-            time = objBME.time * 1000,
-            t = (objBME.t / 10).toFixed(1),
-            rh = (objBME.rh / 10).toFixed(1),
-            p = (objBME.p / 10).toFixed(1);
-      updateBME([time, t, rh, p]);
-      plotBME([time, t, rh, p]);
+      BMErefresh(e.data);
     }, false
   );
 }

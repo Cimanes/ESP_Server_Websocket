@@ -7,11 +7,11 @@
 #define usePWM          // Use analog output channels (PWM's)
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
-#define debug           // for debugging purpose only. Remove for final version.
-#define apartment       // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
+// #define debug           // for debugging purpose only. Remove for final version.
 const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
 #define connectI2C      // Use I2C communication (for BME sensor)
 
+#define apartment       // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
 #if defined(Cimanes)
   const char ssid[] = "Pepe_Cimanes";
   const char pass[] = "Cimanes7581" ;
@@ -52,10 +52,8 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 // PIN DEFINITIONS 
 // =============================================
 #if defined(ESP32)
-  #ifdef connectI2C     // Config. I2C connections (SDA and SCL for BME sensor)
-    #define sdaPin 21
-    #define sclPin 22
-  #endif
+  #define sdaPin 21
+  #define sclPin 22
   #ifdef useButton                       // Config. D.O. GPIO's used by buttons (ON/OFF, AUTO/MAN)
     #define statePin 32
     #define modePin 33
@@ -65,16 +63,14 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
     const byte arrDO[numDOs] = {34, 35}; // D.O. GPIO's used by toggle switches
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
-    #define numPWMs 2                    // Number of toggle switches
+    #define numPWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}"
     const int arrPWM[numPWMs][4] = {{16, 0, 1000}, {17, 50, 350}};
     int PWMval[numPWMs] = {0, 0};   // Store and report PWM values
   #endif
 #elif defined(ESP8266)
-  #ifdef connectI2C                      // Config. I2C connections (SDA and SCL for BME sensor)
-    #define sdaPin 4
-    #define sclPin 5
-  #endif
+  #define sdaPin 4
+  #define sclPin 5
   #ifdef useButton                       // Config. D.O. GPIO's used by buttons (ON/OFF, AUTO/MAN)
     #define statePin 0
     #define modePin 2
@@ -84,7 +80,7 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
     const byte arrDO[numDOs] = {12, 14}; // D.O. GPIO's used by toggle switches
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
-    #define numPWMs 2                    // Number of toggle switches
+    #define numPWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}" (match ranges with JS and )
     const int arrPWM[numPWMs][4] = {{13, 0, 1000}, {15, 0, 2000}};
     int PWMval[numPWMs] = {0, 0};   // Store and report PWM values
@@ -96,7 +92,7 @@ const int aFactor = 10; // Factor for range of analog signals (10 -> one decimal
 // =============================================
 // Configure feedback messages for console and BME sensor (Websocket and SSE):
 const byte fbkLength = 60;        // Max length of feedback message
-char feedbackChar[fbkLength];     // Char array to store the JSON object
+char feedbackChar[fbkLength];     // Char array to store JSON object to be sent to client.
 
 // Config. boolean variables
 #ifdef useBVAR                                      
@@ -122,7 +118,7 @@ char feedbackChar[fbkLength];     // Char array to store the JSON object
   
   // File name where readings will be saved, and maximum size (bytes)
   const char* dataPath = "/data.txt";
-  const int fileLength = 4000U;
+  const int fileLength = 10000U;
 
   // Function to initialize BME280 sensor
   void initBME(){

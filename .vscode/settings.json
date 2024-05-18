@@ -27,6 +27,9 @@
     "yaxis"
   ],
   "files.associations": {
-    "new": "cpp"
+    "new": "cpp",
+    "sstream": "cpp",
+    "regex": "cpp",
+    "system_error": "cpp"
   }
 }
