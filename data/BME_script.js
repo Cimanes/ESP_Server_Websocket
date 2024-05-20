@@ -284,7 +284,6 @@ function resizeChartJS() {
 
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 function plotBME(arr) {
-  console.log(arr);
   highChartPlot(arr);   // Update chart (Highcharts)
   plotlyPlot(arr);      // Update chart (Plotly)
   chartJSPlot(arr);     // Update chart (Charts.js):
