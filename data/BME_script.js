@@ -284,11 +284,12 @@ function resizeChartJS() {
 
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 function plotBME(arr) {
+  console.log(arr);
   highChartPlot(arr);   // Update chart (Highcharts)
   plotlyPlot(arr);      // Update chart (Plotly)
   chartJSPlot(arr);     // Update chart (Charts.js):
-  resizeChartJS();        // Update y scales
- chartJS.update();      // Update the chart
+  resizeChartJS();      // Update y scales
+  chartJS.update();     // Update the chart
 }
 numPoints
 // Function to load values from file to charts
@@ -308,7 +309,7 @@ function BMEfile() {
             len = objBME.length,
             i0 = Math.max(0, len - numPoints);
       for (let i = i0; i < len; i++){                   
-        const time = objBME[i].time *1000,            // seconds to miliseconds
+        const time = objBME[i].time *1000,     // epoch(seconds) to epoch(miliseconds
               t = (objBME[i].t / 10).toFixed(1),
               rh = (objBME[i].rh / 10).toFixed(1),
               p = (objBME[i].p / 10).toFixed(1);
@@ -327,7 +328,7 @@ function BMEfile() {
 
 function BMErefresh(reading) {
   const objBME = JSON.parse(reading);
-  const time = new Date(objBME.time * 1000),
+  const time = objBME.time * 1000,
         t = (objBME.t / 10).toFixed(1),
         rh = (objBME.rh / 10).toFixed(1),
         p = (objBME.p / 10).toFixed(1);
