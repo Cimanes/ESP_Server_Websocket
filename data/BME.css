@@ -1,6 +1,7 @@
-@import "main_style.css";
+@import "main.css";
 
 :root {
+  --rateColor: black;
   --tColor: #922;
   --rhColor: #173;
   --pColor: #169;
@@ -10,6 +11,8 @@
   --deleteColor: #911; 
   --deleteHover: #600;
 }
+
+
 
 /* ================================== */
 /* Style the cards and the card-grid  */
@@ -40,6 +43,20 @@
   margin: 0 ;
   color: var(--colorFeedback);
 }
+
+/* ================================== */
+/* Style the period input box           */
+/* ================================== */
+#periodCard {
+  width: 60%;
+  margin: 0 auto;
+}
+#periodBMEinput {
+  background-color: #333;
+  color: #ddd;
+  text-align: center;
+}
+.periodBME  {color: var(--rateColor); }
 
 /* =====================  */
 /* Style the table       */

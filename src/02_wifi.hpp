@@ -41,9 +41,9 @@ void initWiFi() {
   Serial.println(WiFi.localIP());
 }
 
-// Create AsyncWebServer object on port 80, a WebSocket object ("/ws") and an Event Source ("/events"):
+// Create AsyncWebServer object on port 80, a WebSocket object ("/wsConsole") and an Event Source ("/eventsBME"):
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");             // Required for WEBSOCKETS
-AsyncEventSource events("/events");   // Required for SERVER SENT EVENTS
+AsyncWebSocket wsConsole("/wsConsole");             // Required for WEBSOCKETS
+AsyncEventSource eventsBME("/eventsBME");   // Required for SERVER SENT EVENTS
 const int cleanTimer = 2000UL;        // Timer to periodically clean websocket
 

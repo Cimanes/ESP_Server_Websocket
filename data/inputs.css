@@ -1,0 +1,60 @@
+@import "main.css";
+:root {
+  --colorIcon: #700;
+  --colorSwitch: #eee;
+}
+
+/* ================================== */
+/* Style the cards and the card-grid  */
+/* ================================== */
+
+.content { 
+  padding: 30px;
+} 
+.card-grid { 
+  max-width: 1000px; 
+  margin: 0 auto; 
+  display: grid; 
+  grid-gap: 1rem; 
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+.card { 
+  background-color: var(--colorCard); 
+  box-shadow: 2px 2px 12px 1px black;
+  border-radius: 10px;
+}
+.fa-solid {
+  color: var(--colorIcon);
+}
+.card-title { 
+  display: inline-block;
+  color: var(--colorON);
+  margin: 3% 0 0 0 ;
+}
+.feedback { 
+  display: inline-block;
+  font-weight: bold;
+  margin: 0 ;
+}
+
+/* =====================  */
+/* Style the buttons      */
+/* =====================  */
+Button {
+  border: none;
+  color: #eee;
+  padding: 8px 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  width: 40%;
+  border-radius: 4px;
+  transition-duration: 0.4s;
+  margin: 5% auto;
+}
+
+.button-on { background-color: var(--colorON); }
+.button-on:hover { background-color: var(--hoverON); cursor: pointer;}
+.button-off { background-color: var(--colorOFF); }
+.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;} 
+

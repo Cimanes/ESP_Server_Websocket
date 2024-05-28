@@ -63,7 +63,7 @@ for (const item of arrSliders) {
 //===============================================================================
 // Define the gateway as the current URL using template literal with variable (the webserver IP address)
 // Initialize the WebSocket connection on that gateway:
-const gateway = `ws://${window.location.hostname}/ws`,
+const gateway = `ws://${window.location.hostname}/wsConsole`,
     websocket = new WebSocket(gateway);
 
 // Add an event listener to run function when the page loads:
