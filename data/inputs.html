@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="index_style.css">
+    <link rel="icon" type="image/png" href="inputs.png">
+    <link rel="stylesheet" type="text/css" href="inputs.css">
   </head>
   <body>
     <div class="topnav">
@@ -18,15 +19,29 @@
       <h1>Input form</h1>
     </div>
     <div class="content">
-
-      <form action="/get" method="GET">
-        <label for="setpoint">Temp. Setpoint: </label>
-        <input type="text" id='setpoint' name="setpoint" placeholder="Enter value (ºC)">
-        <br><label for="setpoint">Temp. Setpoint: </label>
-        <input type="range" name="" id="">
-        <br><input type="text" id='setpoint' name="setpoint" placeholder="MIn to max"><br>
-        <br><input type="submit" value="submit">
-      </form>
+      <!-- ===================================================  -->
+      <!-- One card with input fields                           -->
+      <!-- ===================================================  -->
+      <!-- the id's of the elements are used in JS -->
+      <div class="card">
+        <form action="/" method="POST">
+          <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade"></i> Text FIeld:</p>
+          <p class="feedback"><span id="in_1_fbk">%TEXT%</span></p><br/>
+          <label class="toggleSwitch">
+            <input type="text" id="in_1" name="in_1">
+            <input type ="submit" value ="Submit">
+          </label>
+        </form>
+        <form action="/" method="POST">
+          <p class="card-title"><i class="fa-solid fa-hand"></i> BME period</p>
+          <p class="feedback"><span id="in_2_fbk">%MINUTES%</span></p><br/>
+          <label class="toggleSwitch">
+            <input type="number" id="in_2" name="in_2" min=1 max=180>
+            <input type ="submit" value ="Submit">
+          </label>
+        </form>
+      </div>
     </div>
+    <script src="inputs.js"></script>
   </body>
 </html>

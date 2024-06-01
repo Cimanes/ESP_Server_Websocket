@@ -7,7 +7,8 @@
 #define usePWM          // Use analog output channels (PWM's)
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
-// #define debug           // for debugging purpose only. Remove for final version.
+#define useInputs       // Use input fields (text & numbers using POST method)
+#define debug           // for debugging purpose only. Remove for final version.
 
 // =============================================
 // LIBRARIES
@@ -40,15 +41,7 @@ const byte fbkLength = 60;        // Max length of feedback message
 const int aFactor = 10;           // Factor for range of analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
 char feedbackChar[fbkLength];     // Char array to store JSON object to be sent to client.
 SimpleTimer timer;                // Setup timers for periodic tasks (websocket clean and take BME readings):
-
-// =============================================
-// MANAGE FILE SYSTEM
-// =============================================
-void initFS() {
-  if (!LittleFS.begin()) Serial.println(F("Error mounting File System"));
-  // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
-  else Serial.println(F("File System mounted"));
-}
+int BMEtimer;                     // variable to store the timer that runs periodically to retrieve BME readings.
 
 
 

@@ -1,4 +1,4 @@
-#include "01_globals.hpp"
+#include "02_FileSys.hpp"
 // =============================================
 // LIBRARIES
 // =============================================
@@ -16,7 +16,7 @@
 // =============================================
 // OPTIONS 
 // =============================================
-#define apartment       // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
+#define apartment      // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
 #if defined(Cimanes)
   const char ssid[] = "Pepe_Cimanes";
   const char pass[] = "Cimanes7581" ;
@@ -42,8 +42,8 @@ void initWiFi() {
 }
 
 // Create AsyncWebServer object on port 80, a WebSocket object ("/wsConsole") and an Event Source ("/eventsBME"):
-AsyncWebServer server(80);
-AsyncWebSocket wsConsole("/wsConsole");             // Required for WEBSOCKETS
+AsyncWebServer server(80)               ;
 AsyncEventSource eventsBME("/eventsBME");   // Required for SERVER SENT EVENTS
-const int cleanTimer = 2000UL;        // Timer to periodically clean websocket
+AsyncWebSocket wsConsole("/wsConsole")  ;   // Required for WEBSOCKETS
+const int cleanTimer = 2000UL           ;   // Timer to periodically clean websocket
 

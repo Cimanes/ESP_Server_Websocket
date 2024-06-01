@@ -1,4 +1,4 @@
-#include "02_wifi.hpp"
+#include "03_wifi.hpp"
 
 // =============================================
 // PIN DEFINITIONS 
@@ -67,7 +67,7 @@ void updateButton(const char var[]) {
         strcpy(feedbackChar, digitalRead(modePin) ? "AUTO" : "MAN");
     }
     else feedbackChar[0] = '\0';    
-    ws.textAll(feedbackChar);
+    wsConsole.textAll(feedbackChar);
 }
 #endif
 
@@ -82,13 +82,13 @@ void updateButton(const char var[]) {
     // jsonObj["state"] = digitalRead(gpio);   // 0 or 1
     // JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     // return feedbackChar;                    // JSON object converted into a String.
-  // }    
-    void updateDO(byte gpio){               // void function and send feedback
+  // }
+  void updateDO(byte gpio){               // void function and send feedback
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
-    ws.textAll(feedbackChar);
+    wsConsole.textAll(feedbackChar);
   }
 #endif
 
@@ -102,7 +102,7 @@ void updateButton(const char var[]) {
     jsonObj["dfb"] = BVAR[index];         // Variable name
     jsonObj["state"] = BVARval[index];    // Variable value
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
-    ws.textAll(feedbackChar);
+    wsConsole.textAll(feedbackChar);
   }
 #endif
 
@@ -116,7 +116,7 @@ void updateButton(const char var[]) {
     jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
-    ws.textAll(feedbackChar);
+    wsConsole.textAll(feedbackChar);
   }
 #endif
 
@@ -130,7 +130,7 @@ void updateButton(const char var[]) {
     jsonObj["afb"] = AVAR[index];         // Analog Variable name
     jsonObj["value"] = AVARval[index];    // Analog Variable value
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
-    ws.textAll(feedbackChar);
+    wsConsole.textAll(feedbackChar);
   }
 #endif
 
@@ -138,7 +138,7 @@ void updateButton(const char var[]) {
 // FUNCTIONS TO UPDATE VALUES OF VARIABLES AND OUTPUTS
 // ===============================================================================
 // Function to notify all clients with a message (JSON object)
-// void notifyClients(const char* msg) { ws.textAll(msg); }
+// void notifyClients(const char* msg) { wsConsole.textAll(msg); }
 void updateOuts() {
   #ifdef useButton
     updateButton("STATE");   // update Button field "state".
@@ -194,7 +194,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
         else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
         else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
         else if (strcmp(butName, "bMAN") == 0)   digitalWrite(modePin, 0);      
-        ws.textAll(butName+1);
+        wsConsole.textAll(butName+1);
       }
     #endif
 
@@ -292,10 +292,10 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
 }
 
 // Callback function to periodically clean websocket clients:
-void clean() { ws.cleanupClients();}
+void clean() { wsConsole.cleanupClients();}
 
 // Function to initialize the websocket
 void initWebSocket() {
-  ws.onEvent(onEvent);
-  server.addHandler(&ws);
+  wsConsole.onEvent(onEvent);
+  server.addHandler(&wsConsole);
 }

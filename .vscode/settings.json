@@ -7,6 +7,7 @@
     "BVARS",
     "datetime",
     "epochtime",
+    "Etimer",
     "gpio",
     "Highchart",
     "Highcharts",
@@ -30,6 +31,9 @@
     "new": "cpp",
     "sstream": "cpp",
     "regex": "cpp",
-    "system_error": "cpp"
+    "system_error": "cpp",
+    "*.tcc": "cpp",
+    "optional": "cpp",
+    "01_globals.hpp": "c"
   }
 }

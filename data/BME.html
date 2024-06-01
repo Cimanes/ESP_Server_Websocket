@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ESP server - BME Readings</title>
-  <link rel="icon" type="image/png" href="BME_icon.png">
-  <link rel="stylesheet" type="text/css" href="BME_style.css">
+  <link rel="icon" type="image/png" href="BME.png">
+  <link rel="stylesheet" type="text/css" href="BME.css">
   
   <!-- Fonts Awsome for icons in cards -->
   <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
@@ -37,9 +37,9 @@
     <h1>BME Sensor</h1>
   </div>
 
-  <!-- Display current readings in individual cards  -->
   <div class="content">
-    <div class="card-grid">
+    <!-- Display current readings in individual cards  -->
+     <div class="card-grid">
       <div class="card">
         <p class="card-title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
         <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
@@ -55,11 +55,12 @@
       <div class="card">
         <p class="card-title"><i class="fa-solid fa-clock time"></i> Updated: </p>
         <p class="feedback"><span id="timeBME">%TIME%</span></p>
-      </div>  
+      </div>
     </div>
     <br>
 
-  <!-- Display current readings in a table  -->
+
+    <!-- Display current readings in a table  -->
     <div class="card-grid">
       <div class="card">
         <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p><br>
@@ -84,8 +85,8 @@
             <tr>
               <td><i class="fa-solid fa-clock time"></i> Updated</td>
               <td><span id="timeBMEtable">%TIME%</span></td>
-            </tr>            
-          </table>
+            </tr>
+        </table>
         </p>
       </div>
     </div>
@@ -129,6 +130,6 @@
     </div>
   </div>
 
-  <script src="BME_script.js"></script>
+  <script src="BME.js"></script>
 </body>
 </html>
