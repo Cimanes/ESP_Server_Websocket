@@ -338,12 +338,12 @@ function BMErefresh(reading) {
 // And process response with "refresh" + "plot" to update values and charts
 function refresh() {
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', '/refresh', true);
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       BMErefresh(this.responseText);
     }
   };
+  xhr.open('GET', '/refresh', true);
   xhr.send();
 }
 

@@ -15,12 +15,17 @@
   const char* in_1Path = "/in_1.txt";
   const char* in_2Path = "/in_2.txt";
 
-  JSONVar values;
-  String getCurrentInputValues(){
+  // String getCurrentInputValues(){
+  //   JSONVar values;
+  //   values["in_1"] = in_1;
+  //   values["in_2"] = in_2;
+  //   return JSON.stringify(values);
+  // }
+  void getCurrentInputValues(){
+    JSONVar values;
     values["in_1"] = in_1;
     values["in_2"] = in_2;
-    String jsonString = JSON.stringify(values);
-    return jsonString;
+    JSON.stringify(values).toCharArray(feedbackChar, fbkLength);
   }
 
   void initInputs() {
@@ -28,10 +33,15 @@
     in_1 = readFile(LittleFS, in_1Path);
     in_2 = readFile(LittleFS, in_2Path);
 
+    // server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
+    //   String json = getCurrentInputValues();
+    //   request->send(200, "application/json", json);
+    //   json = String();
+    // });
+    
     server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
-      String json = getCurrentInputValues();
-      request->send(200, "application/json", json);
-      json = String();
+      getCurrentInputValues();
+      request->send(200, "application/json", feedbackChar);
     });
 
     server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
