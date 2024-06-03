@@ -34,6 +34,7 @@
     "system_error": "cpp",
     "*.tcc": "cpp",
     "optional": "cpp",
-    "01_globals.hpp": "c"
+    "01_globals.hpp": "c",
+    "string_view": "cpp"
   }
 }

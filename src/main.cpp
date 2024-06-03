@@ -45,7 +45,7 @@ void setup() {
     initBME();
     initDataFile();
     initBMErequests();
-      BMEtimer = timer.setInterval(BMEperiod, updateBME);
+    BMEtimer = timer.setInterval(BMEperiod, updateBME);
     initBMEevents();
   #endif
 

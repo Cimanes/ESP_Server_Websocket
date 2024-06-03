@@ -91,6 +91,7 @@
       deleteFile(LittleFS, dataPath);
       request->send(200, "text/plain", "data.txt deleted.");
     });
+    Serial.println("initBMErequests done");
   }
 
   void initBMEevents() {
@@ -103,6 +104,8 @@
       client->send("hello!", NULL, millis(), 1000);
     });
     server.addHandler(&eventsBME);
+        Serial.println("initBMEevents done");
+
   }
 #endif
 

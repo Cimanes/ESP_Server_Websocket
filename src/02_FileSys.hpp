@@ -10,31 +10,50 @@ void initFS() {
 }
 
 // ===============================================================================
-// Read file from LittleFS
+// Read file from LittleFS into const char*
 // ===============================================================================
-const char* readFile(fs::FS &fs, const char * path) {
-  #ifdef debug 
-    Serial.printf("Reading file: %s\r\n", path);
-  #endif 
+// const char* readFile(fs::FS &fs, const char * path) {
+//   #ifdef debug 
+//     Serial.printf("Reading file: %s\r\n", path);
+//   #endif 
+//   File file = fs.open(path, "r");
+//   #ifdef debug 
+//     if(!file || file.isDirectory()){
+//         Serial.println(F("- file not found"));
+//       return nullptr;
+//     }
+//     // Allocate memory for the file content + null terminator
+//     char* fileContent = new char[file.size() + 1]; 
+//     // Read the file content: 
+//     if (file.readBytes(fileContent, file.size()) != file.size()) {
+//         Serial.println(F("- error reading file"));
+//       delete[] fileContent; // Free memory
+//       file.close();
+//       return nullptr;
+//     }
+//   #endif
+//   fileContent[file.size()] = '\0';  // Null-terminate the string
+//   file.close();
+//   return fileContent;
+// }
+
+// ===============================================================================
+// Read file from LittleFS into char* variable
+// ===============================================================================
+void fileToCharPtr(fs::FS &fs, const char * path, char * buffer) {
   File file = fs.open(path, "r");
-  #ifdef debug 
-    if(!file || file.isDirectory()){
-        Serial.println(F("- file not found"));
-      return nullptr;
-    }
-    // Allocate memory for the file content + null terminator
-    char* fileContent = new char[file.size() + 1]; 
-    // Read the file content
-    if (file.readBytes(fileContent, file.size()) != file.size()) {
-        Serial.println(F("- error reading file"));
-      delete[] fileContent; // Free memory
-      file.close();
-      return nullptr;
-    }
-  #endif
-  fileContent[file.size()] = '\0';  // Null-terminate the string
+  if (!file || file.isDirectory()) {
+    Serial.println("no file");
+    strncpy(buffer, "", sizeof(buffer));
+    return;
+  }
+  Serial.println("Yes file");
+  size_t i = 0;
+  while (file.available() && i < sizeof(buffer) - 1) {
+    buffer[i++] = (char)file.read();
+  }
+  buffer[i] = '\0';
   file.close();
-  return fileContent;
 }
 
 // ===============================================================================
@@ -87,7 +106,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
   if(file.print(message)){
     Serial.println("- file written");
   } else {
-    Serial.println("- frite failed");
+    Serial.println("- write failed");
   }
 }
 
