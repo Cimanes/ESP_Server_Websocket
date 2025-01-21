@@ -14,10 +14,10 @@ void setup() {
     digitalWrite(modePin, 1);
   #endif
   #ifdef useToggle
-    for (byte i =0; i<numDOs; i++) { pinMode(arrDO[i], OUTPUT); }
+    for (byte i =0; i<n_DOs; i++) { pinMode(arrDO[i], OUTPUT); }
   #endif
   #ifdef usePWM
-    for (byte i =0; i<numPWMs; i++) { 
+    for (byte i =0; i<n_PWMs; i++) { 
       pinMode(arrPWM[i][0], OUTPUT);
       analogWrite(arrPWM[i][0], 0);
     }
@@ -57,7 +57,7 @@ void setup() {
   // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
   server.serveStatic("/", LittleFS, "/");
   // Start the server.
-  server.begin();   
+  server.begin();
 }
 
 void loop() {

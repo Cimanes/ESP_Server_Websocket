@@ -35,6 +35,7 @@
     "*.tcc": "cpp",
     "optional": "cpp",
     "01_globals.hpp": "c",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "ratio": "cpp"
   }
 }

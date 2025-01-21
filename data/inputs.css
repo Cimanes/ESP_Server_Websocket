@@ -15,7 +15,7 @@
   margin: 0 auto; 
   display: grid; 
   grid-gap: 1rem; 
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 .card { 
   background-color: var(--colorCard); 
@@ -48,11 +48,11 @@ form input {
   font-size: 1rem;
   border-radius: 4px;
   transition-duration: 0.4s;
-  margin: 0 0 1% 0
+  margin: 0 0 2% 0
 }
 
 form input[type=submit] {
-  width: 15%;
+  width: 25%;
   background-color: var(--colorON);
   cursor: pointer;
 }

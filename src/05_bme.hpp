@@ -10,7 +10,7 @@
   // =============================================
   // VARIABLES 
   // =============================================
-  // Create BME sensor object; connect to ESP I2C (GPIO 21 = SDA, GPIO 22 = SCL)
+  // Create BME sensor object; connect to ESP I2C (GPIO4 = D2 = SDA, GPIO5 = D1 = SCL)
   Adafruit_BME280 bme;
   // Define NTP Client to get time (used in data file)
   WiFiUDP ntpUDP;
@@ -91,7 +91,6 @@
       deleteFile(LittleFS, dataPath);
       request->send(200, "text/plain", "data.txt deleted.");
     });
-    Serial.println("initBMErequests done");
   }
 
   void initBMEevents() {
@@ -104,8 +103,6 @@
       client->send("hello!", NULL, millis(), 1000);
     });
     server.addHandler(&eventsBME);
-        Serial.println("initBMEevents done");
-
   }
 #endif
 

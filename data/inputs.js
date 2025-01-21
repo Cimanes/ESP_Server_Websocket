@@ -8,8 +8,14 @@ function getInputs(){
     if (this.readyState == 4 && this.status == 200) {
       const myObj = JSON.parse(this.responseText);
       console.log(myObj);
-      document.getElementById("in_1_fbk").innerHTML = myObj.in_1;
-      document.getElementById("in_2_fbk").innerHTML = myObj.in_2;
+      // document.getElementById("tx_1_fbk").textContent = myObj.tx_1;
+      // document.getElementById("tx_2_fbk").textContent = myObj.tx_2;
+      // document.getElementById("num_1_fbk").textContent = myObj.num_1;
+      // document.getElementById("num_2_fbk").textContent = myObj.num_2;
+      document.getElementById("tx_1").value = myObj.tx_1;
+      document.getElementById("tx_2").value = myObj.tx_2;
+      document.getElementById("num_1").value = myObj.num_1;
+      document.getElementById("num_2").value = myObj.num_2;
     }
   };
   xhr.open("GET", "/inputs", true);

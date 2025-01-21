@@ -2,9 +2,12 @@
 // OPTIONS 
 // =============================================
 #define useButton       // Use buttons
-#define useBVAR         // Use Boolean control variables
 #define useToggle       // Use toggle switches (ON - OFF)
 #define usePWM          // Use analog output channels (PWM's)
+#define useBVAR         // Use Boolean control variables
+#define useAVAR         // Use floating control variables
+#define useTxIn         // Use text input fields
+#define useNumIn        // Use numeric input fields
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
 #define useInputs       // Use input fields (text & numbers using POST method)
@@ -29,8 +32,8 @@
   #define sdaPin 21
   #define sclPin 22
 #elif defined(ESP8266)
-  #define sdaPin 4
-  #define sclPin 5
+  #define sdaPin 4  // D2 in Wemos D1 Mini
+  #define sclPin 5  // D1 in Wemos D1 Mini
 #endif
 
 // =============================================

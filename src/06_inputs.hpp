@@ -1,33 +1,46 @@
 #include "05_bme.hpp"
+
 #ifdef useInputs
   // =============================================
   // VARIABLES 
   // =============================================
-  // Search for parameter in HTTP POST request
-  const char* PARAM_INPUT_1 = "in_1";
-  const char* PARAM_INPUT_2 = "in_2";
+  const byte inputLength = 10;    // Length of the input messages
 
-  //Variables to save values from HTML form
-  const byte inputLength = 10;
-  char in_1[inputLength];
-  char in_2[inputLength];
+  // Config. text inputs  (number, names, file paths and variable with values)
+  #ifdef useTxIn                                      
+    #define n_TxIn 2
+    const char* TxName[n_TxIn] = {"tx_1", "tx_2"};
+    const char* TxPath[n_TxIn] = {"tx_1.txt", "tx_2.txt"};
+    char TxVal[n_TxIn][inputLength] = {"Text_1000", "Text_2000"};  // Initialize here
+  #endif
 
-  // File paths to save input values permanently
-  const char* in_1Path = "/in_1.txt";
-  const char* in_2Path = "/in_2.txt";
+  // Config. numeric inputs (number, names, file paths and variable with values)
+  #ifdef useNumIn
+    #define n_NumIn 2
+    const char* NumName[n_NumIn] = {"num_1", "num_2"};
+    const char* NumPath[n_NumIn] = {"num_1.txt", "num_2.txt"};
+    char NumVal[n_NumIn][inputLength];
+  #endif
 
+  // =============================================
+  // Prepare feedbackChar with current input values 
+  // =============================================
   void getCurrentInputValues(){
     JSONVar values;
-    values["in_1"] = in_1;
-    values["in_2"] = in_2;
+    for (byte i = 0; i < n_TxIn; i++) { values[TxName[i]] = TxVal[i]; }
+    for (byte i = 0; i < n_NumIn; i++) { values[NumName[i]] = NumVal[i]; }
     JSON.stringify(values).toCharArray(feedbackChar, fbkLength);
   }
 
   void initInputs() {
-    // Load values saved in SPIFFS
-    fileToCharPtr(LittleFS, in_1Path, in_1);
-    fileToCharPtr(LittleFS, in_2Path, in_2);
-    
+    // Update initial values
+    ultoa(BMEperiod, NumVal[0], 10);  
+    strcpy(NumVal[1], "100");
+
+    for (byte i = 0; i < n_TxIn; i++) { fileToCharPtr(LittleFS, TxPath[i], TxVal[i]); }
+    for (byte i = 0; i < n_NumIn; i++) { fileToCharPtr(LittleFS, NumPath[i], NumVal[i]); }
+    Serial.println(NumVal[0]);
+
     server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
       getCurrentInputValues();
       request->send(200, "application/json", feedbackChar);
@@ -38,23 +51,28 @@
       for(int i=0;i<params;i++){
         AsyncWebParameter* p = request->getParam(i);
         if(p->isPost()){
-          // HTTP POST in_1 value
-          if (p->name() == PARAM_INPUT_1) {
-            strcpy(in_1, p->value().c_str());
-            in_1[sizeof(in_1) - 1] = '\0';
-            Serial.print("Input 1 set to: ");
-            Serial.println(in_1);
-            writeFile(LittleFS, in_1Path, in_1);
+          for (byte i = 0; i < n_TxIn; i++) {          
+            if (p->name() == TxName[i]) { 
+              strcpy(TxVal[i], p->value().c_str());
+              TxVal[i][sizeof(TxVal[i]) - 1] = '\0';
+              Serial.print(TxName[i]);
+              Serial.print("set to: ");
+              Serial.println(TxVal[i]);
+              writeFile(LittleFS, TxPath[i], TxVal[i]);
+              break;
+            }
           }
-          // HTTP POST in_2 value
-          if (p->name() == PARAM_INPUT_2) {
-            strcpy(in_2, p->value().c_str());
-            in_2[sizeof(in_2) - 1] = '\0';
-            Serial.print("Input 2 set to: ");
-            Serial.println(in_2);
-            writeFile(LittleFS, in_2Path, in_2);
+          for (byte i = 0; i < n_NumIn; i++) {          
+            if (p->name() == NumName[i]) { 
+              strcpy(NumVal[i], p->value().c_str());
+              NumVal[i][sizeof(NumVal[i]) - 1] = '\0';
+              Serial.print(NumName[i]);
+              Serial.print("set to: ");
+              Serial.println(NumVal[i]);
+              writeFile(LittleFS, NumPath[i], NumVal[i]);
+              break;
+            }
           }
-          //Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
         }
       }
       request->send(LittleFS, "/inputs.html", "text/html");

@@ -40,11 +40,11 @@ void initFS() {
 // ===============================================================================
 // Read file from LittleFS into char* variable
 // ===============================================================================
-void fileToCharPtr(fs::FS &fs, const char * path, char * buffer) {
+void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
     Serial.println("no file");
-    strncpy(buffer, "", sizeof(buffer));
+    strncpy(buffer, "", strlen(buffer));
     return;
   }
   Serial.println("Yes file");

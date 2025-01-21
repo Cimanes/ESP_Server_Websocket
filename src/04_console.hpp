@@ -9,29 +9,29 @@
     #define modePin 33
   #endif
   #ifdef useToggle                       // Config. toggle switches
-    #define numDOs 2                     // Number of toggle switches
-    const byte arrDO[numDOs] = {34, 35}; // D.O. GPIO's used by toggle switches
+    #define n_DOs 2                     // Number of toggle switches
+    const byte arrDO[n_DOs] = {34, 35}; // D.O. GPIO's used by toggle switches
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
-    #define numPWMs 2                    // Number of analog outputs
+    #define n_PWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}"
-    const int arrPWM[numPWMs][4] = {{16, 0, 1000}, {17, 50, 350}};
-    int PWMval[numPWMs] = {0, 0};   // Store and report PWM values
+    const int arrPWM[n_PWMs][4] = {{16, 0, 1000}, {17, 50, 350}};
+    int PWMval[n_PWMs] = {0, 0};   // Store and report PWM values
   #endif
 #elif defined(ESP8266)
   #ifdef useButton                       // Config. D.O. GPIO's used by buttons (ON/OFF, AUTO/MAN)
-    #define statePin 0
+    #define statePin 0  // 
     #define modePin 2
   #endif
   #ifdef useToggle                       // Config. toggle switches
-    #define numDOs 2                     // Number of toggle switches
-    const byte arrDO[numDOs] = {12, 14}; // D.O. GPIO's used by toggle switches
+    #define n_DOs 2                     // Number of toggle switches
+    const byte arrDO[n_DOs] = {13, 15}; // D.O. GPIO's used by toggle switches
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
-    #define numPWMs 2                    // Number of analog outputs
+    #define n_PWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}" (match ranges with JS and )
-    const int arrPWM[numPWMs][4] = {{13, 0, 1000}, {15, 0, 2000}};
-    int PWMval[numPWMs] = {0, 0};   // Store and report PWM values
+    const int arrPWM[n_PWMs][4] = {{12, 0, 1000}, {14, 0, 2000}};
+    int PWMval[n_PWMs] = {0, 0};   // Store and report PWM values
   #endif
 #endif
 
@@ -40,16 +40,16 @@
 // =============================================
 // Config. boolean variables
 #ifdef useBVAR                                      
-  #define numBVARS 2                                // Number of boolean variables
-  const char* BVAR[numBVARS] = {"bVAR1", "bVAR2"};  // Boolean variable names 
-  bool BVARval[numBVARS] = {0, 0};                  // Store boolean variable initial values
+  #define n_BVARS 2                                // Number of boolean variables
+  const char* BVAR[n_BVARS] = {"bVAR1", "bVAR2"};  // Boolean variable names 
+  bool BVARval[n_BVARS] = {0, 0};                  // Store boolean variable initial values
 #endif
 
 // Config. analog variables (match initial value with JS range)
 #ifdef useAVAR                                        
-  #define numAVARS 2                                // Number of analog variables
-  const char* AVAR[numAVARS] = {"tSET", "rhSET"};   // Analog variable names 
-  int AVARval[numAVARS] = {50, 0};                   // Analog variable initial values  
+  #define n_AVARS 2                                // Number of analog variables
+  const char* AVAR[n_AVARS] = {"tSET", "rhSET"};   // Analog variable names 
+  int AVARval[n_AVARS] = {50, 0};                   // Analog variable initial values  
 #endif
 
 
@@ -149,15 +149,15 @@ void updateOuts() {
     for (byte i:arrDO) { updateDO(i); }                   // using "void function" updateDO
   #endif
   #ifdef usePWM
-    for (byte i = 0; i < numPWMs; i++) { updatePWM(i); }
+    for (byte i = 0; i < n_PWMs; i++) { updatePWM(i); }
   #endif
 }
 void updateVars() {
   #ifdef useBVAR
-    for (byte i = 0; i < numBVARS; i++) { updateBVAR(i); }
+    for (byte i = 0; i < n_BVARS; i++) { updateBVAR(i); }
   #endif  
   #ifdef useAVAR
-    for (byte i = 0; i < numAVARS; i++) { updateAVAR(i); }
+    for (byte i = 0; i < n_AVARS; i++) { updateAVAR(i); }
   #endif
 }
 
@@ -219,7 +219,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("bvar")) {
         byte varIndex = 255;
         const char* varName = jsonObj["bvar"];
-        for (byte i=0; i<numBVARS; i++) {
+        for (byte i=0; i<n_BVARS; i++) {
           if (strcmp(varName, BVAR[i]) == 0) { varIndex = i; break; }
         }
         if (varIndex == 255) return;
@@ -236,7 +236,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("pwm")) {
         byte pwmIndex = 255;
         const byte pwmOutput = byte(jsonObj["pwm"]);
-        for (byte i=0; i<numPWMs; i++) {
+        for (byte i=0; i<n_PWMs; i++) {
           if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
         }
         if (pwmIndex == 255) return;
@@ -254,7 +254,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("avar")) {
         byte varIndex = 255;
         const char* varName = jsonObj["avar"];
-        for (byte i=0; i<numAVARS; i++) {
+        for (byte i=0; i<n_AVARS; i++) {
           if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
         }
         if (varIndex == 255) return;

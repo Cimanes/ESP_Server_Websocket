@@ -8,19 +8,14 @@
   const char* PARAM_INPUT_2 = "in_2";
 
   //Variables to save values from HTML form
-  String in_1;
-  String in_2;
+  const byte inputLength = 10;
+  char in_1[inputLength];
+  char in_2[inputLength];
 
   // File paths to save input values permanently
   const char* in_1Path = "/in_1.txt";
   const char* in_2Path = "/in_2.txt";
 
-  // String getCurrentInputValues(){
-  //   JSONVar values;
-  //   values["in_1"] = in_1;
-  //   values["in_2"] = in_2;
-  //   return JSON.stringify(values);
-  // }
   void getCurrentInputValues(){
     JSONVar values;
     values["in_1"] = in_1;
@@ -30,14 +25,8 @@
 
   void initInputs() {
     // Load values saved in SPIFFS
-    in_1 = readFile(LittleFS, in_1Path);
-    in_2 = readFile(LittleFS, in_2Path);
-
-    // server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
-    //   String json = getCurrentInputValues();
-    //   request->send(200, "application/json", json);
-    //   json = String();
-    // });
+    fileToCharPtr(LittleFS, in_1Path, in_1);
+    fileToCharPtr(LittleFS, in_2Path, in_2);
     
     server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
       getCurrentInputValues();
@@ -51,19 +40,19 @@
         if(p->isPost()){
           // HTTP POST in_1 value
           if (p->name() == PARAM_INPUT_1) {
-            in_1 = p->value().c_str();
+            strcpy(in_1, p->value().c_str());
+            in_1[sizeof(in_1) - 1] = '\0';
             Serial.print("Input 1 set to: ");
             Serial.println(in_1);
-            // Write file to save value
-            writeFile(LittleFS, in_1Path, in_1.c_str());
+            writeFile(LittleFS, in_1Path, in_1);
           }
           // HTTP POST in_2 value
           if (p->name() == PARAM_INPUT_2) {
-            in_2 = p->value().c_str();
+            strcpy(in_2, p->value().c_str());
+            in_2[sizeof(in_2) - 1] = '\0';
             Serial.print("Input 2 set to: ");
             Serial.println(in_2);
-            // Write file to save value
-            writeFile(LittleFS, in_2Path, in_2.c_str());
+            writeFile(LittleFS, in_2Path, in_2);
           }
           //Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
         }

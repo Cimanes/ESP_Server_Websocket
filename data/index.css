@@ -16,3 +16,6 @@ button {
 
 button:hover { cursor: pointer;}
 
+#index {
+  display: inline-block
+}
