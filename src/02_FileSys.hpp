@@ -1,5 +1,3 @@
-#include "01_globals.hpp"
-
 // =============================================
 // MANAGE FILE SYSTEM
 // =============================================
@@ -44,7 +42,7 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
     Serial.println("no file");
-    strncpy(buffer, "", strlen(buffer));
+    // strncpy(buffer, "", strlen(buffer));
     return;
   }
   Serial.println("Yes file");
@@ -76,7 +74,7 @@ void deleteFile(fs::FS &fs, const char * path){
 }
 
 // ===============================================================================
-// Get size from file in LittleFS
+// Get size from data-file in LittleFS
 // ===============================================================================
 const unsigned int getFileSize(fs::FS &fs, const char * path){
   File file = fs.open(path, "r");
@@ -133,4 +131,20 @@ void appendToFile(fs::FS &fs, const char * path, const char * message) {
     else Serial.println(F("- append failed"));  
   #endif    
   file.close();
+}
+
+// ===============================================================================
+// Check used and total memory of file system
+// ===============================================================================
+void memoryCheck() {
+  FSInfo fs_info;
+  LittleFS.info(fs_info);
+  usedBytes = fs_info.usedBytes;
+  totalBytes = fs_info.totalBytes;
+  #ifdef debug
+    Serial.print(F("Total bytes: "));
+    Serial.println(totalBytes);
+    Serial.print(F("Used bytes: "));
+    Serial.println(usedBytes);
+  #endif
 }

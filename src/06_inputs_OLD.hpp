@@ -1,5 +1,5 @@
 #include "05_bme.hpp"
-#ifdef useInputs
+#ifdef useConfig
   // =============================================
   // VARIABLES 
   // =============================================
@@ -16,20 +16,20 @@
   const char* in_1Path = "/in_1.txt";
   const char* in_2Path = "/in_2.txt";
 
-  void getCurrentInputValues(){
+  void getCurrentValues(){
     JSONVar values;
     values["in_1"] = in_1;
     values["in_2"] = in_2;
     JSON.stringify(values).toCharArray(feedbackChar, fbkLength);
   }
 
-  void initInputs() {
+  void initConfig() {
     // Load values saved in SPIFFS
     fileToCharPtr(LittleFS, in_1Path, in_1);
     fileToCharPtr(LittleFS, in_2Path, in_2);
     
-    server.on("/inputs", HTTP_GET, [](AsyncWebServerRequest *request){
-      getCurrentInputValues();
+    server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
+      getCurrentValues();
       request->send(200, "application/json", feedbackChar);
     });
 
@@ -57,7 +57,7 @@
           //Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
         }
       }
-      request->send(LittleFS, "/inputs.html", "text/html");
+      request->send(LittleFS, "/config.html", "text/html");
     });
   }
 #endif

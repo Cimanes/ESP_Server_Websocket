@@ -1,74 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP server - BME Readings</title>
-  <link rel="icon" type="image/png" href="BME.png">
-  <link rel="stylesheet" type="text/css" href="BME.css">
-  
-  <!-- Fonts Awsome for icons in cards -->
-  <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP server - BME Readings</title>
+    <link rel="icon" type="image/png" href="BME.png">
+    <link rel="stylesheet" type="text/css" href="BME.css">
+    
+    <!-- Fonts Awsome for icons in cards -->
+    <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
 
-  <!-- Highcharts -->
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/modules/exporting.js"></script>
-  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
-  <!-- Charts.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- Charts.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
-  <!-- Plotly -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
 
-<body>
-  <!-- Navigation links at the top -->
-  <div class="topnav">
-    <ul>
-      <a href="index.html"><li>Index</li></a>
-      <a href="inputs.html"><li>Inputs</li></a>
-      <a href="BME.html"><li>BME Sensor</li></a>
-      <a href="console.html"><li>Control Console</li></a>
-      <a href="grid.html"><li>Grid Template</li></a>
-    </ul>
-    <h1>BME Sensor</h1>
-  </div>
-
-  <div class="content">
-    <!-- Display current readings in individual cards  -->
-     <div class="card-grid">
-      <div class="card">
-        <p class="card-title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
-        <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
-      </div>
-      <div class="card">
-        <p class="card-title"><i class="fa-solid fa-droplet humidity"></i> Rel. Hum: </p>
-        <p class="feedback"><span id="rhBME">%RH%</span> &percnt;</p>
-      </div>  
-      <div class="card">
-        <p class="card-title"><i class="fa-solid fa-gauge-high pressure"></i> Press: </p>
-        <p class="feedback"><span id="pBME">%PRESS%</span> mbar</p>
-      </div>
-      <div class="card">
-        <p class="card-title"><i class="fa-solid fa-clock time"></i> Updated: </p>
-        <p class="feedback"><span id="timeBME">%TIME%</span></p>
-      </div>
+  <body>
+    <!-- Navigation links at the top -->
+    <div class="topnav">
+      <ul>
+        <a href="index.html"><li>Index</li></a>
+        <a href="config.html"><li>Config</li></a>
+        <a href="BME.html"><li>BME Sensor</li></a>
+        <a href="console.html"><li>Control Console</li></a>
+        <a href="grid.html"><li>Grid Template</li></a>
+      </ul>
+      <h1>BME Sensor</h1>
     </div>
-    <br>
 
+    <div class="content">
+      <!-- Display current readings in individual cards  -->
+      <div class="card-grid">
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
+          <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
+        </div>
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-droplet humidity"></i> Rel. Hum: </p>
+          <p class="feedback"><span id="rhBME">%RH%</span> &percnt;</p>
+        </div>  
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-gauge-high pressure"></i> Press: </p>
+          <p class="feedback"><span id="pBME">%PRESS%</span> mbar</p>
+        </div>
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-clock time"></i> Updated: </p>
+          <p class="feedback"><span id="timeBME">%TIME%</span></p>
+        </div>
+      </div>
+      <br>
 
-    <!-- Display current readings in a table  -->
-    <div class="card-grid">
-      <div class="card">
-        <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p><br>
-        <p>
+      <!-- Display current readings in a table using a card grid -->
+      <div class="card-grid">
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p><br>
           <table>
-            <tr>
-              <th>READING</th>
-              <th>VALUE</th>
+            <tr>  
+              <th>READING</th> <th>VALUE</th> 
             </tr>
             <tr>
               <td><i class="fa-solid fa-temperature-half temperature"></i> Temperature</td>
@@ -86,50 +83,48 @@
               <td><i class="fa-solid fa-clock time"></i> Updated</td>
               <td><span id="timeBMEtable">%TIME%</span></td>
             </tr>
-        </table>
-        </p>
+          </table>
+          <br>
+        </div>
       </div>
-    </div>
-    <br>
-    
-    <!-- Display historical readings in charts using Highcharts (SVG based)-->
-    <div class="card-grid">
+      <br>
+
+      <!-- Chart using Highcharts (SVG based) -->
       <div class="card">
         <p class="card-title">BME HighCharts</p>
         <div id="bmeHighchart" class="chart-container"></div>
+        <br>
       </div>
-    </div>
-    <br>
+      <br>
 
-    <!-- Display historical readings in charts using Charts.js (canvas based)-->
-    <div class="card-grid">
+      <!-- Chart using Charts.js (canvas based) -->
       <div class="card">
         <p class="card-title">BME Charts.js</p>
         <!-- The canvas needs to be within a div with following style: -->
         <div class="chart-container" style="position: relative; height:98%; width:96%">
           <canvas id="bmeChartJS"></canvas>
         </div>
+        <br>
       </div>
-    </div>
-    <br>
+      <br>
     
-    <!-- Display historical readings in charts using Plotly (D3 based)-->
-    <div class="card-grid">
+      <!-- Chart using Plotly (D3 based)-->
       <div class="card">
         <p class="card-title">BME Plotly</p>
         <div id="bmePlotly" class="chart-container"></div>
+        <br>
+      </div>
+
+      <!-- Card-grid to show tools (refresh data, view table, delete data) -->
+      <div class="card-grid">
+        <div class="button-card">
+          <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+          <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
+          <button onclick=deleteData() id="delete-data"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
+        </div>
       </div>
     </div>
 
-    <div class="card-grid">
-      <div class="button-card">
-        <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
-        <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
-        <a href="delete-data"><button id="delete-data"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
-      </div>
-    </div>
-  </div>
-
-  <script src="BME.js"></script>
-</body>
+    <script src="BME.js"></script>
+  </body>
 </html>

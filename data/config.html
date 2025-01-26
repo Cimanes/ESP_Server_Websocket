@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP Server - Config</title>
+    <link rel="icon" type="image/png" href="config.png">
+    <link rel="stylesheet" type="text/css" href="config.css">
+    <!-- Fonts Awsome for icons in cards -->
+    <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->  
+  </head>
+  <body>
+    <div class="topnav">
+      <ul>
+        <a href="index.html"><li>Index</li></a>
+        <a href="config.html"><li>Config</li></a>
+        <a href="BME.html"><li>BME Sensor</li></a>
+        <a href="console.html"><li>Control Console</li></a>
+        <a href="grid.html"><li>Grid Template</li></a>
+      </ul>
+      <h1>Input form</h1>
+    </div>
+    <div class="content">
+      <div class="card-grid">
+        <!-- ===================================================  -->
+        <!-- One card with text input fields                      -->
+        <!-- ===================================================  -->
+        <!-- the id's of the elements are used in JS -->
+        <div class="card">
+          <form action="/" method="POST">
+            <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade"></i> Text Field (tx_1):</p>
+            <br/>
+            <input type="text" id="tx_1" name="tx_1">
+            <input type ="submit" value ="Submit">
+          </form>        
+          <form action="/" method="POST">
+            <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade"></i> Text Field (tx_2):</p>
+            <br/>
+            <input type="text" id="tx_2" name="tx_2">
+            <input type ="submit" value ="Submit">
+          </form>
+        </div>
+        <!-- ===================================================  -->
+        <!-- One card with numeric input fields                   -->
+        <!-- ===================================================  -->
+        <!-- the id's of the elements are used in JS -->
+        <div class="card">
+          <form action="/" method="POST">
+            <p class="card-title"><i class="fa-solid fa-hand"></i> BME period (n_1):</p>
+            <br/>
+            <input type="number" id="n_1" name="n_1" min=1 max=180>
+            <input type ="submit" value ="Submit">
+          </form>
+          <form action="/" method="POST">
+            <p class="card-title"><i class="fa-solid fa-hand"></i> File limit KB (n_2):</p>
+            <br/>
+            <input type="number" id="n_2" name="n_2" min=0 max=100>
+            <input type ="submit" value ="Submit">
+          </form>
+        </div>
+        <!-- ===================================================  -->
+        <!-- One card with numeric feedback fields                   -->
+        <!-- ===================================================  -->
+        <!-- the id's of the elements are used in JS -->
+        <div class="card">
+          <br>
+          <p class="card-title"><i class="fa-solid fa-sd-card"></i> Total Kbs (fb_1): </p>
+          <p class="feedback"><span id="fb_1">%TotBytes%</span></p>
+          <br><br>
+          <p class="card-title"><i class="fa-solid fa-database"></i> Used Kbs (fb_2): </p>
+          <p class="feedback"><span id="fb_2">%UsedBytes%</span></p>
+          <br><br>
+          <p class="card-title"><i class="fa-solid fa-file-half-dashed"></i> BME file % (fb_3): </p>
+          <p class="feedback"><span id="fb_3">%FileSize%</span></p>
+          <p></p>
+        </div>
+        <!-- ===================================================  -->
+        <!-- One card with buttons                               -->
+        <!-- ===================================================  -->
+        <div class="card">
+          <br>
+          <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
+          <button onclick=deleteData() id="delete-data"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a>
+          <br>
+        </div>
+    </div>
+    <script src="config.js"></script>
+  </body>
+</html>

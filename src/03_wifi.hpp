@@ -1,4 +1,3 @@
-#include "02_FileSys.hpp"
 // =============================================
 // LIBRARIES
 // =============================================
@@ -16,7 +15,7 @@
 // =============================================
 // OPTIONS 
 // =============================================
-#define Toledo      // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
+#define Cimanes      // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
 #if defined(Cimanes)
   const char ssid[] = "Pepe_Cimanes";
   const char pass[] = "Cimanes7581" ;

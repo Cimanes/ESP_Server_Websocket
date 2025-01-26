@@ -1,5 +1,3 @@
-#include "03_wifi.hpp"
-
 // =============================================
 // PIN DEFINITIONS 
 // =============================================
@@ -25,12 +23,12 @@
   #endif
   #ifdef useToggle                       // Config. toggle switches
     #define n_DOs 2                     // Number of toggle switches
-    const byte arrDO[n_DOs] = {13, 15}; // D.O. GPIO's used by toggle switches
+    const byte arrDO[n_DOs] = {12, 14}; // D.O. GPIO's used by toggle switches
   #endif
   #ifdef usePWM                          // Config. PWM analog outputs
     #define n_PWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}" (match ranges with JS and )
-    const int arrPWM[n_PWMs][4] = {{12, 0, 1000}, {14, 0, 2000}};
+    const int arrPWM[n_PWMs][4] = {{13, 0, 1000}, {15, 0, 2000}};
     int PWMval[n_PWMs] = {0, 0};   // Store and report PWM values
   #endif
 #endif
@@ -83,7 +81,7 @@ void updateButton(const char var[]) {
     // JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     // return feedbackChar;                    // JSON object converted into a String.
   // }
-  void updateDO(byte gpio){               // void function and send feedback
+  void updateDO(byte gpio){                 // Use void function and send feedback
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
@@ -236,6 +234,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("pwm")) {
         byte pwmIndex = 255;
         const byte pwmOutput = byte(jsonObj["pwm"]);
+        Serial.println(jsonObj["pwm"]);
         for (byte i=0; i<n_PWMs; i++) {
           if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
         }

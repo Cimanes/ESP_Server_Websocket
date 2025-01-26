@@ -248,7 +248,9 @@ function plotlyPlot(arr) {
   }
 }
 
+// ===============================================================================
 // Function to apply format to time values to be displayed:
+// ===============================================================================
 function formatTime(time) {
   const config = {
     // timeZone: 'Europe/Madrid', 
@@ -258,7 +260,9 @@ function formatTime(time) {
   return new Date(time).toLocaleString('es-ES', config);
 }
 
+// ===============================================================================
 // Function to update values (arr = [time, t, rh, p])
+// ===============================================================================
 function updateBME(arr) {
   // Update data cards
   document.getElementById('timeBME').textContent = formatTime(arr[0]);
@@ -273,6 +277,9 @@ function updateBME(arr) {
   document.getElementById('pBMEtable').textContent = arr[3];
 }
 
+// ===============================================================================
+// Function to resize the chart by Charts.js
+// ===============================================================================
 function resizeChartJS() {
   chartJS.options.scales.y0.min = minVal(0, tRound);
   chartJS.options.scales.y1.min = minVal(1, rhRound);
@@ -282,7 +289,9 @@ function resizeChartJS() {
   chartJS.options.scales.y2.max = maxVal(2, pRound);
 }
 
+// ===============================================================================
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
+// ===============================================================================
 function plotBME(arr) {
   highChartPlot(arr);   // Update chart (Highcharts)
   plotlyPlot(arr);      // Update chart (Plotly)
@@ -290,17 +299,14 @@ function plotBME(arr) {
   resizeChartJS();      // Update y scales
   chartJS.update();     // Update the chart
 }
-// Function to load values from file to charts
+
 // ===============================================================================
-// Get current sensor readings when the page loads:
+// Get historic sensor readings from data file when the page loads:
 // ===============================================================================
 // We send a "GET" request with URL= '/data-file' --> get the complete file
-// And process response to update values and charts
-window.addEventListener('load', onLoad);
-
+// Function to load values from file and process response to update values and charts
 function getBMEfile() {
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', '/data-file', true);
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       const objBME = JSON.parse("["+this.responseText.slice(0, -1)+"]"),
@@ -314,16 +320,21 @@ function getBMEfile() {
         plotBME([time, t, rh, p]);
         if(i == len-1) updateBME([time, t, rh, p]);
       }
-
       resizeChartJS();    // Re-scale Y axis      
       chartJS.update();   // Update the chart
     }
   };
+  xhr.open('GET', '/data-file', true);
   xhr.send();
 }
 
-function onLoad() { getBMEfile(); }
+window.addEventListener('load', getBMEfile);
+// window.addEventListener('load', onLoad);
+// function onLoad() { getBMEfile(); }
 
+// ===============================================================================
+//  Function to update data and charts when a new reading is received
+// ===============================================================================
 function BMErefresh(reading) {
   const objBME = JSON.parse(reading);
   const time = objBME.time * 1000,
@@ -334,22 +345,42 @@ function BMErefresh(reading) {
   plotBME([time, t, rh, p]);
 }
 
+// ============================================================================
+//  Button "Refresh" --> trigger function refresh()
+// ============================================================================
 // We send a "GET" request with URL= '/refresh' --> get single point
 // And process response with "refresh" + "plot" to update values and charts
 function refresh() {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      BMErefresh(this.responseText);
-    }
+      alert('Data updated');
+    }  
   };
   xhr.open('GET', '/refresh', true);
   xhr.send();
 }
 
-// ===============================================================================
+// ============================================================================
+//  Button "delete-data" --> trigger function deleteData()
+// ============================================================================
+// We send a "GET" request with URL= '/delete-data' --> ESP will delete the file
+// When confirmation is received, send feedback message to user.
+function deleteData() {
+  confirm('Confirm to delete data / Cancel to abort');  // Popup confirm/cancel
+  const xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      alert('Data deleted');                            // Feedback deleted
+    }
+  };
+  xhr.open('GET', '/delete-data', true);
+  xhr.send();
+}
+
+// ============================================================================
 // Handle data received via events
-// ===============================================================================
+// ============================================================================
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
 if (!!window.EventSource) {
@@ -366,8 +397,5 @@ if (!!window.EventSource) {
   }, false);
 
   // Update charts when new periodic readings are received (timerBME)
-  source.addEventListener('newBMEreading', function(e) {
-      BMErefresh(e.data);
-    }, false
-  );
+  source.addEventListener('newBMEreading', function(e) { BMErefresh(e.data);}, false );
 }

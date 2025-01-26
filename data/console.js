@@ -19,10 +19,9 @@ const logger = 1,                                   // 1 if console log is desir
       useBVAR = 1,                                  // 1 if boolean control variables are used / 0 if not
       decimals = 1,                                 // Define number of decimals for analog readings
       aFactor = 10 ** decimals;                     // Factor for conversion of analog values (server uses int; factor = 10 -> one decimal place)
-
       
 //===============================================================================
-// Define and style the slide bars (set initial low value, add ticks and tick values)
+// Define and style the slide bars (set id, initial low value, add ticks and tick values)
 //===============================================================================
 const arrSliders = [
   { id: 13, val: [0, 100], hue: [180, 0], num: 5 },

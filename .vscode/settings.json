@@ -36,6 +36,7 @@
     "optional": "cpp",
     "01_globals.hpp": "c",
     "string_view": "cpp",
-    "ratio": "cpp"
+    "ratio": "cpp",
+    "string": "cpp"
   }
 }

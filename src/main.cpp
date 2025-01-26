@@ -1,4 +1,9 @@
-#include "06_inputs.hpp"
+#include "01_globals.hpp"
+#include "02_FileSys.hpp"
+#include "03_wifi.hpp"
+#include "04_console.hpp"
+#include "05_bme.hpp"
+#include "06_config.hpp"
 
 void setup() {
   Serial.begin(115200);
@@ -6,7 +11,6 @@ void setup() {
   // ===============================================================================
   // Set GPIO modes and initial values
   // ===============================================================================
-  
   #ifdef useButton
     pinMode(statePin, OUTPUT);
     pinMode(modePin, OUTPUT);
@@ -38,6 +42,10 @@ void setup() {
     request->send(LittleFS, "/index.html", "text/html",false);
   });
   
+  #ifdef useConfig
+    initConfig();
+  #endif
+  
   // ===============================================================================
   // Tasks related with BME sensor
   // ===============================================================================
@@ -48,11 +56,6 @@ void setup() {
     BMEtimer = timer.setInterval(BMEperiod, updateBME);
     initBMEevents();
   #endif
-
-  #ifdef useInputs
-    initInputs();
-  #endif
-
 
   // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
   server.serveStatic("/", LittleFS, "/");

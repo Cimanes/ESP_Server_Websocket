@@ -1,6 +1,8 @@
 @import "main.css";
 :root {
-  --colorIcon: #700;
+  --colorIcon: #722;
+  --deleteColor: #911; 
+  --deleteHover: #600;
 }
 
 /* ================================== */
@@ -25,6 +27,10 @@
 .fa-solid {
   color: var(--colorIcon);
 }
+.fa-trash-can, .fa-download {
+  color: var(--colorCard);
+}
+
 .card-title { 
   display: inline-block;
   color: var(--colorON);
@@ -60,7 +66,25 @@ form input[type=submit] {
 form input[type=submit]:hover { background-color: var(--hoverON); }
 
 input-on { background-color: var(--colorON); }
-.button-on:hover { background-color: var(--hoverON); cursor: pointer;}
+/* .button-on:hover { background-color: var(--hoverON); cursor: pointer;}
 .button-off { background-color: var(--colorOFF); }
-.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;} 
+.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;}  */
 
+button {
+  border: none;
+  color: var(--colorCard);
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  width: 50%;
+  min-width: 120px;
+  border-radius: .5rem;
+  transition-duration: 0.4s;
+  margin: 0.5rem auto;
+  background-color: var(--colorON);
+}
+button:hover { background-color: var(--hoverON); cursor: pointer;} 
+
+#delete-data { background-color: var(--deleteColor); }
+#delete-data:hover { background-color: var(--deleteHover); cursor: pointer;} 

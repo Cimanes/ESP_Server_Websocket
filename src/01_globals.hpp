@@ -7,10 +7,11 @@
 #define useBVAR         // Use Boolean control variables
 #define useAVAR         // Use floating control variables
 #define useTxIn         // Use text input fields
-#define useNumIn        // Use numeric input fields
+#define useNumIn        // Use numeric input fields (tune BMEperiod and data-file size limit)
+#define useFbk          // Use Feedback fields (receive usedBytes and totalBytes)
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
-#define useInputs       // Use input fields (text & numbers using POST method)
+#define useConfig       // Use input fields (text & numbers using POST method)
 #define debug           // for debugging purpose only. Remove for final version.
 
 // =============================================
@@ -40,12 +41,13 @@
 // GLOBAL VARIABLES 
 // =============================================
 // Configure feedback messages for console and BME sensor (Websocket and SSE):
-const byte fbkLength = 60;        // Max length of feedback message
-const int aFactor = 10;           // Factor for range of analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
-char feedbackChar[fbkLength];     // Char array to store JSON object to be sent to client.
-SimpleTimer timer;                // Setup timers for periodic tasks (websocket clean and take BME readings):
-int BMEtimer;                     // variable to store the timer that runs periodically to retrieve BME readings.
-
+const byte fbkLength = 100;      // Max length of feedback message.
+const int aFactor = 10;         // Factor for range of exchanged analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
+char feedbackChar[fbkLength];   // Char array to store JSON object to be sent to client.
+SimpleTimer timer;              // Setup timers for periodic tasks (websocket clean and take BME readings).
+int BMEtimer;                   // Variable to store the timer that runs periodically to retrieve BME readings.
+unsigned int usedBytes;         // Used memory in FS system.
+unsigned int totalBytes;        // Total memory in FS system.
 
 
 

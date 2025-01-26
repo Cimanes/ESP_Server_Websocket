@@ -1,4 +1,4 @@
-  #include "04_console.hpp"
+//  #include "04_console.hpp"
 // =============================================
 // LIBRARIES
 // =============================================
@@ -15,11 +15,11 @@
   // Define NTP Client to get time (used in data file)
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, "pool.ntp.org");  
-  unsigned int BMEperiod = 60000L;
+  unsigned int BMEperiod = 54000000;
 
   // File name where readings will be saved, and maximum size (bytes)
   const char* dataPath = "/data.txt";
-  const int fileLength = 10000U;
+  unsigned int fileLimit = 30000;
 
   // Function to initialize BME280 sensor
   void initBME(){
@@ -36,24 +36,24 @@
     jsonObj["time"] = timeClient.getEpochTime();          // time key-value (epochtime in seconds)
     jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
     jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
-    jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to DPascals)
+    jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to mbars)
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);// Return JSON object as char array.
+    appendToFile(LittleFS, dataPath, feedbackChar);    // Append new data to file
   }
 
   // ===============================================================================
   // Callback function to be done periodically:
   // ===============================================================================
   void updateBME() { 
-    readBME();                                          // Read data from BME sensor
-    eventsBME.send("ping", NULL, millis());                // send ping to client
+    readBME();                                                // Read data from BME sensor
+    eventsBME.send("ping", NULL, millis());                   // send ping to client
     eventsBME.send(feedbackChar, "newBMEreading", millis());  // Send event "newBMEreading" with last data to client
-    if (getFileSize(LittleFS, dataPath) >= fileLength) {
+    if (getFileSize(LittleFS, dataPath) >= fileLimit) {
       #ifdef debug 
         Serial.println(F("Deleting big file..."));
       #endif
-      deleteFile(LittleFS, dataPath);       // Delete file if too large.
+      deleteFile(LittleFS, dataPath);                         // Delete file if too large.
     }
-    appendToFile(LittleFS, dataPath, feedbackChar);          // Append new data "feedbackChar" to file 
   }
 
   void initDataFile() {
@@ -63,7 +63,6 @@
         Serial.println(F("Creating file..."));
       #endif
       readBME();                        // Update "feedbackChar" with new readings
-      appendToFile(LittleFS, dataPath, feedbackChar);    // Append new data to file
     }
     else {
       #ifdef debug
@@ -73,11 +72,13 @@
   }
 
   void initBMErequests() {
-    // Receive request for latest sensor readings --> Response HTTP to request received "/refresh"
+    // Receive request for latest sensor readings --> re-start timer and take one reading.
     server.on("/refresh", HTTP_GET, [](AsyncWebServerRequest *request) {
-      readBME();                        // Take one reading
-      request->send(200, "application/json", feedbackChar);
-      appendToFile(LittleFS, dataPath, feedbackChar);    // Append new data to file
+      request->send(200);
+      timer.deleteTimer(BMEtimer);                        // Stop periodic sampling
+      BMEtimer = timer.setInterval(BMEperiod, updateBME); // Restore periodic sampling
+      timer.setTimeout(1000,updateBME);                   // Take one reading
+      // request->send(200, "application/json", feedbackChar);
     });
 
     // Receive request for complete file --> Response HTTP to request received "/data-file"
@@ -89,7 +90,8 @@
     // Request to delete data file
     server.on("/delete-data", HTTP_GET, [](AsyncWebServerRequest *request) {
       deleteFile(LittleFS, dataPath);
-      request->send(200, "text/plain", "data.txt deleted.");
+      // request->send(200, "text/plain", "data.txt deleted.");
+      request->send(200);
     });
   }
 
