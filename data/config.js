@@ -8,13 +8,13 @@ function getInputs(){
     if (this.readyState == 4 && this.status == 200) {
       const myObj = JSON.parse(this.responseText);
       console.log(myObj);
-      document.getElementById("tx_1").value = myObj.tx_1;
-      document.getElementById("tx_2").value = myObj.tx_2;
-      document.getElementById("n_1").value = myObj.n_1;
-      document.getElementById("n_2").value = myObj.n_2;
-      document.getElementById("fb_1").textContent = myObj.fb_1;   // texContent: Only inputs have "value"
-      document.getElementById("fb_2").textContent = myObj.fb_2;   // texContent: Only inputs have "value"
-      document.getElementById("fb_3").textContent = myObj.fb_3;   // texContent: Only inputs have "value"
+      document.getElementById("t1").value = myObj.t1;
+      document.getElementById("t2").value = myObj.t2;
+      document.getElementById("n1").value = myObj.n1;
+      document.getElementById("n2").value = myObj.n2;
+      document.getElementById("f1").textContent = myObj.f1;   // texContent: Only inputs have "value"
+      document.getElementById("f2").textContent = myObj.f2;   // texContent: Only inputs have "value"
+      document.getElementById("f3").textContent = myObj.f3;   // texContent: Only inputs have "value"
     }
   };
   xhr.open("GET", "/config", true);

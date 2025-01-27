@@ -7,8 +7,9 @@
     <link rel="icon" type="image/png" href="BME.png">
     <link rel="stylesheet" type="text/css" href="BME.css">
     
-    <!-- Fonts Awsome for icons in cards -->
-    <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
+    <!-- Use Fonts Awsome for icons in cards -->
+    <!-- Use personal Fonts Awsome link -->    
+    <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   
 
     <!-- Highcharts -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -65,7 +66,8 @@
           <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p><br>
           <table>
             <tr>  
-              <th>READING</th> <th>VALUE</th> 
+              <th>READING</th>
+              <th>VALUE</th> 
             </tr>
             <tr>
               <td><i class="fa-solid fa-temperature-half temperature"></i> Temperature</td>
@@ -115,13 +117,11 @@
         <br>
       </div>
 
-      <!-- Card-grid to show tools (refresh data, view table, delete data) -->
-      <div class="card-grid">
-        <div class="button-card">
-          <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
-          <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
-          <button onclick=deleteData() id="delete-data"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
-        </div>
+      <!-- button card to show tools (refresh data, view table, delete data) -->
+      <div class="card button-card">
+        <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
+        <button onclick=deleteData() class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
       </div>
     </div>
 

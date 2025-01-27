@@ -7,17 +7,17 @@
   // Config. text inputs  (number, names, file paths and variable with values)
   #ifdef useTxIn                                      
     #define n_TxIn 2
-    const char* TxName[n_TxIn] = {"tx_1", "tx_2"};
-    const char* TxPath[n_TxIn] = {"tx_1.txt", "tx_2.txt"};
-    const char* TxDefault[n_TxIn] = {"ex_1", "tx_2"};      // { BME period minutes, File size limit in KB }
+    const char* TxName[n_TxIn] = {"t1", "t2"};
+    const char* TxPath[n_TxIn] = {"t1.txt", "t2.txt"};
+    const char* TxDefault[n_TxIn] = {"t1", "t2"};      // { BME period minutes, File size limit in KB }
     char TxVal[n_TxIn][inputLength];  // Initialize here
   #endif
 
   // Config. numeric inputs (number, names, file paths and variable with values)
   #ifdef useNumIn
     #define n_NumIn 2
-    const char* NumName[n_NumIn] = {"n_1", "n_2"};          
-    const char* NumPath[n_NumIn] = {"n_1.txt", "n_2.txt"};
+    const char* NumName[n_NumIn] = {"n1", "n2"};          
+    const char* NumPath[n_NumIn] = {"n1.txt", "n2.txt"};
     const char* NumDefault[n_NumIn] = {"15", "30"};      // { BME period minutes, File size limit in KB, feedbackchar size }
     char NumVal[n_NumIn][inputLength];
   #endif
@@ -25,8 +25,8 @@
   // Config. memory fields (number, names, file paths and variable with values)
   #ifdef useFbk
     #define n_Fbk 3
-    const char* FbkName[n_Fbk] = {"fb_1", "fb_2", "fb_3"};          
-    const char* FbkPath[n_Fbk] = {"fb_1.txt", "fb_2.txt", "fb_3.txt"};
+    const char* FbkName[n_Fbk] = {"f1", "f2", "f3"};          
+    const char* FbkPath[n_Fbk] = {"f1.txt", "f2.txt", "f3.txt"};
     char FbkVal[n_Fbk][inputLength];
   #endif
 

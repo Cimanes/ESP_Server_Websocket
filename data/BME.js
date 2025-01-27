@@ -301,7 +301,7 @@ function plotBME(arr) {
 }
 
 // ===============================================================================
-// Get historic sensor readings from data file when the page loads:
+// Function to get historic sensor readings from data file
 // ===============================================================================
 // We send a "GET" request with URL= '/data-file' --> get the complete file
 // Function to load values from file and process response to update values and charts
@@ -327,10 +327,6 @@ function getBMEfile() {
   xhr.open('GET', '/data-file', true);
   xhr.send();
 }
-
-window.addEventListener('load', getBMEfile);
-// window.addEventListener('load', onLoad);
-// function onLoad() { getBMEfile(); }
 
 // ===============================================================================
 //  Function to update data and charts when a new reading is received
@@ -381,6 +377,10 @@ function deleteData() {
 // ============================================================================
 // Handle data received via events
 // ============================================================================
+
+// run function getBMEfile() when the page is loaded
+window.addEventListener('load', getBMEfile);
+
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
 if (!!window.EventSource) {

@@ -6,7 +6,7 @@
   <title>ESP Server - Console</title>
   <link rel="icon" type="image/png" href="console.png">
   <link rel="stylesheet" type="text/css" href="console.css">
-  <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal font Awsome link -->
+  <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   <!-- personal Fonts Awsome link -->
 </head>
 <body>
   <div class="topnav">
@@ -21,7 +21,6 @@
   </div>
   <div class="content">
     <div class="card-grid">
-
       <!-- =============================  -->
       <!-- One card with buttons          -->
       <!-- =============================  -->
@@ -30,13 +29,13 @@
         <p class="card-title"><i class="fa-solid fa-lightbulb fa-fade"></i> GPIO 0 (State): </p>
         <p class="feedback"><span id="state">%STATE%</span></p>  
         <div>
-          <button class="button-on" id="bON" onclick="press(this)">ON</button>   
+          <button id="bON" onclick="press(this)">ON</button>   
           <button class="button-off" id="bOFF" onclick="press(this)">OFF</button>     
         </div>
         <p class="card-title"><i class="fa-solid fa-hand"></i> GPIO 2 (Mode): </p>
         <p class="feedback"><span id="mode">%MODE%</span></p>
         <div>
-          <button class="button-on" id="bAUTO" onclick="press(this)">AUTO</button>
+          <button id="bAUTO" onclick="press(this)">AUTO</button>
           <button class="button-off" id="bMAN" onclick="press(this)">MAN</button>
         </div>
       </div>

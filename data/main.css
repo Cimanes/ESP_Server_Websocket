@@ -1,14 +1,22 @@
+/* ======================
+Global color variables
+====================== */
 :root {
-  --colorBack: #000;
-  --colorNav: #359;
-  --colorON: #359;
-  --hoverON: #116;
-  --colorOFF: #777;
-  --hoverOFF: #333;
-  --colorCard: #bbb;
-  --colorFeedback: #333;
+  --colorBack: #000 ;   /* Background - body          */
+  --colorNav: #359  ;   /* Background - Navigation    */
+  --colorON: #359   ;   /* Standard button            */
+  --hoverON: #116   ;   /* Standard button hover      */
+  --colorRed: #911  ;   /* class = "button-red"       */
+  --hoverRed: #600  ;   /* hover class = "button-red" */
+  --colorOFF: #777  ;   /* class = "button-off"       */
+  --hoverOFF: #333  ;   /* hover class = "button-off" */
+  --colorCard: #ccc ;   /* B.G. class = "card"        */
+  --colorFback: #333;   /* class = "feedback"         */
 }
 
+/* ======================
+Global design
+====================== */
 html {
   font-family: Arial, Helvetica, sans-serif; 
   text-align: center;
@@ -20,8 +28,13 @@ body {
   margin: 0;
 }
 
-p, h1 { text-align: center; }
+h1, p { text-align: center; }
 
+a { text-decoration: none;  }
+
+/* ======================
+Top navigation area
+====================== */
 .topnav { 
   padding: 0 0 10px 0;
   background-color: var(--colorNav);
@@ -30,8 +43,6 @@ p, h1 { text-align: center; }
   margin: 0 auto;
   border-radius: 1rem;
 }
-
-a { text-decoration: none;  }
 
 ul {
   width: 50%;
@@ -56,3 +67,58 @@ h1 {
   margin: 0 auto;
   background-color: var(--colorCard);
 }
+
+/* ======================
+Main body
+====================== */
+.content { padding: 30px; }
+
+/* ================================== 
+ Style the cards and the card-grid  
+================================== */
+ .card-grid { 
+  max-width: 1000px; 
+  margin: 0 auto; 
+  display: grid;
+  grid-gap: 1rem; 
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+ .card {
+  background-color: var(--colorCard); 
+  box-shadow: 2px 2px 12px 1px black;
+  border-radius: 1rem;
+}
+.card-title { 
+  display: inline-block;
+  color: var(--colorON);
+  margin: 1rem 0 0.2rem 0;
+}
+.feedback { 
+  display: inline-block;
+  font-weight: bold;
+  margin: 0 ;
+  color: var(--colorFback);
+}
+
+/* ================================== 
+ Style the buttons  
+================================== */
+button {
+  border: none;
+  color: var(--colorCard);
+  background-color: var(--colorON);  
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: .5rem;
+  transition-duration: 0.4s;
+  margin: 0.3rem auto;
+  padding: 0.5rem 1rem;
+  width: 40%;
+  min-width: 140px;
+}
+button:hover { background-color: var(--hoverON); cursor: pointer;}
+.button-red { background-color: var(--colorRed); }
+.button-red:hover { background-color: var(--hoverRed); cursor: pointer;}
+.button-off { background-color: var(--colorOFF); }
+.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;}

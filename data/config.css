@@ -1,52 +1,17 @@
 @import "main.css";
-:root {
-  --colorIcon: #722;
-  --deleteColor: #911; 
-  --deleteHover: #600;
-}
+:root { --colorIcon: #722; }
 
-/* ================================== */
-/* Style the cards and the card-grid  */
-/* ================================== */
+/* ==================================
+Style specific icons
+================================== */
+.fa-solid { color: var(--colorIcon); }
+.fa-trash-can, .fa-download { color: var(--colorCard); }
 
-.content { 
-  padding: 30px;
-} 
-.card-grid { 
-  max-width: 1000px; 
-  margin: 0 auto; 
-  display: grid; 
-  grid-gap: 1rem; 
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-.card { 
-  background-color: var(--colorCard); 
-  box-shadow: 2px 2px 12px 1px black;
-  border-radius: 10px;
-}
-.fa-solid {
-  color: var(--colorIcon);
-}
-.fa-trash-can, .fa-download {
-  color: var(--colorCard);
-}
-
-.card-title { 
-  display: inline-block;
-  color: var(--colorON);
-  margin: 2% 0 1% 0 ;
-}
-.feedback { 
-  display: inline-block;
-  font-weight: bold;
-  margin: 0 ;
-}
-
-/* =====================  */
-/* Style the buttons      */
-/* =====================  */
+/* =====================
+Style the forms
+===================== */
 form input {
-  width: 30%;
+  width: 40%;
   background-color: var(--colorOFF);
   color: #eee;
   padding: 1%;
@@ -54,37 +19,15 @@ form input {
   font-size: 1rem;
   border-radius: 4px;
   transition-duration: 0.4s;
-  margin: 0 0 2% 0
 }
 
+/* 
+Optional: if submit is an "input" instead of a "button":
 form input[type=submit] {
-  width: 25%;
+  width: 30%;
   background-color: var(--colorON);
   cursor: pointer;
 }
-
 form input[type=submit]:hover { background-color: var(--hoverON); }
-
-input-on { background-color: var(--colorON); }
-/* .button-on:hover { background-color: var(--hoverON); cursor: pointer;}
-.button-off { background-color: var(--colorOFF); }
-.button-off:hover { background-color: var(--hoverOFF); cursor: pointer;}  */
-
-button {
-  border: none;
-  color: var(--colorCard);
-  padding: 0.5rem 1rem;
-  text-align: center;
-  text-decoration: none;
-  font-size: 16px;
-  width: 50%;
-  min-width: 120px;
-  border-radius: .5rem;
-  transition-duration: 0.4s;
-  margin: 0.5rem auto;
-  background-color: var(--colorON);
-}
-button:hover { background-color: var(--hoverON); cursor: pointer;} 
-
-#delete-data { background-color: var(--deleteColor); }
-#delete-data:hover { background-color: var(--deleteHover); cursor: pointer;} 
+input-on { background-color: var(--colorON); } 
+*/
