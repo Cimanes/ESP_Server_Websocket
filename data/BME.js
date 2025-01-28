@@ -6,7 +6,7 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
       bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
       gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
       gridWidth = 0.5,
-      numPoints = 60;
+      numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
 
 // ===============================================================================
 // OPTION: HIGHCHARTS --> Create single chart with all values
@@ -17,8 +17,8 @@ const highChart = new Highcharts.Chart({
   chart:{ 
     backgroundColor: bgColor,
     height: (9 / 16 * 100) + '%',
-    renderTo:'bmeHighchart', 
-    borderRadius: 20,
+    renderTo:'bmeHighchart',        // "div" element in html file where the chart is displayed
+    borderRadius: 20
   },
   series: [
     { name: 'Temperature (ºC)', color: tColor },  
@@ -35,7 +35,7 @@ const highChart = new Highcharts.Chart({
     dateTimeLabelFormats: { second: '%H:%M:%S' }
   },
   yAxis: [    
-    { //title: { style: { color: tColor }, text: 'Temperature (ºC)' }, 
+    { title: { style: { color: tColor }, text: 'Temperature (ºC)' }, 
       labels: { style: { color: tColor } },
       lineColor: tColor,
       lineWidth: 1,
@@ -53,7 +53,7 @@ const highChart = new Highcharts.Chart({
       labels: { style: {color: pColor } },
       lineColor: pColor,
       lineWidth: 1,
-      opposite: true,
+      opposite: true,             // display on the right hand side
       gridLineColor: gridColor,
       gridLineWidth: gridWidth
     }, 
@@ -300,32 +300,47 @@ function plotBME(arr) {
   chartJS.update();     // Update the chart
 }
 
-// ===============================================================================
-// Function to get historic sensor readings from data file
-// ===============================================================================
-// We send a "GET" request with URL= '/data-file' --> get the complete file
-// Function to load values from file and process response to update values and charts
-function getBMEfile() {
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      const objBME = JSON.parse("["+this.responseText.slice(0, -1)+"]"),
-            len = objBME.length,
-            i0 = Math.max(0, len - numPoints);
-      for (let i = i0; i < len; i++){                   
-        const time = objBME[i].time *1000,     // epoch(seconds) to epoch(miliseconds
-              t = (objBME[i].t / 10).toFixed(1),
-              rh = (objBME[i].rh / 10).toFixed(1),
-              p = (objBME[i].p / 10).toFixed(1);
-        plotBME([time, t, rh, p]);
-        if(i == len-1) updateBME([time, t, rh, p]);
-      }
-      resizeChartJS();    // Re-scale Y axis      
-      chartJS.update();   // Update the chart
+// ============================================================================
+// Process BME data-file received and limit numPoints
+// ============================================================================
+function processBMEData(jsonArray, numPoints) {
+  const len = jsonArray.length,
+        i0 = Math.max(0, len - numPoints),      // Extract the last `numPoints` data points
+        processedData = [];
+  
+  for (let i = i0; i < len; i++) {
+    const time = jsonArray[i].time * 1000,      // Convert epoch (seconds) to milliseconds
+          t = (jsonArray[i].t / 10).toFixed(1),
+          rh = (jsonArray[i].rh / 10).toFixed(1),
+          p = (jsonArray[i].p / 10).toFixed(1);
+    processedData.push([time, t, rh, p]);
+  }
+  return processedData;
+}
+
+// ============================================================================
+// Update the charts with the processed data
+// ============================================================================
+function updateChart(processedData) {
+  processedData.forEach(row => {
+    const [time, t, rh, p] = row;
+    plotBME([time, t, rh, p]); // Plot the BME data
+    if (processedData.indexOf(row) === processedData.length - 1) {
+      updateBME([time, t, rh, p]); // Update BME if it's the last data point
     }
-  };
-  xhr.open('GET', '/data-file', true);
-  xhr.send();
+  });
+  resizeChartJS(); // Rescale Y axis
+  chartJS.update(); // Update the chart
+}
+
+// ============================================================================
+// Complete process: retrieve file, process the data and update the charts
+// ============================================================================
+function plotBMEfile() {
+  fetchAndFixJSON('/data-file')         // Fetch the BME data-file
+    .then(jsonArray => processBMEData(jsonArray, numPoints)) // Process the data (apply conversions and filter the number of points)
+    .then(processedData => updateChart(processedData)) // Update the chart with the processed data
+    .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }
 
 // ===============================================================================
@@ -378,8 +393,8 @@ function deleteData() {
 // Handle data received via events
 // ============================================================================
 
-// run function getBMEfile() when the page is loaded
-window.addEventListener('load', getBMEfile);
+// run function plotBMEfile() when the page is loaded
+window.addEventListener('load', plotBMEfile);
 
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource

@@ -15,16 +15,21 @@
   // Define NTP Client to get time (used in data file)
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, "pool.ntp.org");  
-  unsigned int BMEperiod = 54000000;
 
   // File name where readings will be saved, and maximum size (bytes)
   const char* dataPath = "/data.txt";
-  unsigned int fileLimit = 30000;
+
+  // Configurable variables (via config page):
+  unsigned int BMEperiod; // Time interval between BME samples.
+  unsigned int fileLimit; // Data-file size limit for BME readings.
 
   // Function to initialize BME280 sensor
   void initBME(){
-    if (!bme.begin(0x76)) { Serial.println(F("BME280 not Found")); while (1);}
-    else Serial.println(F("BME280 found"));
+    if (!bme.begin(0x76)) { 
+      if (Debug == true) Serial.println(F("BME280 not Found")); 
+      while (1);
+    }
+    else if (Debug == true) Serial.println(F("BME280 found"));
   }
 
   // ===============================================================================
@@ -49,9 +54,7 @@
     eventsBME.send("ping", NULL, millis());                   // send ping to client
     eventsBME.send(feedbackChar, "newBMEreading", millis());  // Send event "newBMEreading" with last data to client
     if (getFileSize(LittleFS, dataPath) >= fileLimit) {
-      #ifdef debug 
-        Serial.println(F("Deleting big file..."));
-      #endif
+      if (Debug == true)  Serial.println(F("Deleting big file..."));
       deleteFile(LittleFS, dataPath);                         // Delete file if too large.
     }
   }
@@ -59,15 +62,11 @@
   void initDataFile() {
     // Create file and add one point if not existing:
     if (!LittleFS.exists(dataPath)) {
-      #ifdef debug
-        Serial.println(F("Creating file..."));
-      #endif
+      if (Debug == true)  Serial.println(F("Creating file..."));
       readBME();                        // Update "feedbackChar" with new readings
     }
     else {
-      #ifdef debug
-        Serial.println(F("File exists"));
-      #endif
+      if (Debug == true)  Serial.println(F("File exists"));
     }
   }
 
@@ -98,9 +97,7 @@
   void initBMEevents() {
     eventsBME.onConnect([](AsyncEventSourceClient *client){
       if(client->lastId()){
-        #ifdef debug
-          Serial.printf("Client reconnected! Last message ID: %u\n", client->lastId());
-        #endif
+        if (Debug == true)  Serial.printf("Client reconnected! Last msg ID: %u\n", client->lastId());
       }
       client->send("hello!", NULL, millis(), 1000);
     });

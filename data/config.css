@@ -1,16 +1,16 @@
-@import "main.css";
+@import 'main.css';
 :root { --colorIcon: #722; }
 
 /* ==================================
 Style specific icons
 ================================== */
 .fa-solid { color: var(--colorIcon); }
-.fa-trash-can, .fa-download { color: var(--colorCard); }
+.fa-trash-can, .fa-download, .fa-file-export { color: var(--colorCard); }
 
 /* =====================
-Style the forms
+Style the input fields
 ===================== */
-form input {
+input, select {
   width: 40%;
   background-color: var(--colorOFF);
   color: #eee;
@@ -22,7 +22,7 @@ form input {
 }
 
 /* 
-Optional: if submit is an "input" instead of a "button":
+Optional: if submit is an 'input' instead of a 'button':
 form input[type=submit] {
   width: 30%;
   background-color: var(--colorON);

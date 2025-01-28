@@ -1,21 +1,31 @@
 // =============================================
+// VARIABLES
+// =============================================
+  FSInfo fs_info;     // FSInfo is a structure (defined in LittleFS library) that holds information about the file system
+
+// =============================================
 // MANAGE FILE SYSTEM
 // =============================================
 void initFS() {
-  if (!LittleFS.begin()) Serial.println(F("Error mounting File System"));
+  if (!LittleFS.begin()) {
+    if (Debug == true) Serial.println(F("Error mounting File System"));
+  }
   // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
-  else Serial.println(F("File System mounted"));
+  else {
+    if (Debug == true) Serial.println(F("File System mounted"));
+    LittleFS.info(fs_info);                                   // Populates fs_info structure with info about LittleFS
+    totalBytes = fs_info.totalBytes/1000;  // Total memory in LittleFS
+  }
 }
 
 // ===============================================================================
 // Read file from LittleFS into const char*
 // ===============================================================================
 // const char* readFile(fs::FS &fs, const char * path) {
-//   #ifdef debug 
+//   if (Debug == true) 
 //     Serial.printf("Reading file: %s\r\n", path);
-//   #endif 
 //   File file = fs.open(path, "r");
-//   #ifdef debug 
+//   if (Debug == true) 
 //     if(!file || file.isDirectory()){
 //         Serial.println(F("- file not found"));
 //       return nullptr;
@@ -29,7 +39,6 @@ void initFS() {
 //       file.close();
 //       return nullptr;
 //     }
-//   #endif
 //   fileContent[file.size()] = '\0';  // Null-terminate the string
 //   file.close();
 //   return fileContent;
@@ -41,11 +50,11 @@ void initFS() {
 void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
-    Serial.println("no file");
+    if (Debug == true) Serial.println("no file");
     // strncpy(buffer, "", strlen(buffer));
     return;
   }
-  Serial.println("Yes file");
+  if (Debug == true) Serial.println("Yes file");
   size_t i = 0;
   while (file.available() && i < sizeof(buffer) - 1) {
     buffer[i++] = (char)file.read();
@@ -58,18 +67,12 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
 // Delete File from LittleFS
 // ===============================================================================
 void deleteFile(fs::FS &fs, const char * path){
-  #ifdef debug
-    Serial.printf("Deleting file: %s\r\n", path);
-  #endif
+  if (Debug == true)  Serial.printf("Deleting file: %s\r\n", path);
   if(fs.remove(path)) {
-    #ifdef debug
-      Serial.println(F("- file deleted"));
-    #endif
+    if (Debug == true)  Serial.println(F("- file deleted"));
   }
   else {
-    #ifdef debug
-      Serial.println(F("- delete failed"));
-    #endif
+    if (Debug == true)  Serial.println(F("- delete failed"));
   }  
 }
 
@@ -79,15 +82,13 @@ void deleteFile(fs::FS &fs, const char * path){
 const unsigned int getFileSize(fs::FS &fs, const char * path){
   File file = fs.open(path, "r");
   if(!file){
-    #ifdef debug
-      Serial.println(F("Failed to open file for checking size"));
-    #endif
+    if (Debug == true)  Serial.println(F("Failed to open file for checking size"));
     return 0;
   }
-  #ifdef debug
+  if (Debug == true) {
     Serial.print(F("File size: "));
     Serial.println(file.size());
-  #endif
+  }
   return file.size();
 }
 
@@ -95,16 +96,19 @@ const unsigned int getFileSize(fs::FS &fs, const char * path){
 // Write file to LittleFS
 // ===============================================================================
 void writeFile(fs::FS &fs, const char * path, const char * message){
-  Serial.printf("Writing file: %s\r\n", path);
+  if (Debug == true) Serial.printf("Writing file: %s\r\n", path);
   File file = fs.open(path, "w");
   if(!file){
-    Serial.println("- failed to open file for writing");
+    if (Debug == true) Serial.println(F("- failed to open file for writing"));
     return;
   }
-  if(file.print(message)){
-    Serial.println("- file written");
-  } else {
-    Serial.println("- write failed");
+  if(file.print(message)) {
+    if (Debug == true) Serial.println(F("- file written"));
+    return;
+  }
+  else { 
+    if (Debug == true) Serial.println(F("- write failed"));
+    return;
   }
 }
 
@@ -112,39 +116,17 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 // Append data to file in LittleFS
 // ===============================================================================
 void appendToFile(fs::FS &fs, const char * path, const char * message) {
-  #ifdef debug
-    Serial.printf("Appending to file: %s\r\n", path);
-  #endif
+  if (Debug == true)  Serial.printf("Appending to file: %s\r\n", path);
   File file = fs.open(path, "a");
   if(!file){
-    #ifdef debug 
-      Serial.println(F("- failed to open file for appending"));
-    #endif
+    if (Debug == true)  Serial.println(F("- failed to open file for appending"));
     return;
   }
   if(file.print(message) && file.print(",")) {
-    #ifdef debug
-      Serial.println(F("- msg. appended"));
-    #endif
+    if (Debug == true)  Serial.println(F("- msg. appended"));
   }
-  #ifdef debug
-    else Serial.println(F("- append failed"));  
-  #endif    
+  else { 
+    if (Debug == true) Serial.println(F("- append failed")); 
+  }
   file.close();
-}
-
-// ===============================================================================
-// Check used and total memory of file system
-// ===============================================================================
-void memoryCheck() {
-  FSInfo fs_info;
-  LittleFS.info(fs_info);
-  usedBytes = fs_info.usedBytes;
-  totalBytes = fs_info.totalBytes;
-  #ifdef debug
-    Serial.print(F("Total bytes: "));
-    Serial.println(totalBytes);
-    Serial.print(F("Used bytes: "));
-    Serial.println(usedBytes);
-  #endif
 }

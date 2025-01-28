@@ -6,12 +6,12 @@ Global color variables
   --colorNav: #359  ;   /* Background - Navigation    */
   --colorON: #359   ;   /* Standard button            */
   --hoverON: #116   ;   /* Standard button hover      */
-  --colorRed: #911  ;   /* class = "button-red"       */
-  --hoverRed: #600  ;   /* hover class = "button-red" */
-  --colorOFF: #777  ;   /* class = "button-off"       */
-  --hoverOFF: #333  ;   /* hover class = "button-off" */
-  --colorCard: #ccc ;   /* B.G. class = "card"        */
-  --colorFback: #333;   /* class = "feedback"         */
+  --colorRed: #911  ;   /* class = 'button-red'       */
+  --hoverRed: #600  ;   /* hover class = 'button-red' */
+  --colorOFF: #777  ;   /* class = 'button-off'       */
+  --hoverOFF: #333  ;   /* hover class = 'button-off' */
+  --colorCard: #ccc ;   /* B.G. class = 'card'        */
+  --colorFback: #333;   /* class = 'feedback'         */
 }
 
 /* ======================
@@ -24,7 +24,7 @@ html {
 
 body {  
   background-color: var(--colorBack);
-  background-image: url("background.png");
+  background-image: url('background.png');
   margin: 0;
 }
 

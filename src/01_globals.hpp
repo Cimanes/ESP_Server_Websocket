@@ -12,7 +12,6 @@
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
 #define useConfig       // Use input fields (text & numbers using POST method)
-#define debug           // for debugging purpose only. Remove for final version.
 
 // =============================================
 // LIBRARIES
@@ -48,6 +47,4 @@ SimpleTimer timer;              // Setup timers for periodic tasks (websocket cl
 int BMEtimer;                   // Variable to store the timer that runs periodically to retrieve BME readings.
 unsigned int usedBytes;         // Used memory in FS system.
 unsigned int totalBytes;        // Total memory in FS system.
-
-
-
+boolean Debug = true;           // true --> serial print output

@@ -2,14 +2,14 @@
   // =============================================
   // VARIABLES 
   // =============================================
-  const byte inputLength = 10;    // Length of the input messages
+  const byte inputLength = 5;    // Length of the input messages
 
   // Config. text inputs  (number, names, file paths and variable with values)
   #ifdef useTxIn                                      
     #define n_TxIn 2
     const char* TxName[n_TxIn] = {"t1", "t2"};
     const char* TxPath[n_TxIn] = {"t1.txt", "t2.txt"};
-    const char* TxDefault[n_TxIn] = {"t1", "t2"};      // { BME period minutes, File size limit in KB }
+    const char* TxDefault[n_TxIn] = {"Y", "t2"};      // { BME period minutes, File size limit in KB }
     char TxVal[n_TxIn][inputLength];  // Initialize here
   #endif
 
@@ -18,7 +18,7 @@
     #define n_NumIn 2
     const char* NumName[n_NumIn] = {"n1", "n2"};          
     const char* NumPath[n_NumIn] = {"n1.txt", "n2.txt"};
-    const char* NumDefault[n_NumIn] = {"15", "30"};      // { BME period minutes, File size limit in KB, feedbackchar size }
+    const char* NumDefault[n_NumIn] = {"15", "30"};      // { BME period minutes, File size limit in KB }
     char NumVal[n_NumIn][inputLength];
   #endif
 
@@ -34,7 +34,7 @@
   // Prepare feedbackChar with current input values 
   // =============================================
   void getCurrentValues(){
-    memoryCheck();
+    // memoryCheck();
     JSONVar values;
     #ifdef useTxIn                                      
       for (byte i = 0; i < n_TxIn; i++) { values[TxName[i]] = TxVal[i]; }
@@ -43,12 +43,12 @@
       for (byte i = 0; i < n_NumIn; i++) { values[NumName[i]] = NumVal[i]; }
     #endif
     #ifdef useFbk
-      values[FbkName[0]] = totalBytes/1000;
-      values[FbkName[1]] = usedBytes/1000;
+      values[FbkName[0]] = totalBytes;
+      values[FbkName[1]] = fs_info.usedBytes/1000;
       values[FbkName[2]] = getFileSize(LittleFS, dataPath) * 100 / fileLimit;
     #endif
     JSON.stringify(values).toCharArray(feedbackChar, fbkLength);
-    Serial.println(values);
+    if (Debug == true) Serial.println(values);
   }
 
   // =============================================
@@ -56,37 +56,33 @@
   // =============================================
   void updateBMEinterval() {
     BMEperiod = 60000 * atoi(NumVal[0]);
-    timer.deleteTimer(BMEtimer);
+    if(BMEtimer) timer.deleteTimer(BMEtimer);
     BMEtimer = timer.setInterval(BMEperiod, updateBME);
-    #ifdef debug
+    if (Debug == true){
       Serial.print(F("timer: "));
       Serial.println(BMEperiod / 60000);
-    #endif
-  }
-
-  // =============================================
-  // Function to update data-file max size  
-  // =============================================
-  void updateBMElimit() {
-    fileLimit = 1000 * atoi(NumVal[1]);
-    #ifdef debug
-      Serial.print(F("timer: "));
-      Serial.println(BMEperiod / 60000);
-    #endif
+    }
   }
 
   void initConfig() {
     #ifdef useTxIn                                      
       for (byte i = 0; i < n_TxIn; i++) {   
-        fileToCharPtr(LittleFS, TxPath[i], TxVal[i]);             // Initialize from file
+        fileToCharPtr(LittleFS, TxPath[i], TxVal[i]);         // Initialize from file
         if(*TxVal[i] == '\0') strcpy(TxVal[i], TxDefault[i]);  // If file empty, initialize from default
+        Serial.println(TxVal[i]);
       }
+      if (TxVal[0][0] == 'N') Debug = false;
+      else Debug = true; 
     #endif
     #ifdef useNumIn
       for (byte i = 0; i < n_NumIn; i++) { 
         fileToCharPtr(LittleFS, NumPath[i], NumVal[i]);           // Initialize from file
         if(*NumVal[i] == '\0') strcpy(NumVal[i], NumDefault[i]);  // If file empty, initialize from default
       }
+    #endif
+    #ifdef useBME
+      BMEperiod = 60000 * atoi(NumVal[0]);
+      fileLimit = 1000 * atoi(NumVal[1]);
     #endif
 
     server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -103,11 +99,17 @@
             if (p->name() == TxName[i]) { 
               strcpy(TxVal[i], p->value().c_str());
               TxVal[i][sizeof(TxVal[i]) - 1] = '\0';
-              #ifdef debug
+              if(i == 0) {
+                if (TxVal[i][0] == 'Y')  Debug = true;
+                else Debug = false;
+              }
+              if (Debug == true) {
                 Serial.print(TxName[i]);
-                Serial.print("set to: ");
+                Serial.print(F("set to: "));
                 Serial.println(TxVal[i]);
-              #endif
+                Serial.print(F("Debug: "));
+                Serial.println(Debug);
+              }
               writeFile(LittleFS, TxPath[i], TxVal[i]);
               break;
             }
@@ -116,14 +118,14 @@
             if (p->name() == NumName[i]) {
               strcpy(NumVal[i], p->value().c_str());
               NumVal[i][sizeof(NumVal[i]) - 1] = '\0';
-              #ifdef debug
+              if (Debug == true) {
                 Serial.print(NumName[i]);
                 Serial.print(F("set to: "));
                 Serial.println(NumVal[i]);
-              #endif
+              }
               writeFile(LittleFS, NumPath[i], NumVal[i]);
-              if(i == 0) updateBMEinterval();   // BME timer interval is set to NumVal[0]
-              else if(i == 1) updateBMElimit(); // BME timer interval is set to NumVal[0]
+              if(i == 0) updateBMEinterval();                     // BME timer interval is set to NumVal[0]
+              else if(i == 1) fileLimit = 1000 * atoi(NumVal[1]); // Data-file limit is set to NumVal[1]
               break;
             }
           }         

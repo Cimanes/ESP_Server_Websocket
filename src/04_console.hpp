@@ -234,7 +234,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("pwm")) {
         byte pwmIndex = 255;
         const byte pwmOutput = byte(jsonObj["pwm"]);
-        Serial.println(jsonObj["pwm"]);
+        if (Debug == true) Serial.println(jsonObj["pwm"]);
         for (byte i=0; i<n_PWMs; i++) {
           if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
         }
@@ -271,16 +271,14 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
              void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
-      #ifdef debug    
+      if (Debug == true) 
         Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
-        client->remoteIP().toString().c_str());
-      #endif
-    break;
+      client->remoteIP().toString().c_str());
+      break;
     case WS_EVT_DISCONNECT:
-      #ifdef debug    
+      if (Debug == true)    
         Serial.printf("WebSocket client #%u disconnected\n", client->id());
-      #endif
-    break;
+      break;
     case WS_EVT_DATA:
       handleWSMessage(arg, data, len);
       break;
