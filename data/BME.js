@@ -372,25 +372,12 @@ function refresh() {
   xhr.send();
 }
 
-// ============================================================================
-//  Button "delete-data" --> trigger function deleteData()
-// ============================================================================
-// We send a "GET" request with URL= '/delete-data' --> ESP will delete the file
-// When confirmation is received, send feedback message to user.
-function deleteData() {
-  confirm('Confirm to delete data / Cancel to abort');  // Popup confirm/cancel
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      alert('Data deleted');                            // Feedback deleted
-    }
-  };
-  xhr.open('GET', '/delete-data', true);
-  xhr.send();
-}
+
+
 
 // ============================================================================
 // Handle data received via events
+// ============================================================================
 // ============================================================================
 
 // run function plotBMEfile() when the page is loaded

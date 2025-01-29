@@ -87,7 +87,7 @@
     });
 
     // Request to delete data file
-    server.on("/delete-data", HTTP_GET, [](AsyncWebServerRequest *request) {
+    server.on("/data-file", HTTP_DELETE, [](AsyncWebServerRequest *request) {
       deleteFile(LittleFS, dataPath);
       // request->send(200, "text/plain", "data.txt deleted.");
       request->send(200);
