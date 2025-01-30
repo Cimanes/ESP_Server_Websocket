@@ -5,7 +5,6 @@
  * This function creates a div element with the class 'notification',
  * sets its text content to the provided message, and appends it to the body.
  * The notification is automatically removed after 3 seconds.
- * 
  * @param {string} message - The message to display in the notification.
  */
 function showNotification(message) {
@@ -23,7 +22,6 @@ function showNotification(message) {
  * The function sends a GET request to the specified URL, retrieves the response as text,
  * and then parses it into a JSON array after fixing the format by adding square brackets
  * and removing the trailing comma.
- *
  * @param {string} url - The URL to fetch data from.
  * @returns {Promise<Object[]>} A promise that resolves to an array of JSON objects.
  */
@@ -50,11 +48,8 @@ function fileDELETE(url) {
   if (confirm('Confirm to delete data / Cancel to abort')) {  // Popup confirm/cancel
     fetch(url, { method: 'DELETE' })
       .then(response => {
-        if (response.ok) {
-          alert('Data deleted');                            // Feedback deleted
-        } else {
-          console.error('Error deleting data:', response.statusText);
-        }
+        if (response.ok) { alert('Data deleted'); }     // Feedback deleted OK
+        else { throw new Error(response.statusText); }  // Throw error for non-OK response
       })
       .catch(error => console.error('Error deleting data:', error));
   }
@@ -113,12 +108,13 @@ function convertToCSV(jsonArray) {
 // Trigger CSV download
 // ============================================================================
 /**
- * Initiate a download of a CSV file with the provided data.
- * @param {string} csvData - The CSV data to be downloaded.
- * @param {string} [filename='download.csv'] - The name of the file to be downloaded. Default is 'download.csv'.
+ * Downloads a file with the specified data, filename, and MIME type.
+ * @param {string} data - The data to be included in the file.
+ * @param {string} [filename='download.csv'] - The name of the file to be downloaded.
+ * @param {string} [mimeType='text/csv'] - The MIME type of the file.
  */
-function downloadCSV(csvData, filename = 'download.csv') {
-  const blob = new Blob([csvData], { type: 'text/csv' });
+function downloadFile(data, filename = 'download.csv', mimeType = 'text/csv') {
+  const blob = new Blob([data], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -130,9 +126,9 @@ function downloadCSV(csvData, filename = 'download.csv') {
 // ============================================================================
 // Export data-file to formatted CSV (including unit conversion)
 // ============================================================================
-function retrieveCSV() {
+function downloadCSV() {
   fetchAndFixJSON('/data-file')
     .then(jsonArray => convertToCSV(jsonArray))
-    .then(csvData => downloadCSV(csvData,'BMEdata.csv'))
+    .then(csvData => downloadFile(csvData,'BMEdata.csv'))
     .catch(error => console.error("Error retrieving CSV:", error));
 }

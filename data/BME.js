@@ -251,6 +251,11 @@ function plotlyPlot(arr) {
 // ===============================================================================
 // Function to apply format to time values to be displayed:
 // ===============================================================================
+/**
+ * Formats a given time into a localized string based on Spanish (Spain) locale.
+ * @param {Date|string|number} time - The time to format (Date object, string representing a date, or timestamp).
+ * @returns {string} - The formatted time string in 'es-ES' locale.
+ */
 function formatTime(time) {
   const config = {
     // timeZone: 'Europe/Madrid', 
@@ -263,6 +268,15 @@ function formatTime(time) {
 // ===============================================================================
 // Function to update values (arr = [time, t, rh, p])
 // ===============================================================================
+/**
+ * Update the BME data on the webpage.
+ * Update both the data cards and the table with the provided BME sensor data.
+ * @param {Array} arr - An array containing BME sensor data.
+ * @param {number} arr[0] - The timestamp of the data.
+ * @param {number} arr[1] - The temperature value.
+ * @param {number} arr[2] - The relative humidity value.
+ * @param {number} arr[3] - The pressure value.
+ */
 function updateBME(arr) {
   // Update data cards
   document.getElementById('timeBME').textContent = formatTime(arr[0]);
@@ -280,6 +294,13 @@ function updateBME(arr) {
 // ===============================================================================
 // Function to resize the chart by Charts.js
 // ===============================================================================
+/**
+ * Adjust min/max values of the y-axes for the ChartJS instance.
+ * Update the scales of the ChartJS instance by setting the minimum
+ * and maximum values for each y-axis (y0, y1, y2) based on the provided rounding
+ * functions (tRound, rhRound, pRound).
+ * @function resizeChartJS
+ */
 function resizeChartJS() {
   chartJS.options.scales.y0.min = minVal(0, tRound);
   chartJS.options.scales.y1.min = minVal(1, rhRound);
@@ -303,6 +324,13 @@ function plotBME(arr) {
 // ============================================================================
 // Process BME data-file received and limit numPoints
 // ============================================================================
+/**
+ * Processes BME sensor data from a JSON array and extracts the last `numPoints` data points.
+ * @param {Array<Object>} jsonArray - Array of objects containing BME sensor data.
+ * @param {number} numPoints - Number of data points to extract from the end of the array.
+ * @returns {Array<Array<number|string>>} - Array of processed data points, each containing:
+ *   [time (ms), temperature (°C), relative humidity (%), pressure (hPa)].
+ */
 function processBMEData(jsonArray, numPoints) {
   const len = jsonArray.length,
         i0 = Math.max(0, len - numPoints),      // Extract the last `numPoints` data points
@@ -321,6 +349,15 @@ function processBMEData(jsonArray, numPoints) {
 // ============================================================================
 // Update the charts with the processed data
 // ============================================================================
+/**
+ * Updates the chart with the given processed data.
+ * @param {Array} processedData - An array of arrays, where each inner array contains:
+ *                                [time, temperature, relative humidity, pressure].
+ *                                - time {number}: The timestamp of the data point.
+ *                                - t {number}: The temperature value.
+ *                                - rh {number}: The relative humidity value.
+ *                                - p {number}: The pressure value.
+ */
 function updateChart(processedData) {
   processedData.forEach(row => {
     const [time, t, rh, p] = row;
@@ -346,6 +383,15 @@ function plotBMEfile() {
 // ===============================================================================
 //  Function to update data and charts when a new reading is received
 // ===============================================================================
+/**
+ * Refreshes BME sensor data by parsing the reading, extracting relevant values,
+ * and updating and plotting the data.
+ * @param {string} reading - The JSON string containing BME sensor data.
+ * @property {number} time - The timestamp of the reading in seconds.
+ * @property {number} t - The temperature reading in tenths of a degree.
+ * @property {number} rh - The relative humidity reading in tenths of a percent.
+ * @property {number} p - The pressure reading in tenths of a hPa.
+ */
 function BMErefresh(reading) {
   const objBME = JSON.parse(reading);
   const time = objBME.time * 1000,
@@ -361,25 +407,22 @@ function BMErefresh(reading) {
 // ============================================================================
 // We send a "GET" request with URL= '/refresh' --> get single point
 // And process response with "refresh" + "plot" to update values and charts
+/**
+ * Sends an asynchronous GET request to the '/refresh' endpoint to update data.
+ * Displays an alert message 'Data updated' when the request is successfully completed.
+ */
 function refresh() {
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      alert('Data updated');
-    }  
-  };
-  xhr.open('GET', '/refresh', true);
-  xhr.send();
+  fetch('/refresh')
+    .then(response => {
+      if (response.ok) { alert('Data updated'); }     // Feedback update OK
+      else { throw new Error(response.statusText); }  // Throw error for non-OK response
+    })
+    .catch(error => console.error('Error:', error));
 }
-
-
-
 
 // ============================================================================
 // Handle data received via events
 // ============================================================================
-// ============================================================================
-
 // run function plotBMEfile() when the page is loaded
 window.addEventListener('load', plotBMEfile);
 
@@ -394,10 +437,11 @@ if (!!window.EventSource) {
 
   source.addEventListener('error', function(e) {
     if (e.target.readyState != EventSource.OPEN) {
-      console.log('Events Disconnected');
+      console.error('Events Disconnected: ', e);
     }
   }, false);
 
   // Update charts when new periodic readings are received (timerBME)
-  source.addEventListener('newBMEreading', function(e) { BMErefresh(e.data);}, false );
+  source.addEventListener('newBMEreading', (e) => BMErefresh(e.data), false );
+
 }

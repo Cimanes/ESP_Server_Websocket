@@ -41,6 +41,14 @@
     </div>
 
     <div class="content">
+      <!-- button card to show tools (refresh data, view table, delete data) -->
+      <div class="card button-card">
+        <button onclick="refresh()" id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <a href="data-file"></a><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
+        <button onclick="downloadCSV()"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+        <button onclick="fileDELETE('/data-file')" class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button>
+      </div>
+      <br>
       <!-- Display current readings in individual cards  -->
       <div class="card-grid">
         <div class="card">
@@ -118,18 +126,7 @@
         <div id="bmePlotly" class="chart-container"></div>
         <br>
       </div>
-
-      <!-- button card to show tools (refresh data, view table, delete data) -->
-      <div class="card button-card">
-        <button onclick=refresh() id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
-        <a href="data-file"><button id="data-file"><i class="fa-solid fa-download"></i> View Data</button></a>
-        <br>
-        <button onclick=retrieveCSV()><i class="fa-solid fa-file-export"></i> Export CSV</button>
-        <br>  
-        <button onclick="fileDELETE('/data-file')" class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button></a> 
-      </div>
     </div>
-
     <script src="BME.js"></script>
   </body>
 </html>
