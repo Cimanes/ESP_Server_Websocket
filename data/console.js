@@ -83,7 +83,7 @@ function initWebSocket() {
 // (Server will reply message with state of ALL Buttons and Toggle Switches).
 function onOpen(event) { 
   if(logger) console.log('WebSocket opened: Update all');
-  websocket.send(`{"all": ""}`); 
+  websocket.send(`{'all': ''}`); 
 }
 
 // Re-initiate the Websocket if the connection gets lost.
@@ -96,47 +96,47 @@ function onClose(event) {
 // HANDLE USER ACTIONS IN HTML
 //===============================================================================
 // function press(element) is called by the HTML when one button is pressed
-// Send message (object: {"but":"element.id"}) using websocket to the server to toggle D.O. channel number
+// Send message (object: {'but':'element.id'}) using websocket to the server to toggle D.O. channel number
 if (useButton) {
   function press(element) {
-    const msg = `{"but": "${element.id}"}`;
+    const msg = `{'but': '${element.id}'}`;
     if (logger) console.log('button ' + element.id);
     websocket.send(msg);
   }
 }
 // function toggle(element) is called by the HTML when one "D.O." element (toggle switch) is operated
-// Send message (object: {"tog":"element.id"}) using websocket to the server to toggle D.O. channel number
+// Send message (object: {'tog':'element.id'}) using websocket to the server to toggle D.O. channel number
 if (useToggle) {
   function toggle(element) {
-    const msg = `{"tog": ${element.id}}`;
+    const msg = `{'tog': ${element.id}}`;
     if (logger) console.log('toggle ' + element.id);
     websocket.send(msg);
   }
 }
 // function bvar(element) is called by the HTML when one boolean variable is toggled by the user
-// Send message (object: {"var":"XX"}) using websocket to the server to toggle the value of that variable.
+// Send message (object: {'bvar':'XX'}) using websocket to the server to toggle the value of that variable.
 if (useBVAR) {
   function bvar(element) {
-    const msg = `{"bvar": "${element.id}"}`;
+    const msg = `{'bvar': '${element.id}'}`;
     if (logger) console.log('bvar ' + element.id);
     websocket.send(msg);
   }
 }
 // function tune(element) is called by the HTML when one A.O. (PWM) is adjusted
-// Send message (object: {"pwm":element.id, "value":##}) using websocket to the server to change value of that variable.
+// Send message (object: {'pwm':element.id, 'value':##}) using websocket to the server to change value of that variable.
 
 if (usePWM) {
   function tune(element, value) {
-    const msg = `{"pwm": ${element.id}, "value":${value * aFactor}}`;
+    const msg = `{'pwm': ${element.id}, 'value':${value * aFactor}}`;
     if (logger) console.log('tune ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
 }
 // function avar(element) is called by the HTML when one analog variable is set by the user
-// Send message (object: {"avar":"x", "value":##}) using websocket to the server to change value of that variable.
+// Send message (object: {'avar':'x', 'value':##}) using websocket to the server to change value of that variable.
 if (useAVAR) {
   function avar(element, value) {
-    const msg = `{"avar": "${element.id}", "value":${value * aFactor}}`;
+    const msg = `{'avar': '${element.id}', 'value':${value * aFactor}}`;
     if (logger) console.log('avar ' + element.id + ' - ' + value);
     websocket.send(msg);
   }
@@ -151,7 +151,7 @@ function onMessage(event) {
   //------------------------------------------------------
   // BUTTONS "element.id"
   //------------------------------------------------------
-  // message received: "ON" / "OFF" / "AUTO" / "MAN"
+  // message received: 'ON' / 'OFF' / 'AUTO' / 'MAN'
   if (useButton && arrButton.includes(event.data)) {
     const element = (event.data === 'ON' || event.data === 'OFF') ? 'state' : 'mode';
     document.getElementById(element).textContent = event.data;
@@ -159,13 +159,13 @@ function onMessage(event) {
   }
 
   //------------------------------------------------------
-  // DIGITAL FEEDBACK "dfb" from TOGGLE SWITCHES
+  // DIGITAL FEEDBACK 'dfb' from TOGGLE SWITCHES
   //------------------------------------------------------
   // Update one toggle switch using JSON object with its current Output State:
-  // { "dfb":"12", "state":"0" }
+  // { 'dfb':'12', 'state':'0' }
   else if ((useBVAR || useToggle) && 'dfb' in JSON.parse(event.data)) {
     const jsonObj = JSON.parse(event.data);
-    document.getElementById(jsonObj.dfb).checked = jsonObj.state == "1";
+    document.getElementById(jsonObj.dfb).checked = jsonObj.state == '1';
     document.getElementById(jsonObj.dfb+'_state').textContent = jsonObj.state == '1' ? 'ON' : 'OFF';
     document.getElementById(jsonObj.dfb+'_state').style.color = jsonObj.state == '1' ? colorON : colorOFF;
   }

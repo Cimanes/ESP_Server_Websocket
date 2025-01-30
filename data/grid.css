@@ -1,13 +1,15 @@
 @import 'main.css';
 
-.card {
-  margin: 2rem;
-  padding-left: 20px;
-  padding-right: 20px;
+#frame {
+  /* margin-left: auto;
+  margin-right: auto; */
+  background-color: var(--colorCard);
+  margin: 1rem auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  max-width: 1000px; 
-  grid-gap: 1rem; 
+  width: 95%; 
+  column-gap: 1rem;
+  padding: 2%;
 }
 
 /* =====================  */

@@ -28,8 +28,8 @@ function showNotification(message) {
 function fetchAndFixJSON(url) {
   return fetch(url)                 // { method: 'GET' } is default
     .then(response => response.text())
-    .then(data => {       // Fix the response format (add "[]" and remove trailing comma)
-      return JSON.parse("[" + data.slice(0, -1) + "]");
+    .then(data => {       // Fix the response format (add '[]' and remove trailing comma)
+      return JSON.parse('[' + data.slice(0, -1) + ']');
     });
 }
 
@@ -92,7 +92,7 @@ function unitConvert(jsonArray) {
  */
 function convertToCSV(jsonArray) {
   if (!Array.isArray(jsonArray) || jsonArray.length === 0) {
-    console.error("Invalid or empty JSON data");
+    console.error('Invalid or empty JSON data');
     return null;
   }
   const data = unitConvert(jsonArray);        // Process the data with unitConvert
@@ -130,5 +130,5 @@ function downloadCSV() {
   fetchAndFixJSON('/data-file')
     .then(jsonArray => convertToCSV(jsonArray))
     .then(csvData => downloadFile(csvData,'BMEdata.csv'))
-    .catch(error => console.error("Error retrieving CSV:", error));
+    .catch(error => console.error('Error retrieving CSV:', error));
 }

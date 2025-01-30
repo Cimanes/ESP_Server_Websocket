@@ -17,7 +17,7 @@
       <a href='console.html'><li>Control Console</li></a>
       <a href='grid.html'><li>Grid Template</li></a>
     </ul>
-    <h1>Control Console</h1>
+    <h1><i class='fa-regular fa-hand'></i> Control Console</h1>
   </div>
   <div class='content'>
     <div class='card-grid'>
@@ -26,13 +26,13 @@
       <!-- =============================  -->
       <!-- button id's are used in JS file -->
       <div class='card'>
-        <p class='card-title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 0 (State): </p>
+        <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 0 (State): </p>
         <p class='feedback'><span id='state'>%STATE%</span></p>  
         <div>
           <button id='bON' onclick='press(this)'>ON</button>
           <button class='button-off' id='bOFF' onclick='press(this)'>OFF</button>
         </div>
-        <p class='card-title'><i class='fa-solid fa-hand'></i> GPIO 2 (Mode): </p>
+        <p class='title'><i class='fa-solid fa-hand'></i> GPIO 2 (Mode): </p>
         <p class='feedback'><span id='mode'>%MODE%</span></p>
         <div>
           <button id='bAUTO' onclick='press(this)'>AUTO</button>
@@ -46,13 +46,13 @@
       <!-- ===================================================  -->
       <!-- the id's of the elements are used in JS -->
       <div class='card'>
-        <p class='card-title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 13 (D.O.):</p>
+        <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 13 (D.O.):</p>
         <p class='feedback'><span id='12_state'>%STATE%</span></p>                
         <label class='toggleSwitch'>
           <input type='checkbox' id=12 onchange='toggle(this)'>
           <span class='toggle'></span>
         </label>  
-        <p class='card-title'><i class='fa-solid fa-hand'></i> GPIO 15 (D.O.):</p>
+        <p class='title'><i class='fa-solid fa-hand'></i> GPIO 15 (D.O.):</p>
         <p class='feedback'><span id='14_state'>%STATE%</span></p>
         <label class='toggleSwitch'>
           <input type='checkbox' id=14 onchange='toggle(this)'>
@@ -66,13 +66,13 @@
       <!-- ===================================================  -->
       <!-- the id's of the elements are used in JS -->
       <div class='card'>
-        <p class='card-title'><i class='fa-solid fa-lightbulb fa-fade'></i> bVAR-1:</p>
+        <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> bVAR-1:</p>
         <p class='feedback'><span id='bVAR1_state'>%STATE%</span></p>                
         <label class='toggleSwitch'>
           <input type='checkbox' id='bVAR1' onchange='bvar(this)'>   
           <span class='toggle'></span>
         </label>  
-        <p class='card-title'><i class='fa-solid fa-hand'></i> bVAR-2:</p>
+        <p class='title'><i class='fa-solid fa-hand'></i> bVAR-2:</p>
         <p class='feedback'><span id='bVAR2_state'>%STATE%</span></p>  
         <label class='toggleSwitch'>
           <input type='checkbox' id='bVAR2' onchange='bvar(this)'>
@@ -84,13 +84,13 @@
       <!-- One card with sliders (PWM's analog outputs)         -->
       <!-- ===================================================  -->
       <div class='card'>
-        <p class='card-title'><i class='fa-solid fa-sliders'></i> GPIO 12 (PWM): </p>
+        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 12 (PWM): </p>
         <p class='feedback'><number id='13_value'>%VALUE%</number></p>
         <div class='sliderBox'>
           <input type='range' id=13 onchange='tune(this, this.value)' class='slider'>
           <div class='ticks' id='13_axis'></div>
         </div>
-        <p class='card-title'><i class='fa-solid fa-sliders'></i> GPIO 14 (PWM): </p>
+        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 14 (PWM): </p>
         <p class='feedback'><number id='15_value'>%VALUE%</number></p>
         <div class='sliderBox'>
           <input type='range' id=15 onchange='tune(this, this.value)' class='slider'>
@@ -101,13 +101,13 @@
       <!-- One card with sliders (analog variables)            -->
       <!-- ===================================================  -->
       <div class='card'>         
-        <p class='card-title'><i class='fa-solid fa-temperature-half'></i><i class='fa-solid fa-arrows-up-down'></i> Temp set (ºC): </p>
+        <p class='title'><i class='fa-solid fa-temperature-half'></i><i class='fa-solid fa-arrows-up-down'></i> Temp set (ºC): </p>
         <p class='feedback'><number id='tSET_value'>%TSET%</number></p>
         <div class='sliderBox'>
           <input type='range' id='tSET' onchange='avar(this, this.value)' class='slider'>
           <div class='ticks' id='tSET_axis'></div>
         </div>
-        <p class='card-title'><i class='fa-solid fa-droplet'></i><i class='fa-solid fa-arrows-up-down'></i> RH set (%): </p>
+        <p class='title'><i class='fa-solid fa-droplet'></i><i class='fa-solid fa-arrows-up-down'></i> RH set (%): </p>
         <p class='feedback'><number id='rhSET_value'>%RHSET%</number></p>
         <div class='sliderBox'>
           <input type='range' id='rhSET' onchange='avar(this, this.value)' class='slider'>

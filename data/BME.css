@@ -22,7 +22,8 @@ Style the readings
 Style the table
 =====================  */
 table {
-  margin: 0 auto;
+  margin: 0 auto 1rem auto;
+  padding-bottom: 2%;
   width: 90%;
   table-layout: auto;
 }
@@ -54,7 +55,10 @@ Style the Chart
   margin: 0 2% 2% 2%;
 	overflow: hidden;
 } 
-
+.chartMargin {
+  height: 1rem;
+  margin-bottom: 1rem;
+}
 /* Required only for canvas chart with Charts.js: */
 #bmeChartJS {
   background-color: var(--bgColor);

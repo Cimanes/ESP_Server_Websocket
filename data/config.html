@@ -8,7 +8,7 @@
     <link rel='stylesheet' type='text/css' href='config.css'>
     <!-- Fonts Awsome for icons in cards -->
     <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>   <!-- personal Fonts Awsome link -->
-    <script src="main.js"></script> <!-- generic functions -->
+    <script src='main.js'></script> <!-- generic functions -->
   </head>
   <body>
     <div class='topnav'>
@@ -19,7 +19,7 @@
         <a href='console.html'><li>Control Console</li></a>
         <a href='grid.html'><li>Grid Template</li></a>
       </ul>
-      <h1>Configuration</h1>
+      <h1><i class='fa-solid fa-screwdriver-wrench'></i> Configuration</h1>
     </div>
     <div class='content'>
       <div class='card-grid'>
@@ -70,27 +70,26 @@
         <!-- ===================================================  -->
         <!-- the id's of the elements are used in JS -->
         <div class='card'>
-          <p class='title'><i class='fa-solid fa-sd-card'></i> Total - Kbs (f1): </p>
-          <p class='feedback'><span id='f1'>%TotBytes%</span></p>
-          <br><br>
-          <p class='title'><i class='fa-solid fa-database'></i> Used - Kbs (f2): </p>
-          <p class='feedback'><span id='f2'>%UsedBytes%</span></p>
-          <br><br>
-          <p class='title'><i class='fa-solid fa-file-half-dashed'></i> BME file - % (f3): </p>
-          <p class='feedback'><span id='f3'>%FileSize%</span></p>
-          <br><br>
+          <p class='feedback'>
+            <p class='title'><i class='fa-solid fa-sd-card'></i> Total - Kbs (f1): </p>
+            <span id='f1'> %TotBytes%</span>
+          </p>
+          <p class='feedback'>
+            <p class='title'><i class='fa-solid fa-database'></i> Used - Kbs (f2): </p>
+            <span id='f2'> %UsedBytes%</span>
+          </p>
+          <p class='feedback'>
+            <p class='title'><i class='fa-solid fa-file-half-dashed'></i> BME file - % (f3): </p>
+            <span id='f3'> %FileSize%</span>
+          </p>
         </div>
         <!-- ===================================================  -->
         <!-- One card with buttons                                -->
         <!-- ===================================================  -->
         <div class='card'>
-          <br>
-          <a href='data-file'><button id='data-file'><i class='fa-solid fa-download'></i> View Data</button></a>
-          <br>
-          <button onclick=downloadCSV()><i class="fa-solid fa-file-export"></i> Export CSV</button>
-          <br>          
+          <a href='data-file'><button id='data-file'><i class='fa-solid fa-file-export'></i> View Data</button></a>
+          <button onclick=downloadCSV()><i class='fa-solid fa-download'></i> Download CSV</button>
           <button onclick=deleteData() class='button-red'><i class='fa-solid fa-trash-can'></i> Delete Data</button>
-          <br>
         </div>
     </div>
     <script src='config.js'></script>     <!-- specific script for this page -->

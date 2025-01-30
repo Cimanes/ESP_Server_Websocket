@@ -1,4 +1,4 @@
-@import "main.css";
+@import 'main.css';
 :root {
   --colorIcon: #700;
   --colorSwitch: #eee;
@@ -7,9 +7,7 @@
 /* ==================================
 Style the cards and the card-grid 
 ================================== */
-.fa-solid {
-  color: var(--colorIcon);
-}
+.fa-solid { color: var(--colorIcon); }
 
 /* =====================  */
 /* Style the buttons      */
@@ -48,7 +46,7 @@ Style the toggle switches
 /* :before creates a pseudo element that is the first child of "toggle" */
 .toggle:before {
   position: absolute; 
-  content: ""; 
+  content: ''; 
   height: 30px; 
   width: 40px; 
   left: 5px; 

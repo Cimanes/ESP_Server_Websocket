@@ -48,3 +48,7 @@ int BMEtimer;                   // Variable to store the timer that runs periodi
 unsigned int usedBytes;         // Used memory in FS system.
 unsigned int totalBytes;        // Total memory in FS system.
 boolean Debug = true;           // true --> serial print output
+
+// Web Server HTTP Authentication credentials
+// const char* http_username = "admin";
+// const char* http_password = "admin";

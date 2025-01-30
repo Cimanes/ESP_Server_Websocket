@@ -17,18 +17,25 @@
       <a href='console.html'><li>Control Console</li></a>
       <a href='grid.html'><li>Grid Template</li></a>
     </ul>
-  <div>  
-  <p><i class='fas fa-user-slash' onclick='logoutButton()'></i> Logout</p>
+  <button class='button-red'><i class='fas fa-user-slash' onclick='logout()'></i> Logout</button>
   </div id='index'>
-    <h1><i class='fa-solid fa-indent'></i> Index</h1>
+    <h1><i class='fa-solid fa-indent'></i> Login</h1>
   </div>
   <h2>ESP32 / ESP8266 Web Server</h2>
-  <!-- <p>Congratulations!<br>This is your first Web Server with the ESP.</p>
-  <div id='links'>
-    <a class='link' href='https://randomnerdtutorials.com/'><button>RNT Website</button></a>
-    <a class='link' href='https://www.youtube.com/user/RandomNerdTutorials'><button >RNT You
-      tube Channel</button></a>
-  </div>   -->
-    <script src='/index.js'></script>
+  <div class='card' id='login-card'>
+    <!-- <p class='card-title'>Login</p> -->
+    <form id='login-form'>
+      <div>      
+        <label for='username' class='title'>Username:</label>
+        <input type='text' id='username' name='username' required>
+      </div>
+      <div>      
+        <label for='password' class='title'>Password:</label>
+        <input type='password' id='password' name='password' required>
+      <div>      
+        <button type='submit'>Login</button>
+    </form>
+  </div>
+  <script src='/index.js'></script>
 </body>
 </html>

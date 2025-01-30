@@ -4,18 +4,21 @@
   display: inline-block
 }
 
-button {
-  border: none;  
-  color: var(--colorCard);
-  background-color: var(--colorON);
+/* =====================
+Style the input fields
+===================== */
+input {
+  width: 40%;
+  background-color: var(--colorOFF);
+  color: #eee;
+  padding: 1%;
   text-align: center;
-  text-decoration: none;
-  font-size: 16px;
+  font-size: 1rem;
   border-radius: 4px;
   transition-duration: 0.4s;
-  margin: 0% auto;
-  padding: 10px 10px;
-  width: 40%;
+  margin: 1rem 0 0.5rem 0
 }
 
-button:hover { cursor: pointer;}
+#login-card {
+  max-width: 600px;
+}

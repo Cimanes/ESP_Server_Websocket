@@ -5,8 +5,8 @@
 Style specific icons
 ================================== */
 .fa-solid { color: var(--colorIcon); }
-.fa-trash-can, .fa-download, .fa-file-export { color: var(--colorCard); }
-
+.fa-trash-can, .fa-download, .fa-file-export, .fa-file-csv { color: var(--colorCard); }
+.fa-screwdriver-wrench {color: var(--colorON);}
 /* =====================
 Style the input fields
 ===================== */

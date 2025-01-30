@@ -1,10 +1,10 @@
 // Configuration: Retrieve color variables from defined in CSS:
-const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tColor"),
-      rhColor = getComputedStyle(document.documentElement).getPropertyValue("--rhColor"),
-      pColor = getComputedStyle(document.documentElement).getPropertyValue("--pColor"),
-      timeColor = getComputedStyle(document.documentElement).getPropertyValue("--timeColor"),
-      bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
-      gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
+const tColor = getComputedStyle(document.documentElement).getPropertyValue('--tColor'),
+      rhColor = getComputedStyle(document.documentElement).getPropertyValue('--rhColor'),
+      pColor = getComputedStyle(document.documentElement).getPropertyValue('--pColor'),
+      timeColor = getComputedStyle(document.documentElement).getPropertyValue('--timeColor'),
+      bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bgColor'),
+      gridColor = getComputedStyle(document.documentElement).getPropertyValue('--gridColor'),
       gridWidth = 0.5,
       numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
 
@@ -154,7 +154,7 @@ const options = {
 }
 // Create the chart with the configuration defined previously
 const chartJS = new Chart(
-  document.getElementById("bmeChartJS"), 
+  document.getElementById('bmeChartJS'), 
   { type: 'line', data: dataChartJS, options: options}
 );
 
@@ -177,7 +177,7 @@ const plotly = document.getElementById('bmePlotly');
 const x0 = 80 / (plotly.offsetWidth + 50);
 const dataPlotly = [
   { x: [], y: [],
-    name: "Temperature (ºC)",
+    name: 'Temperature (ºC)',
     line: {color: tColor}
   },
   { x: [], y: [],
@@ -223,7 +223,7 @@ const layout = {
     showline:true, linecolor: pColor
   },
 	legend: {
-		"orientation": "h",
+		'orientation': 'h',
 		y: 1.1, x: 0.5,
 		xanchor: 'center'
 	}
@@ -232,7 +232,7 @@ const config = {
 	responsive: true,
 	// scrollZoom: true,
 	showLink: true,
-  plotlyServerURL: "https://chart-studio.plotly.com"
+  plotlyServerURL: 'https://chart-studio.plotly.com'
 }
 
 // Create the Plotly chart
@@ -377,7 +377,7 @@ function plotBMEfile() {
   fetchAndFixJSON('/data-file')         // Fetch the BME data-file
     .then(jsonArray => processBMEData(jsonArray, numPoints)) // Process the data (apply conversions and filter the number of points)
     .then(processedData => updateChart(processedData)) // Update the chart with the processed data
-    .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
+    .catch(error => console.error('Error retrieving BME data:', error)); // Handle any errors
 }
 
 // ===============================================================================
