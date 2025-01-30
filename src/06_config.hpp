@@ -93,7 +93,7 @@
     server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
       int params = request->params();
       for(int i = 0 ; i < params ; i++){
-        AsyncWebParameter* p = request->getParam(i);
+        const AsyncWebParameter* p = request->getParam(i);
         if(p->isPost()){
           for (byte i = 0; i < n_TxIn; i++) {          
             if (p->name() == TxName[i]) { 
