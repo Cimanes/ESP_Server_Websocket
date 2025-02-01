@@ -6,7 +6,8 @@
   <title>ESP Server - Console</title>
   <link rel='icon' type='image/png' href='console.png'>
   <link rel='stylesheet' type='text/css' href='console.css'>
-  <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>   <!-- personal Fonts Awsome link -->
+  <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>   <!-- personal Font Awsome link -->
+  <script src="index.js"></script>    <!-- use logout button -->
 </head>
 <body>
   <div class='topnav'>
@@ -17,6 +18,7 @@
       <a href='console.html'><li>Control Console</li></a>
       <a href='grid.html'><li>Grid Template</li></a>
     </ul>
+    <a href="logout.html"><button class="button-red"><i class="fas fa-user-slash"></i> Logout</button></a>
     <h1><i class='fa-regular fa-hand'></i> Control Console</h1>
   </div>
   <div class='content'>
@@ -46,13 +48,13 @@
       <!-- ===================================================  -->
       <!-- the id's of the elements are used in JS -->
       <div class='card'>
-        <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 13 (D.O.):</p>
+        <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> GPIO 12 (D.O.):</p>
         <p class='feedback'><span id='12_state'>%STATE%</span></p>                
         <label class='toggleSwitch'>
           <input type='checkbox' id=12 onchange='toggle(this)'>
           <span class='toggle'></span>
         </label>  
-        <p class='title'><i class='fa-solid fa-hand'></i> GPIO 15 (D.O.):</p>
+        <p class='title'><i class='fa-solid fa-hand'></i> GPIO 14 (D.O.):</p>
         <p class='feedback'><span id='14_state'>%STATE%</span></p>
         <label class='toggleSwitch'>
           <input type='checkbox' id=14 onchange='toggle(this)'>
@@ -84,13 +86,13 @@
       <!-- One card with sliders (PWM's analog outputs)         -->
       <!-- ===================================================  -->
       <div class='card'>
-        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 12 (PWM): </p>
+        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 13 (PWM): </p>
         <p class='feedback'><number id='13_value'>%VALUE%</number></p>
         <div class='sliderBox'>
           <input type='range' id=13 onchange='tune(this, this.value)' class='slider'>
           <div class='ticks' id='13_axis'></div>
         </div>
-        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 14 (PWM): </p>
+        <p class='title'><i class='fa-solid fa-sliders'></i> GPIO 15 (PWM): </p>
         <p class='feedback'><number id='15_value'>%VALUE%</number></p>
         <div class='sliderBox'>
           <input type='range' id=15 onchange='tune(this, this.value)' class='slider'>

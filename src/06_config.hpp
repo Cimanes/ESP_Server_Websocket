@@ -48,7 +48,7 @@
       values[FbkName[2]] = getFileSize(LittleFS, dataPath) * 100 / fileLimit;
     #endif
     JSON.stringify(values).toCharArray(feedbackChar, fbkLength);
-    if (Debug == true) Serial.println(values);
+    if (Debug) Serial.println(values);
   }
 
   // =============================================
@@ -58,7 +58,7 @@
     BMEperiod = 60000 * atoi(NumVal[0]);
     if(BMEtimer) timer.deleteTimer(BMEtimer);
     BMEtimer = timer.setInterval(BMEperiod, updateBME);
-    if (Debug == true){
+    if (Debug){
       Serial.print(F("timer: "));
       Serial.println(BMEperiod / 60000);
     }
@@ -103,7 +103,7 @@
                 if (TxVal[i][0] == 'Y')  Debug = true;
                 else Debug = false;
               }
-              if (Debug == true) {
+              if (Debug) {
                 Serial.print(TxName[i]);
                 Serial.print(F("set to: "));
                 Serial.println(TxVal[i]);
@@ -118,7 +118,7 @@
             if (p->name() == NumName[i]) {
               strcpy(NumVal[i], p->value().c_str());
               NumVal[i][sizeof(NumVal[i]) - 1] = '\0';
-              if (Debug == true) {
+              if (Debug) {
                 Serial.print(NumName[i]);
                 Serial.print(F("set to: "));
                 Serial.println(NumVal[i]);

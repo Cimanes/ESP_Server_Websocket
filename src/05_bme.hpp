@@ -26,10 +26,10 @@
   // Function to initialize BME280 sensor
   void initBME(){
     if (!bme.begin(0x76)) { 
-      if (Debug == true) Serial.println(F("BME280 not Found")); 
+      if (Debug) Serial.println(F("BME280 not Found")); 
       while (1);
     }
-    else if (Debug == true) Serial.println(F("BME280 found"));
+    else if (Debug) Serial.println(F("BME280 found"));
   }
 
   // ===============================================================================
@@ -54,7 +54,7 @@
     eventsBME.send("ping", NULL, millis());                   // send ping to client
     eventsBME.send(feedbackChar, "newBMEreading", millis());  // Send event "newBMEreading" with last data to client
     if (getFileSize(LittleFS, dataPath) >= fileLimit) {
-      if (Debug == true)  Serial.println(F("Deleting big file..."));
+      if (Debug)  Serial.println(F("Deleting big file..."));
       deleteFile(LittleFS, dataPath);                         // Delete file if too large.
     }
   }
@@ -62,11 +62,11 @@
   void initDataFile() {
     // Create file and add one point if not existing:
     if (!LittleFS.exists(dataPath)) {
-      if (Debug == true)  Serial.println(F("Creating file..."));
+      if (Debug)  Serial.println(F("Creating file..."));
       readBME();                        // Update "feedbackChar" with new readings
     }
     else {
-      if (Debug == true)  Serial.println(F("File exists"));
+      if (Debug)  Serial.println(F("File exists"));
     }
   }
 
@@ -97,7 +97,7 @@
   void initBMEevents() {
     eventsBME.onConnect([](AsyncEventSourceClient *client){
       if(client->lastId()){
-        if (Debug == true)  Serial.printf("Client reconnected! Last msg ID: %u\n", client->lastId());
+        if (Debug)  Serial.printf("Client reconnected! Last msg ID: %u\n", client->lastId());
       }
       client->send("hello!", NULL, millis(), 1000);
     });

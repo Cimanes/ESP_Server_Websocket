@@ -1,10 +1,10 @@
 // Configuration: Retrieve color variables from defined in CSS:
-const tColor = getComputedStyle(document.documentElement).getPropertyValue('--tColor'),
-      rhColor = getComputedStyle(document.documentElement).getPropertyValue('--rhColor'),
-      pColor = getComputedStyle(document.documentElement).getPropertyValue('--pColor'),
-      timeColor = getComputedStyle(document.documentElement).getPropertyValue('--timeColor'),
-      bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bgColor'),
-      gridColor = getComputedStyle(document.documentElement).getPropertyValue('--gridColor'),
+const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tColor"),
+      rhColor = getComputedStyle(document.documentElement).getPropertyValue("--rhColor"),
+      pColor = getComputedStyle(document.documentElement).getPropertyValue("--pColor"),
+      timeColor = getComputedStyle(document.documentElement).getPropertyValue("--timeColor"),
+      bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
+      gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
       gridWidth = 0.5,
       numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
 
@@ -16,14 +16,14 @@ const highChart = new Highcharts.Chart({
   time:{ useUTC: false },
   chart:{ 
     backgroundColor: bgColor,
-    height: (9 / 16 * 100) + '%',
-    renderTo:'bmeHighchart',        // "div" element in html file where the chart is displayed
+    height: (9 / 16 * 100) + "%",
+    renderTo:"bmeHighchart",        // "div" element in html file where the chart is displayed
     borderRadius: 20
   },
   series: [
-    { name: 'Temperature (ºC)', color: tColor },  
-    { name: 'Rel. Humidity (%)', color: rhColor, yAxis: 1 } ,  
-    { name: 'Pressure (mbar)', color: pColor, yAxis: 2 }  
+    { name: "Temperature (ºC)", color: tColor },  
+    { name: "Rel. Humidity (%)", color: rhColor, yAxis: 1 } ,  
+    { name: "Pressure (mbar)", color: pColor, yAxis: 2 }  
   ],
   title: { text: undefined },       // The containing card already includes the title.
   plotOptions: { line: { animation: false } },
@@ -31,25 +31,25 @@ const highChart = new Highcharts.Chart({
   xAxis: {
     gridLineColor: gridColor,
     gridLineWidth: gridWidth,
-    type: 'datetime',
-    dateTimeLabelFormats: { second: '%H:%M:%S' }
+    type: "datetime",
+    dateTimeLabelFormats: { second: "%H:%M:%S" }
   },
   yAxis: [    
-    { title: { style: { color: tColor }, text: 'Temperature (ºC)' }, 
+    { title: { style: { color: tColor }, text: "Temperature (ºC)" }, 
       labels: { style: { color: tColor } },
       lineColor: tColor,
       lineWidth: 1,
       gridLineColor: gridColor,
       gridLineWidth: gridWidth
     },
-    { //title: { text: 'Humidity (%)', style: {color: rhColor } },
+    { //title: { text: "Humidity (%)", style: {color: rhColor } },
       labels: { style: {color: rhColor } },
       lineColor: rhColor,
       lineWidth: 1,
       gridLineColor: gridColor,
       gridLineWidth: gridWidth
     }, 
-    { //title: { text: 'Pressure (mbar)', style: {color: pColor} }, 
+    { //title: { text: "Pressure (mbar)", style: {color: pColor} }, 
       labels: { style: {color: pColor } },
       lineColor: pColor,
       lineWidth: 1,
@@ -86,22 +86,22 @@ const tRound = 3,
 // Define series (data sets)
 const dataChartJS = {
   datasets: [
-    { label: 'Temperature (ºC)',
+    { label: "Temperature (ºC)",
       data: [],              // each element will be {x: ## , y: ## } or [x, y]
       borderColor: tColor,
-      yAxisID: 'y0',
+      yAxisID: "y0",
       // fill: false
     },
-    { label: 'Rel. Humidity (%)',
+    { label: "Rel. Humidity (%)",
       data: [],             // {x: ## , y: ## } or [x, y]
       borderColor: rhColor,
-      yAxisID: 'y1',
+      yAxisID: "y1",
       // fill: false
     },
-    { label: 'Pressure (mbar)',
+    { label: "Pressure (mbar)",
       data: [],              // {x: ## , y: ## } or [x, y]
       borderColor: pColor,
-      yAxisID: 'y2',
+      yAxisID: "y2",
       // fill: false
     }
   ]
@@ -127,24 +127,24 @@ const options = {
   backgroundColor: bgColor,
   scales: {
     x: { 
-      type: 'time',             // Requires Charts.js date "adapter"
-      border: { color: '#111' },
-      ticks: { maxTicksLimit: 16, color: '#111' }
+      type: "time",             // Requires Charts.js date "adapter"
+      border: { color: "#111" },
+      ticks: { maxTicksLimit: 16, color: "#111" }
     },
-    y0: { // title: { display: true, text: 'Temperature (ºC)', color: tColor},
+    y0: { // title: { display: true, text: "Temperature (ºC)", color: tColor},
       min: minVal(0, tRound),      // Optional: round min/max values
       max: maxVal(0, tRound),      // Optional: round min/max values
       border: { color: tColor },
       ticks: { color: tColor, count: numTicks }
     },
-    y1: { // title: { display: true, text: 'Rel. Humidity (%)', color: rhColor},
+    y1: { // title: { display: true, text: "Rel. Humidity (%)", color: rhColor},
       min: minVal(1, rhRound),           // Optional: round min/max values
       max: maxVal(1, rhRound),           // Optional: round min/max values
       border: { color: rhColor },
       ticks: { color: rhColor, count: numTicks }
     },
-    y2: { // title: { display: true, text: 'Pressure (mbar)', color: pColor},
-      position: 'right',
+    y2: { // title: { display: true, text: "Pressure (mbar)", color: pColor},
+      position: "right",
       min: minVal(2, pRound),           // Optional: round min/max values
       max: maxVal(2, pRound),           // Optional: round min/max values
       border: { color: pColor },
@@ -154,8 +154,8 @@ const options = {
 }
 // Create the chart with the configuration defined previously
 const chartJS = new Chart(
-  document.getElementById('bmeChartJS'), 
-  { type: 'line', data: dataChartJS, options: options}
+  document.getElementById("bmeChartJS"), 
+  { type: "line", data: dataChartJS, options: options}
 );
 
 // Plot received object on chart (Charts.js)
@@ -173,21 +173,21 @@ function chartJSPlot(arr) {
 // ===============================================================================
 // OPTION: PLOTLY --> Create single chart with all values / different timestamp
 // ===============================================================================
-const plotly = document.getElementById('bmePlotly');
+const plotly = document.getElementById("bmePlotly");
 const x0 = 80 / (plotly.offsetWidth + 50);
 const dataPlotly = [
   { x: [], y: [],
-    name: 'Temperature (ºC)',
+    name: "Temperature (ºC)",
     line: {color: tColor}
   },
   { x: [], y: [],
-    name: 'Rel. Humidity (%)',
-    yaxis: 'y2',
+    name: "Rel. Humidity (%)",
+    yaxis: "y2",
     line: {color: rhColor}
   },
   { x: [], y: [],
-    name: 'Pressure (mbar)',
-    yaxis: 'y3',
+    name: "Pressure (mbar)",
+    yaxis: "y3",
     line: {color: pColor}
   }
 ];
@@ -196,53 +196,53 @@ const layout = {
 	margin: { t: 20, b: 20, l: 20, r: 80}, 
 	paper_bgcolor: bgColor,
 	plot_bgcolor: bgColor,
-  xaxis: {type: 'date', domain: [x0, 1],
-    showline: true, linecolor: '#222'
+  xaxis: {type: "date", domain: [x0, 1],
+    showline: true, linecolor: "#222"
   },
 	yaxis: {
 		tickfont: {color: tColor, size: 10},
-		anchor: 'x',
+		anchor: "x",
     showline: true,
     linecolor: tColor
   },
   yaxis2: {
     tickfont: {color: rhColor, size: 10},
-    tickmode: 'sync',
-		overlaying: 'y',
+    tickmode: "sync",
+		overlaying: "y",
     position: 0.01,
-		anchor: 'free',
+		anchor: "free",
     showline: true, 
     linecolor: rhColor
   },
 	yaxis3: {
     tickfont: {color: pColor, size: 10},
-    tickmode: 'sync',
-    overlaying: 'y',
-    anchor: 'x',
-    side: 'right',
+    tickmode: "sync",
+    overlaying: "y",
+    anchor: "x",
+    side: "right",
     showline:true, linecolor: pColor
   },
 	legend: {
-		'orientation': 'h',
+		"orientation": "h",
 		y: 1.1, x: 0.5,
-		xanchor: 'center'
+		xanchor: "center"
 	}
 };
 const config = {
 	responsive: true,
 	// scrollZoom: true,
 	showLink: true,
-  plotlyServerURL: 'https://chart-studio.plotly.com'
+  plotlyServerURL: "https://chart-studio.plotly.com"
 }
 
 // Create the Plotly chart
-Plotly.newPlot('bmePlotly', dataPlotly, layout, config);
+Plotly.newPlot("bmePlotly", dataPlotly, layout, config);
 
 // Plot received object on chart (Plotly)
 function plotlyPlot(arr) {
   // const xVal = arr[0];
   for (let i = 1; i < arr.length; i++) {
-    Plotly.extendTraces('bmePlotly',
+    Plotly.extendTraces("bmePlotly",
     { x: [[arr[0]]], y: [[arr[i]]] },      // Point to be added
     [i-1] );                            // Series to get the point
   }
@@ -254,15 +254,15 @@ function plotlyPlot(arr) {
 /**
  * Formats a given time into a localized string based on Spanish (Spain) locale.
  * @param {Date|string|number} time - The time to format (Date object, string representing a date, or timestamp).
- * @returns {string} - The formatted time string in 'es-ES' locale.
+ * @returns {string} - The formatted time string in "es-ES" locale.
  */
 function formatTime(time) {
   const config = {
-    // timeZone: 'Europe/Madrid', 
-    day: 'numeric', month: '2-digit', year: '2-digit', 
-    hour: 'numeric', minute: 'numeric', second: '2-digit'
+    // timeZone: "Europe/Madrid", 
+    day: "numeric", month: "2-digit", year: "2-digit", 
+    hour: "numeric", minute: "numeric", second: "2-digit"
   }
-  return new Date(time).toLocaleString('es-ES', config);
+  return new Date(time).toLocaleString("es-ES", config);
 }
 
 // ===============================================================================
@@ -279,16 +279,16 @@ function formatTime(time) {
  */
 function updateBME(arr) {
   // Update data cards
-  document.getElementById('timeBME').textContent = formatTime(arr[0]);
-  document.getElementById('tBME').textContent = arr[1];
-  document.getElementById('rhBME').textContent = arr[2];
-  document.getElementById('pBME').textContent = arr[3];
+  document.getElementById("timeBME").textContent = formatTime(arr[0]);
+  document.getElementById("tBME").textContent = arr[1];
+  document.getElementById("rhBME").textContent = arr[2];
+  document.getElementById("pBME").textContent = arr[3];
 
   // Update Table
-  document.getElementById('timeBMEtable').textContent = formatTime(arr[0]);
-  document.getElementById('tBMEtable').textContent = arr[1];
-  document.getElementById('rhBMEtable').textContent = arr[2];
-  document.getElementById('pBMEtable').textContent = arr[3];
+  document.getElementById("timeBMEtable").textContent = formatTime(arr[0]);
+  document.getElementById("tBMEtable").textContent = arr[1];
+  document.getElementById("rhBMEtable").textContent = arr[2];
+  document.getElementById("pBMEtable").textContent = arr[3];
 }
 
 // ===============================================================================
@@ -363,7 +363,7 @@ function updateChart(processedData) {
     const [time, t, rh, p] = row;
     plotBME([time, t, rh, p]); // Plot the BME data
     if (processedData.indexOf(row) === processedData.length - 1) {
-      updateBME([time, t, rh, p]); // Update BME if it's the last data point
+      updateBME([time, t, rh, p]); // Update BME if it"s the last data point
     }
   });
   resizeChartJS(); // Rescale Y axis
@@ -374,10 +374,10 @@ function updateChart(processedData) {
 // Complete process: retrieve file, process the data and update the charts
 // ============================================================================
 function plotBMEfile() {
-  fetchAndFixJSON('/data-file')         // Fetch the BME data-file
+  fetchAndFixJSON("/data-file")         // Fetch the BME data-file
     .then(jsonArray => processBMEData(jsonArray, numPoints)) // Process the data (apply conversions and filter the number of points)
     .then(processedData => updateChart(processedData)) // Update the chart with the processed data
-    .catch(error => console.error('Error retrieving BME data:', error)); // Handle any errors
+    .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }
 
 // ===============================================================================
@@ -405,43 +405,43 @@ function BMErefresh(reading) {
 // ============================================================================
 //  Button "Refresh" --> trigger function refresh()
 // ============================================================================
-// We send a "GET" request with URL= '/refresh' --> get single point
+// We send a "GET" request with URL= "/refresh" --> get single point
 // And process response with "refresh" + "plot" to update values and charts
 /**
- * Sends an asynchronous GET request to the '/refresh' endpoint to update data.
- * Displays an alert message 'Data updated' when the request is successfully completed.
+ * Sends an asynchronous GET request to the "/refresh" endpoint to update data.
+ * Displays an alert message "Data updated" when the request is successfully completed.
  */
 function refresh() {
-  fetch('/refresh')
+  fetch("/refresh")
     .then(response => {
-      if (response.ok) { alert('Data updated'); }     // Feedback update OK
+      if (response.ok) { alert("Data updated"); }     // Feedback update OK
       else { throw new Error(response.statusText); }  // Throw error for non-OK response
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => console.error("Error:", error));
 }
 
 // ============================================================================
 // Handle data received via events
 // ============================================================================
 // run function plotBMEfile() when the page is loaded
-window.addEventListener('load', plotBMEfile);
+window.addEventListener("load", plotBMEfile);
 
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
 if (!!window.EventSource) {
-  const source = new EventSource('/eventsBME');
+  const source = new EventSource("/eventsBME");
 
-  source.addEventListener('open', function(e) {
-    console.log('Events Connected');
+  source.addEventListener("open", function(e) {
+    console.log("Events Connected");
   }, false);
 
-  source.addEventListener('error', function(e) {
+  source.addEventListener("error", function(e) {
     if (e.target.readyState != EventSource.OPEN) {
-      console.error('Events Disconnected: ', e);
+      console.error("Events Disconnected: ", e);
     }
   }, false);
 
   // Update charts when new periodic readings are received (timerBME)
-  source.addEventListener('newBMEreading', (e) => BMErefresh(e.data), false );
+  source.addEventListener("newBMEreading", (e) => BMErefresh(e.data), false );
 
 }

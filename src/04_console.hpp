@@ -111,7 +111,7 @@ void updateButton(const char var[]) {
   // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
   void updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
-    jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
+    jsonObj["pwm"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     wsConsole.textAll(feedbackChar);
@@ -234,7 +234,6 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
       else if (jsonObj.hasOwnProperty("pwm")) {
         byte pwmIndex = 255;
         const byte pwmOutput = byte(jsonObj["pwm"]);
-        if (Debug == true) Serial.println(jsonObj["pwm"]);
         for (byte i=0; i<n_PWMs; i++) {
           if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
         }
@@ -257,7 +256,7 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
           if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
         }
         if (varIndex == 255) return;
-        AVARval[varIndex] = jsonObj["value"];
+        AVARval[varIndex] = (int)jsonObj["value"];
         updateAVAR(varIndex);
       }
     #endif
@@ -271,13 +270,11 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
              void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
-      if (Debug == true) 
-        Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
+      if (Debug) Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
       client->remoteIP().toString().c_str());
       break;
     case WS_EVT_DISCONNECT:
-      if (Debug == true)    
-        Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      if (Debug) Serial.printf("WebSocket client #%u disconnected\n", client->id());
       break;
     case WS_EVT_DATA:
       handleWSMessage(arg, data, len);

@@ -8,11 +8,11 @@
 // =============================================
 void initFS() {
   if (!LittleFS.begin()) {
-    if (Debug == true) Serial.println(F("Error mounting File System"));
+    if (Debug) Serial.println(F("Error mounting File System"));
   }
   // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
   else {
-    if (Debug == true) Serial.println(F("File System mounted"));
+    if (Debug) Serial.println(F("File System mounted"));
     LittleFS.info(fs_info);                                   // Populates fs_info structure with info about LittleFS
     totalBytes = fs_info.totalBytes/1000;  // Total memory in LittleFS
   }
@@ -22,10 +22,10 @@ void initFS() {
 // Read file from LittleFS into const char*
 // ===============================================================================
 // const char* readFile(fs::FS &fs, const char * path) {
-//   if (Debug == true) 
+//   if (Debug) 
 //     Serial.printf("Reading file: %s\r\n", path);
 //   File file = fs.open(path, "r");
-//   if (Debug == true) 
+//   if (Debug) 
 //     if(!file || file.isDirectory()){
 //         Serial.println(F("- file not found"));
 //       return nullptr;
@@ -50,11 +50,11 @@ void initFS() {
 void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
-    if (Debug == true) Serial.println("no file");
+    if (Debug) Serial.println("no file");
     // strncpy(buffer, "", strlen(buffer));
     return;
   }
-  if (Debug == true) Serial.println("Yes file");
+  if (Debug) Serial.println("Yes file");
   size_t i = 0;
   while (file.available() && i < sizeof(buffer) - 1) {
     buffer[i++] = (char)file.read();
@@ -67,12 +67,12 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
 // Delete File from LittleFS
 // ===============================================================================
 void deleteFile(fs::FS &fs, const char * path){
-  if (Debug == true)  Serial.printf("Deleting file: %s\r\n", path);
+  if (Debug)  Serial.printf("Deleting file: %s\r\n", path);
   if(fs.remove(path)) {
-    if (Debug == true)  Serial.println(F("- file deleted"));
+    if (Debug)  Serial.println(F("- file deleted"));
   }
   else {
-    if (Debug == true)  Serial.println(F("- delete failed"));
+    if (Debug)  Serial.println(F("- delete failed"));
   }  
 }
 
@@ -82,10 +82,10 @@ void deleteFile(fs::FS &fs, const char * path){
 const unsigned int getFileSize(fs::FS &fs, const char * path){
   File file = fs.open(path, "r");
   if(!file){
-    if (Debug == true)  Serial.println(F("Failed to open file for checking size"));
+    if (Debug)  Serial.println(F("Failed to open file for checking size"));
     return 0;
   }
-  if (Debug == true) {
+  if (Debug) {
     Serial.print(F("File size: "));
     Serial.println(file.size());
   }
@@ -96,18 +96,18 @@ const unsigned int getFileSize(fs::FS &fs, const char * path){
 // Write file to LittleFS
 // ===============================================================================
 void writeFile(fs::FS &fs, const char * path, const char * message){
-  if (Debug == true) Serial.printf("Writing file: %s\r\n", path);
+  if (Debug) Serial.printf("Writing file: %s\r\n", path);
   File file = fs.open(path, "w");
   if(!file){
-    if (Debug == true) Serial.println(F("- failed to open file for writing"));
+    if (Debug) Serial.println(F("- failed to open file for writing"));
     return;
   }
   if(file.print(message)) {
-    if (Debug == true) Serial.println(F("- file written"));
+    if (Debug) Serial.println(F("- file written"));
     return;
   }
   else { 
-    if (Debug == true) Serial.println(F("- write failed"));
+    if (Debug) Serial.println(F("- write failed"));
     return;
   }
 }
@@ -116,17 +116,17 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 // Append data to file in LittleFS
 // ===============================================================================
 void appendToFile(fs::FS &fs, const char * path, const char * message) {
-  if (Debug == true)  Serial.printf("Appending to file: %s\r\n", path);
+  if (Debug)  Serial.printf("Appending to file: %s\r\n", path);
   File file = fs.open(path, "a");
   if(!file){
-    if (Debug == true)  Serial.println(F("- failed to open file for appending"));
+    if (Debug)  Serial.println(F("- failed to open file for appending"));
     return;
   }
   if(file.print(message) && file.print(",")) {
-    if (Debug == true)  Serial.println(F("- msg. appended"));
+    if (Debug)  Serial.println(F("- msg. appended"));
   }
   else { 
-    if (Debug == true) Serial.println(F("- append failed")); 
+    if (Debug) Serial.println(F("- append failed")); 
   }
   file.close();
 }

@@ -1,10 +1,10 @@
+/**
+ * Sends a logout request to the server and redirects the user to the logout page.
+ * This function creates an XMLHttpRequest to send a GET request to the "/logout" endpoint.
+ * After sending the request, it waits for 1 second before redirecting the user to the "/logout" page.
+ */
 function logout() {
-  // Perform logout actions here
-  // For example, clear user session and redirect to login page
-  // fetch('/logged-out.html')
-  console.log('Logging out...');
-  // Clear session storage or cookies if needed
-  sessionStorage.clear();
-  // Redirect to login page
-  window.location.href = '/login';
+  fetch("/logout")       // { method: "GET" } is default
+    .then(() => { setTimeout(() => { window.open("/logout", "_self"); }, 1000); })
+    .catch(error => console.error("Error logging out:", error));
 }

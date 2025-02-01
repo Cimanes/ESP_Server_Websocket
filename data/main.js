@@ -1,21 +1,4 @@
 // ============================================================================
-// Function to show a custom notification with the given message.
-// ============================================================================
-/**
- * This function creates a div element with the class 'notification',
- * sets its text content to the provided message, and appends it to the body.
- * The notification is automatically removed after 3 seconds.
- * @param {string} message - The message to display in the notification.
- */
-function showNotification(message) {
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
-  document.body.appendChild(notification);
-  setTimeout(() => { notification.remove(); }, 3000);
-}
-
-// ============================================================================
 // Fetch JSON data from URL and fix the response format
 // ============================================================================
 /** Fetches data from the given URL and fixes the JSON format.
@@ -26,10 +9,10 @@ function showNotification(message) {
  * @returns {Promise<Object[]>} A promise that resolves to an array of JSON objects.
  */
 function fetchAndFixJSON(url) {
-  return fetch(url)                 // { method: 'GET' } is default
+  return fetch(url)                 // { method: "GET" } is default
     .then(response => response.text())
-    .then(data => {       // Fix the response format (add '[]' and remove trailing comma)
-      return JSON.parse('[' + data.slice(0, -1) + ']');
+    .then(data => {       // Fix the response format (add "[]" and remove trailing comma)
+      return JSON.parse("[" + data.slice(0, -1) + "]");
     });
 }
 
@@ -45,13 +28,13 @@ function fetchAndFixJSON(url) {
  * @returns {void}
  */
 function fileDELETE(url) {
-  if (confirm('Confirm to delete data / Cancel to abort')) {  // Popup confirm/cancel
-    fetch(url, { method: 'DELETE' })
+  if (confirm("Confirm to delete data / Cancel to abort")) {  // Popup confirm/cancel
+    fetch(url, { method: "DELETE" })
       .then(response => {
-        if (response.ok) { alert('Data deleted'); }     // Feedback deleted OK
+        if (response.ok) { alert("Data deleted"); }     // Feedback deleted OK
         else { throw new Error(response.statusText); }  // Throw error for non-OK response
       })
-      .catch(error => console.error('Error deleting data:', error));
+      .catch(error => console.error("Error deleting data:", error));
   }
 }
 
@@ -92,16 +75,16 @@ function unitConvert(jsonArray) {
  */
 function convertToCSV(jsonArray) {
   if (!Array.isArray(jsonArray) || jsonArray.length === 0) {
-    console.error('Invalid or empty JSON data');
+    console.error("Invalid or empty JSON data");
     return null;
   }
   const data = unitConvert(jsonArray);        // Process the data with unitConvert
   const headers = Object.keys(jsonArray[0]);  // Extract headers from the first object
-  const csvRows = [headers.join(',')];        // Add headers to the CSV rows
+  const csvRows = [headers.join(",")];        // Add headers to the CSV rows
   
   // Loop through the processed data and add rows to the CSV
-  data.forEach(row => { csvRows.push(row.join(',')); });
-  return csvRows.join('\n');        // Join all rows with new lines
+  data.forEach(row => { csvRows.push(row.join(",")); });
+  return csvRows.join("\n");        // Join all rows with new lines
 }
 
 // ============================================================================
@@ -110,13 +93,13 @@ function convertToCSV(jsonArray) {
 /**
  * Downloads a file with the specified data, filename, and MIME type.
  * @param {string} data - The data to be included in the file.
- * @param {string} [filename='download.csv'] - The name of the file to be downloaded.
- * @param {string} [mimeType='text/csv'] - The MIME type of the file.
+ * @param {string} [filename="download.csv"] - The name of the file to be downloaded.
+ * @param {string} [mimeType="text/csv"] - The MIME type of the file.
  */
-function downloadFile(data, filename = 'download.csv', mimeType = 'text/csv') {
+function downloadFile(data, filename = "download.csv", mimeType = "text/csv") {
   const blob = new Blob([data], { type: mimeType });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   a.click();                                              // Trigger download
@@ -127,8 +110,8 @@ function downloadFile(data, filename = 'download.csv', mimeType = 'text/csv') {
 // Export data-file to formatted CSV (including unit conversion)
 // ============================================================================
 function downloadCSV() {
-  fetchAndFixJSON('/data-file')
+  fetchAndFixJSON("/data-file")
     .then(jsonArray => convertToCSV(jsonArray))
-    .then(csvData => downloadFile(csvData,'BMEdata.csv'))
-    .catch(error => console.error('Error retrieving CSV:', error));
+    .then(csvData => downloadFile(csvData,"BMEdata.csv"))
+    .catch(error => console.error("Error retrieving CSV:", error));
 }

@@ -4,6 +4,7 @@
 #include "04_console.hpp"
 #include "05_bme.hpp"
 #include "06_config.hpp"
+#include "07_login.hpp"
 
 void setup() {
   Serial.begin(115200);
@@ -36,11 +37,16 @@ void setup() {
   timer.setInterval(cleanTimer, clean);
 
   // ===============================================================================
-  // Load index page when the server is called (on root "/")
+  // Load index page when the server is called (on root "/"). Optional Login
   // ===============================================================================
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html",false);
-  });
+  #ifdef useLogin
+    serverLogin();
+  #else
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(LittleFS, "/index.html", "text/html",false);
+    });
+  #endif
+
   
   #ifdef useConfig
     initConfig();

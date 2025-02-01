@@ -12,6 +12,7 @@
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
 #define useConfig       // Use input fields (text & numbers using POST method)
+#define useLogin        // Use HTTP Authentication
 
 // =============================================
 // LIBRARIES
@@ -40,15 +41,11 @@
 // GLOBAL VARIABLES 
 // =============================================
 // Configure feedback messages for console and BME sensor (Websocket and SSE):
-const byte fbkLength = 100;      // Max length of feedback message.
+const byte fbkLength = 100;     // Max length of feedback message.
 const int aFactor = 10;         // Factor for range of exchanged analog signals (10 -> one decimal; 100 -> 2 decimals). Match with JS!
 char feedbackChar[fbkLength];   // Char array to store JSON object to be sent to client.
 SimpleTimer timer;              // Setup timers for periodic tasks (websocket clean and take BME readings).
-int BMEtimer;                   // Variable to store the timer that runs periodically to retrieve BME readings.
+unsigned int BMEtimer;          // Variable to store the timer that runs periodically to retrieve BME readings.
 unsigned int usedBytes;         // Used memory in FS system.
 unsigned int totalBytes;        // Total memory in FS system.
 boolean Debug = true;           // true --> serial print output
-
-// Web Server HTTP Authentication credentials
-// const char* http_username = "admin";
-// const char* http_password = "admin";
