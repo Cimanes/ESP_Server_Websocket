@@ -37,13 +37,13 @@ void setup() {
   timer.setInterval(cleanTimer, clean);
 
   // ===============================================================================
-  // Load index page when the server is called (on root "/"). Optional Login
+  // Load home page when the server is called (on root "/"). Optional Login
   // ===============================================================================
   #ifdef useLogin
     serverLogin();
   #else
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-      request->send(LittleFS, "/index.html", "text/html",false);
+      request->send(LittleFS, "/home.html", "text/html",false);
     });
   #endif
 

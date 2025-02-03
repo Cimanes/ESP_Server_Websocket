@@ -13,7 +13,7 @@
       if (!request->authenticate(http_username, http_password)) {
         return request->requestAuthentication(); 
       }
-      request->send(LittleFS, "/index.html", "text/html",false);
+      request->send(LittleFS, "/home.html", "text/html",false);
     });
     server.on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send(LittleFS, "/logout.html", "text/html",false);

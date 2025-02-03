@@ -99,7 +99,7 @@ function onClose(event) {
 // Send message (object: {"but":"element.id"}) using websocket to the server to toggle D.O. channel number
 if (useButton) {
   function press(element) {
-    const msg = `{"but": ${element.id}}`;
+    const msg = `{"but": "${element.id}"}`;
     if (logger) console.log("button " + element.id);
     websocket.send(msg);
   }
@@ -117,7 +117,7 @@ if (useToggle) {
 // Send message (object: {"bvar":"XX"}) using websocket to the server to toggle the value of that variable.
 if (useBVAR) {
   function bvar(element) {
-    const msg = `{"bvar": ${element.id}}`;
+    const msg = `{"bvar": "${element.id}"}`;
     if (logger) console.log("bvar " + element.id);
     websocket.send(msg);
   }

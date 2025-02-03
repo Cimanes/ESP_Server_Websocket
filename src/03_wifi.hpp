@@ -15,7 +15,7 @@
 // =============================================
 // OPTIONS 
 // =============================================
-#define Toledo      // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
+#define apartment      // OPTIONAL: Choose Wifi credentials [Cimanes, Toledo, apartment]
 #if defined(Cimanes)
   const char ssid[] = "Pepe_Cimanes";
   const char pass[] = "Cimanes7581" ;
@@ -23,8 +23,8 @@
   const char ssid[] = "MIWIFI_HtR7" ;
   const char pass[] = "TdQTDf3H"    ;
 #elif defined(apartment)
-  const char ssid[] = "HH71VM_309B_2.4G" ;
-  const char pass[] = "Ey6DKct3"    ;
+  const char ssid[] = "John-Rs-Foodhall_EXT" ;
+  const char pass[] = "sive2017"    ;
 #endif
 
 

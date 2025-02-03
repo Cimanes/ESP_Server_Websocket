@@ -36,16 +36,14 @@ for (let i = 1; i <= number; i++) {
 // (style is linked to class)
 // =====================================
 function update(array, index, element) {
-	if (array[index].status == "off") {
-		array[index].status = "on";
-	}
-	else {
-		array[index].status = "off";
-	}
+	if (array[index].status == "off") 	array[index].status = "on";
+	else 	array[index].status = "off";
+
 	element.className = "button-"+array[index].status;
 	element.textContent = array[index].status;
 	console.log(array[index]);
 }
+
 for (let i = 0; i < number; i++) {
 	const target = document.getElementById(buttons[i].index);
 	target.onclick = function() {update(buttons, i, target)}

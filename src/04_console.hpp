@@ -111,7 +111,7 @@ void updateButton(const char var[]) {
   // Update analog feedback of PWM: return JSON object {"afb":5, "value":15}
   void updatePWM(byte index){
     JSONVar jsonObj;                      // Create JSON object for A.O. PWM's
-    jsonObj["pwm"] = arrPWM[index][0];    // Number of the PWM channel
+    jsonObj["afb"] = arrPWM[index][0];    // Number of the PWM channel
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     wsConsole.textAll(feedbackChar);

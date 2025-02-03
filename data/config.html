@@ -9,12 +9,11 @@
     <!-- Font Awsome for icons in cards -->
     <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>   <!-- personal Font Awsome link -->
     <script src='main.js'></script> <!-- generic functions -->
-    <script src="index.js"></script>    <!-- use logout button -->
   </head>
   <body>
     <div class='topnav'>
       <ul>
-        <a href='index.html'><li>Index</li></a>
+        <a href='home.html'><li>Index</li></a>
         <a href='config.html'><li>Config</li></a>
         <a href='BME.html'><li>BME Sensor</li></a>
         <a href='console.html'><li>Control Console</li></a>
@@ -91,7 +90,7 @@
         <div class='card'>
           <a href='data-file'><button id='data-file'><i class='fa-solid fa-file-export'></i> View Data</button></a>
           <button onclick=downloadCSV()><i class='fa-solid fa-download'></i> Download CSV</button>
-          <button onclick=deleteData() class='button-red'><i class='fa-solid fa-trash-can'></i> Delete Data</button>
+          <button onclick='fileDELETE("/data-file")' class='button-red'><i class='fa-solid fa-trash-can'></i> Delete Data</button>
         </div>
     </div>
     <script src='config.js'></script>     <!-- specific script for this page -->

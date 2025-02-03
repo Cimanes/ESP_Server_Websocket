@@ -443,5 +443,4 @@ if (!!window.EventSource) {
 
   // Update charts when new periodic readings are received (timerBME)
   source.addEventListener("newBMEreading", (e) => BMErefresh(e.data), false );
-
 }

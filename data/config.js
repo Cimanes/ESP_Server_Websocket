@@ -34,18 +34,3 @@ function getInputs() {
         })
         .catch(error => { console.error("Error fetching config:", error); });
 }
-
-// ============================================================================
-//  Button "delete-data" --> trigger function deleteData()
-// ============================================================================
-// We send a "GET" request with URL= "/delete-data" --> ESP will delete the file
-// When confirmation is received, send feedback message to user.
-function deleteData() {
-  confirm("Confirm to delete data / Cancel to abort");  // Popup confirm/cancel
-  fetch("/delete-data")
-    .then(response => { 
-      if (response.ok) { alert("Data deleted"); }     // Feedback deleted OK
-      else { throw new Error(response.statusText); }  // Throw error for non-OK response
-    })
-    .catch(error => { console.error("Error deleting data:", error); });
-}
