@@ -27,7 +27,7 @@ function getInputs() {
             document.getElementById("t2").value = myObj.t2;
             document.getElementById("n1").value = myObj.n1;
             document.getElementById("n2").value = myObj.n2;
-            // Use textContent for non-input elements
+            // Use textContent for non-input elements (feedback values)
             document.getElementById("f1").textContent = myObj.f1;
             document.getElementById("f2").textContent = myObj.f2;
             document.getElementById("f3").textContent = myObj.f3;
