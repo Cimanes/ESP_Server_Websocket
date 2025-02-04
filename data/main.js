@@ -50,15 +50,15 @@ function fileDELETE(url) {
  * @param {number} jsonArray[].p - The pressure value multiplied by 10.
  * @returns {Array<Array<number|string>>} An array of arrays, each containing the converted time, temperature, humidity, and pressure values.
  */
-function unitConvert(jsonArray, numDecimals = 1) {
+function unitConvert(jsonArray, factor = 10) {
   const len = jsonArray.length;
   const convertedBME = [];
 
   for (let i = 0; i < len; i++) {
     const time = jsonArray[i].time                // seconds
-          t = (jsonArray[i].t / Math.pow(10, numDecimals)).toFixed(1),   // Convert temperature to decimal places
-          rh = (jsonArray[i].rh / Math.pow(10, numDecimals)).toFixed(1), // Convert humidity to decimal places
-          p = (jsonArray[i].p / Math.pow(10, numDecimals)).toFixed(1);   // Convert pressure to decimal places
+          t = (jsonArray[i].t / factor).toFixed(1),   // Convert temperature to decimal places
+          rh = (jsonArray[i].rh / factor).toFixed(1), // Convert humidity to decimal places
+          p = (jsonArray[i].p / factor).toFixed(1);   // Convert pressure to decimal places
 
           convertedBME.push([time, t, rh, p]);
   }
@@ -73,12 +73,12 @@ function unitConvert(jsonArray, numDecimals = 1) {
  * @param {Object[]} jsonArray - The array of JSON objects to convert.
  * @returns {string|null} The CSV string representation of the JSON array, or null if the input is invalid or empty.
  */
-function convertToCSV(jsonArray, numDecimals) {
+function convertToCSV(jsonArray, factor) {
   if (!Array.isArray(jsonArray) || jsonArray.length === 0) {
     console.error("Invalid or empty JSON data");
     return null;
   }
-  const data = unitConvert(jsonArray, numDecimals);     // Process the data array with unitConvert (1 decimal)
+  const data = unitConvert(jsonArray, factor);     // Process the data array with unitConvert (1 decimal)
   const headers = Object.keys(jsonArray[0]);  // Extract headers from the first object
   const csvRows = [headers.join(",")];        // Add headers to the CSV rows
   
@@ -109,9 +109,9 @@ function downloadFile(data, filename = "download.csv", mimeType = "text/csv") {
 // ============================================================================
 // Export data-file to formatted CSV (including unit conversion)
 // ============================================================================
-function downloadCSV(numDecimals = 1) {
+function downloadCSV(factor = 10) {
   fetchAndFixJSON("/data-file")
-    .then(jsonArray => convertToCSV(jsonArray, numDecimals))
+    .then(jsonArray => convertToCSV(jsonArray, factor))
     .then(csvData => downloadFile(csvData,"BMEdata.csv"))
     .catch(error => console.error("Error retrieving CSV:", error));
 }
