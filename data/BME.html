@@ -1,124 +1,143 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
   <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP server - BME Readings</title>
-    <link rel='icon' type='image/png' href='BME.png'>
-    <link rel='stylesheet' type='text/css' href='BME.css'>
+    <link rel="icon" type="image/png" href="BME.png">
+    <link rel="stylesheet" type="text/css" href="BME.css">
     
     <!-- Use Font Awsome for icons in cards -->
     <!-- Use personal Font Awsome link -->    
-    <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>   
+    <script src="https://kit.fontawesome.com/890c0c4dba.js" crossorigin="anonymous"></script>   
 
     <!-- Highcharts -->
-    <script src='https://code.highcharts.com/highcharts.js'></script>
-    <script src='https://code.highcharts.com/modules/exporting.js'></script>
-    <script src='https://code.highcharts.com/modules/export-data.js'></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
     <!-- Charts.js -->
-    <script src='https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
     <!-- Plotly -->
-    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <script src='main.js'></script> <!-- generic functions -->
+    <script src="main.js"></script> <!-- generic functions -->
   </head>
 
   <body>
     <!-- Navigation links at the top -->
-    <div class='topnav'>
+    <div class="topnav">
       <ul>
-        <a href='home.html'><li>Index</li></a>
-        <a href='config.html'><li>Config</li></a>
-        <a href='BME.html'><li>BME Sensor</li></a>
-        <a href='console.html'><li>Control Console</li></a>
-        <a href='grid.html'><li>Grid Template</li></a>
+        <a href="home.html"><li>Index</li></a>
+        <a href="config.html"><li>Config</li></a>
+        <a href="BME.html"><li>BME Sensor</li></a>
+        <a href="console.html"><li>Control Console</li></a>
+        <a href="grid.html"><li>Grid Template</li></a>
       </ul>
       <a href="logout.html"><button class="button-red"><i class="fas fa-user-slash"></i> Logout</button></a>
-      <h1><i class='fa-solid fa-gauge-high'></i> BME Sensor <i class='fa-solid fa-chart-line'></i></h1>
+      <h1><i class="fa-solid fa-gauge-high"></i> BME Sensor <i class="fa-solid fa-chart-line"></i></h1>
     </div>
 
-    <div class='content'>
+    <div class="content">
       <!-- button card to show tools (refresh data, view table, delete data) -->
-      <div class='card button-card'>
-        <button onclick='refresh()' id='refresh'><i class='fa-solid fa-arrows-rotate'></i> Refresh</button>
-        <a href='data-file'><button id='data-file'><i class='fa-solid fa-file-export'></i> View Data</button></a>
-        <button onclick='downloadCSV(1)'><i class='fa-solid fa-download'></i> Download CSV</button>
-        <button onclick='fileDELETE("/data-file")' class='button-red'><i class='fa-solid fa-trash-can'></i> Delete Data</button>
+      <div class="card config-card">
+        <form id="chartSelection">
+          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Select Chart/s to display:</p>
+          <label>
+            <input type="checkbox" id="showHighcharts">Highcharts
+          </label>
+          <label>
+            <input type="checkbox" id="showChartsJS">Charts.js
+          </label>
+          <label>
+            <input type="checkbox" id="showPlotly" checked>Plotly
+          </label>
+        </form>
+        <form id="numPointsForm">
+          <label for="n1" class="title"><i class="fa-solid fa-ruler-horizontal"></i> Max Number of chart points:</label>
+          <input type="number" id="nPoints" name="nPoints" min=1 max=600 value="60" required>
+          <button type="submit">Submit</button>
+        </form>
+        <p class="title" style="width: 100%;">Data handling:</p>
+        <button onclick="refresh()" id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <a href="data-file"><button id="data-file"><i class="fa-solid fa-file-export"></i> View Data</button></a>
+        <button onclick="downloadCSV(10)"><i class="fa-solid fa-download"></i> Export CSV</button>
+        <button onclick="fileDELETE('/data-file')" class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button>
       </div>
+      
       <!-- Display current readings in individual cards  -->
-      <div class='card-grid'>
-        <div class='card'>
-          <p class='card-title'><i class='fa-solid fa-temperature-half temperature'></i> Temp: </p>
-          <p class='feedback'><span id='tBME'>%TEMP%</span> &deg;C</p>
+      <div class="card-grid">
+        <div class="card">
+          <p class="title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
+          <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
         </div>
-        <div class='card'>
-          <p class='card-title'><i class='fa-solid fa-droplet humidity'></i> Rel. Hum: </p>
-          <p class='feedback'><span id='rhBME'>%RH%</span> &percnt;</p>
+        <div class="card">
+          <p class="title"><i class="fa-solid fa-droplet humidity"></i> Rel. Hum: </p>
+          <p class="feedback"><span id="rhBME">%RH%</span> &percnt;</p>
         </div>  
-        <div class='card'>
-          <p class='card-title'><i class='fa-solid fa-gauge-high pressure'></i> Press: </p>
-          <p class='feedback'><span id='pBME'>%PRESS%</span> mbar</p>
+        <div class="card">
+          <p class="title"><i class="fa-solid fa-gauge-high pressure"></i> Press: </p>
+          <p class="feedback"><span id="pBME">%PRESS%</span> mbar</p>
         </div>
-        <div class='card'>
-          <p class='card-title'><i class='fa-solid fa-clock time'></i> Updated: </p>
-          <p class='feedback'><span id='timeBME'>%TIME%</span></p>
+        <div class="card">
+          <p class="title"><i class="fa-solid fa-clock time"></i> Updated: </p>
+          <p class="feedback"><span id="timeBME">%TIME%</span></p>
         </div>
       </div>
 
       <!-- Display current readings in a table using a card grid -->
-        <div class='card'>
-          <p class='card-title'><i class='fa-solid fa-table-list' style='color: #333;'></i> Summary Table: </p>
+        <div class="card">
+          <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p>
           <table>
             <tr>  
               <th>READING</th>
               <th>VALUE</th> 
             </tr>
             <tr>
-              <td><i class='fa-solid fa-temperature-half temperature'></i> Temperature</td>
-              <td><span id='tBMEtable'>%TEMP%</span> &deg;C</td>
+              <td><i class="fa-solid fa-temperature-half temperature"></i> Temperature</td>
+              <td><span id="tBMEtable">%TEMP%</span> &deg;C</td>
             </tr>
             <tr>
-              <td><i class='fa-solid fa-droplet humidity'></i> Humidity</td>
-              <td><span id='rhBMEtable'>%RH%</span> &percnt;</td>
+              <td><i class="fa-solid fa-droplet humidity"></i> Humidity</td>
+              <td><span id="rhBMEtable">%RH%</span> &percnt;</td>
             </tr>
             <tr>
-              <td><i class='fa-solid fa-gauge-high pressure'></i> Pressure</td>
-              <td><span id='pBMEtable'>%PRESS%</span> mbar</td>
+              <td><i class="fa-solid fa-gauge-high pressure"></i> Pressure</td>
+              <td><span id="pBMEtable">%PRESS%</span> mbar</td>
             </tr>
             <tr>
-              <td><i class='fa-solid fa-clock time'></i> Updated</td>
-              <td><span id='timeBMEtable'>%TIME%</span></td>
+              <td><i class="fa-solid fa-clock time"></i> Updated</td>
+              <td><span id="timeBMEtable">%TIME%</span></td>
             </tr>
           </table>
         </div>
 
       <!-- Chart using Highcharts (SVG based) -->
-      <div class='card'>
-        <p class='card-title'>BME HighCharts</p>
-        <div id='bmeHighchart' class='chart-container'></div>
-        <div class='chartMargin'></div>
+      <div class="card" id="highchartsCard">
+        <p class="card-title">BME HighCharts</p>
+        <div id="bmeHighchart" class="chart-container"></div>
+        <div class="chartMargin"></div>
       </div>
       <!-- Chart using Charts.js (canvas based) -->
-      <div class='card'>
-        <p class='card-title'>BME Charts.js</p>
+      <div class="card" id="chartsJSCard">
+        <p class="card-title">BME Charts.js</p>
         <!-- The canvas needs to be within a div with following style: -->
-        <div class='chart-container' style='position: relative; height:98%; width:96%'>
-          <canvas id='bmeChartJS'></canvas>
+        <div class="chart-container" style="position: relative; height:98%; width:96%">
+          <canvas id="bmeChartJS"></canvas>
         </div>
-        <div class='chartMargin'></div>
+        <div class="chartMargin"></div>
       </div>
     
       <!-- Chart using Plotly (D3 based)-->
-      <div class='card'>
-        <p class='card-title'>BME Plotly</p>
-        <div id='bmePlotly' class='chart-container'></div>
-        <div class='chartMargin'></div>
+      <div class="card" id="plotlyCard">
+        <p class="card-title">BME Plotly</p>
+        <div id="bmePlotly" class="chart-container"></div>
+        <div class="chartMargin"></div>
       </div>
     </div>
-    <script src='BME.js'></script>
+    <script src="BME.js"></script>
   </body>
 </html>

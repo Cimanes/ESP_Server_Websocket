@@ -30,8 +30,7 @@
         <!-- the id's of the elements are used in JS -->
         <div class='card'>
           <form action='/' method='POST'>
-            <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> Debug Y/N (t1):</p>
-            <br/>
+            <label for='t1' class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> Debug Y/N (t1):</label>
             <select id='t1' name='t1'>        <!-- Select Debug Yes / No -->
               <option value='Y'>Y</option>
               <option value='N'>N</option>
@@ -42,8 +41,7 @@
             <!-- <input type ='submit' value ='Submit'> -->
           </form>        
           <form action='/' method='POST'>
-            <p class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> Text Field (t2):</p>
-            <br/>
+            <label for='t2' class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> Text Field (t2):</label>
             <input type='text' id='t2' name='t2'>
             <button type='submit' value='Submit'>Submit</button>
           </form>
@@ -54,14 +52,12 @@
         <!-- the id's of the elements are used in JS -->
         <div class='card'>
           <form action='/' method='POST'>
-            <p class='title'><i class='fa-solid fa-hand'></i> BME period - mins (n1):</p>
-            <br/>
+            <label for='n1' class='title'><i class='fa-solid fa-hand'></i> BME period - mins (n1):</label>
             <input type='number' id='n1' name='n1' min=1 max=180>
             <button type='submit' value='Submit'>Submit</button>
           </form>
           <form action='/' method='POST'>
-            <p class='title'><i class='fa-solid fa-hand'></i> File limit - KB (n2):</p>
-            <br/>
+            <label for='n2' class='title'><i class='fa-solid fa-hand'></i> File limit - KB (n2):</label>
             <input type='number' id='n2' name='n2' min=0 max=100>
             <button type='submit' value='Submit'>Submit</button>
           </form>
@@ -87,9 +83,9 @@
         <!-- ===================================================  -->
         <!-- One card with buttons                                -->
         <!-- ===================================================  -->
-        <div class='card'>
+        <div class='card block'>
           <a href='data-file'><button id='data-file'><i class='fa-solid fa-file-export'></i> View Data</button></a>
-          <button onclick='downloadCSV(10)'><i class='fa-solid fa-download'></i> Download CSV</button>
+          <button onclick='downloadCSV(10)'><i class='fa-solid fa-download'></i> Export CSV</button>
           <button onclick='fileDELETE("/data-file")' class='button-red'><i class='fa-solid fa-trash-can'></i> Delete Data</button>
         </div>
     </div>

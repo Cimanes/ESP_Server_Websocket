@@ -98,14 +98,16 @@ Main body
   border-radius: 1rem;
 }
 .card-title { 
+  width: 100%;
   display: inline-block;
   color: var(--colorON);
-  margin: 0.5rem 0 0.5rem 0;
+  margin: 0.5rem 0 0.2rem 0;
 }
+
 .title { 
   display: inline-block;
   color: var(--colorON);
-  margin: 1rem 0 0 0;
+  margin: 1rem 0 0.2rem 0;
 }
 .feedback { 
   display: inline-block;
@@ -131,6 +133,21 @@ button {
   width: 40%;
   min-width: 150px;
 }
+
+/* =====================
+Style the input fields
+===================== */
+input, select {
+  width: 40%;
+  background-color: var(--colorOFF);
+  color: #eee;
+  padding: 0.33rem 0;
+  text-align: center;
+  font-size: 1rem;
+  border-radius: .5rem;
+  transition-duration: 0.4s;
+}
+
 button:hover { background-color: var(--hoverON); cursor: pointer;}
 .button-red { background-color: var(--colorRed); }
 .button-red:hover { background-color: var(--hoverRed); cursor: pointer;}

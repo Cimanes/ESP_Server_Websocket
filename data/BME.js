@@ -5,8 +5,48 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
       timeColor = getComputedStyle(document.documentElement).getPropertyValue("--timeColor"),
       bgColor = getComputedStyle(document.documentElement).getPropertyValue("--bgColor"),
       gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
-      gridWidth = 0.5,
-      numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
+      gridWidth = 0.5;
+
+ var   numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
+
+// ===============================================================================
+// Update number of points displayed in charts
+// ===============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('numPointsForm');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent the default form submission behavior
+        numPoints = document.getElementById('nPoints').value;
+        console.log(`Number of Points set to: ${numPoints}`);
+        // You can now use the numPoints variable as needed
+    });
+});
+
+// ===============================================================================
+// Update the displayed / hidden charts based on the selected checkboxes
+// ===============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const showHighcharts = document.getElementById('showHighcharts'),
+        showChartsJS = document.getElementById('showChartsJS'),
+        showPlotly = document.getElementById('showPlotly');
+
+  const highchartsCard = document.getElementById('highchartsCard'),
+        chartsJSCard = document.getElementById('chartsJSCard'),
+        plotlyCard = document.getElementById('plotlyCard');
+
+  function showCharts() {
+      highchartsCard.classList.toggle('hidden', !showHighcharts.checked);
+      chartsJSCard.classList.toggle('hidden', !showChartsJS.checked);
+      plotlyCard.classList.toggle('hidden', !showPlotly.checked);
+  }
+
+  showHighcharts.addEventListener('change', showCharts);
+  showChartsJS.addEventListener('change', showCharts);
+  showPlotly.addEventListener('change', showCharts);
+
+  // Initial update to set visibility based on default checkbox states
+  showCharts();
+});
 
 // ===============================================================================
 // OPTION: HIGHCHARTS --> Create single chart with all values
