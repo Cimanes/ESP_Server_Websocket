@@ -1,8 +1,9 @@
 // =============================================
 // VARIABLES
 // =============================================
-  FSInfo fs_info;     // FSInfo is a structure (defined in LittleFS library) that holds information about the file system
-
+  FSInfo fs_info;             // FSInfo is a structure (defined in LittleFS library) that holds information about the file system
+  const byte paramSize = 25;  // Maximum size for SSID, Password and IP
+  
 // =============================================
 // MANAGE FILE SYSTEM
 // =============================================
@@ -22,8 +23,7 @@ void initFS() {
 // Read file from LittleFS into const char*
 // ===============================================================================
 // const char* readFile(fs::FS &fs, const char * path) {
-//   if (Debug) 
-//     Serial.printf("Reading file: %s\r\n", path);
+//   if (Debug) Serial.printf("Reading file: %s\r\n", path);
 //   File file = fs.open(path, "r");
 //   if (Debug) 
 //     if(!file || file.isDirectory()){
@@ -52,11 +52,12 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   if (!file || file.isDirectory()) {
     if (Debug) Serial.println("no file");
     // strncpy(buffer, "", strlen(buffer));
+    buffer[0] = '\0'; // Ensure the buffer is null-terminated
     return;
   }
   if (Debug) Serial.println("Yes file");
   size_t i = 0;
-  while (file.available() && i < sizeof(buffer) - 1) {
+  while (file.available() && i < paramSize - 1) {
     buffer[i++] = (char)file.read();
   }
   buffer[i] = '\0';

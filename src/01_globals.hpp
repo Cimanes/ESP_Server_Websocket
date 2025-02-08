@@ -13,6 +13,7 @@
 #define useBME          // Use BME sensor
 #define useConfig       // Use input fields (text & numbers using POST method)
 #define useLogin        // Use HTTP Authentication
+#define wifiManager     // Use wifi manager with selection of SSID & IP address
 
 // =============================================
 // LIBRARIES
@@ -49,3 +50,4 @@ unsigned int BMEtimer;          // Variable to store the timer that runs periodi
 unsigned int usedBytes;         // Used memory in FS system.
 unsigned int totalBytes;        // Total memory in FS system.
 boolean Debug = true;           // true --> serial print output
+boolean restart = false;        // Command to restart the ESP

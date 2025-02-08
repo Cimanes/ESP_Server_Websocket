@@ -69,9 +69,14 @@ Style the Chart
 /* =====================
 Style the labels for the input fields
 ===================== */
-label { 
-  width: 100%; 
-  /* margin-bottom: 1rem; */
+label { width: 100%; }
+
+.checkbox { 
+  background-color: var(--colorON);
+  color: var(--colorCard);
+  padding: 0.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 #chartSelection label {

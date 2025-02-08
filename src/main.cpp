@@ -29,10 +29,23 @@ void setup() {
   #endif
 
   // ===============================================================================
-  // Initialize wifi, file system, WebSocket and setup timer: 
+  // Initialize file system
   // ===============================================================================
-  initWiFi();
   initFS();
+
+  // ===============================================================================
+  // Initialize Wifi, optional use wifiManager 
+  // ===============================================================================
+  #if defined(wifiManager)
+    getWiFi();                      // Get SSID, Password and IP from files
+    if(!initWiFi()) { defineWiFi(); }  // If SSID or Password were not stored, manage them and restart
+  #else
+    initWiFi();                     // Initialize Wifi with hardcoded values
+  #endif
+
+  // ===============================================================================
+  // Initialize WebSocket and setup timer: 
+  // ===============================================================================
   initWebSocket();
   timer.setInterval(cleanTimer, clean);
 
@@ -47,7 +60,6 @@ void setup() {
     });
   #endif
 
-  
   #ifdef useConfig
     initConfig();
   #endif
@@ -60,15 +72,11 @@ void setup() {
     initDataFile();
     initBMErequests();
     BMEtimer = timer.setInterval(BMEperiod, updateBME);
-    initBMEevents();
+    initBMEevents(); 
   #endif
-
-  // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
-  server.serveStatic("/", LittleFS, "/");
-  // Start the server.
-  server.begin();
 }
 
 void loop() {
   timer.run();
+  if(restart) { delay(5000); ESP.restart(); }
 }

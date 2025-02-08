@@ -37,6 +37,7 @@
     "01_globals.hpp": "c",
     "string_view": "cpp",
     "ratio": "cpp",
-    "string": "cpp"
+    "string": "cpp",
+    "chrono": "cpp"
   }
 }
