@@ -79,7 +79,7 @@ label { width: 100%; }
   cursor: pointer;
 }
 
-#chartSelection label {
+.selection label {
   display: inline-block;
   width: 25%;
 }

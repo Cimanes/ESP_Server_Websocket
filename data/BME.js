@@ -26,26 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // Update the displayed / hidden charts based on the selected checkboxes
 // ===============================================================================
 document.addEventListener('DOMContentLoaded', () => {
-  const showHighcharts = document.getElementById('showHighcharts'),
-        showChartsJS = document.getElementById('showChartsJS'),
-        showPlotly = document.getElementById('showPlotly');
+  const items = [
+    { checkbox: document.getElementById('checkCards'), element: document.getElementById('BMECards') },
+    { checkbox: document.getElementById('checkTable'), element: document.getElementById('BMETable') },
+    { checkbox: document.getElementById('checkHighcharts'), element: document.getElementById('highchartsCard') },
+    { checkbox: document.getElementById('checkChartsJS'), element: document.getElementById('chartsJSCard') },
+    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard') }
+  ];
 
-  const highchartsCard = document.getElementById('highchartsCard'),
-        chartsJSCard = document.getElementById('chartsJSCard'),
-        plotlyCard = document.getElementById('plotlyCard');
-
-  function showCharts() {
-      highchartsCard.classList.toggle('hidden', !showHighcharts.checked);
-      chartsJSCard.classList.toggle('hidden', !showChartsJS.checked);
-      plotlyCard.classList.toggle('hidden', !showPlotly.checked);
-  }
-
-  showHighcharts.addEventListener('change', showCharts);
-  showChartsJS.addEventListener('change', showCharts);
-  showPlotly.addEventListener('change', showCharts);
-
-  // Initial update to set visibility based on default checkbox states
-  showCharts();
+  items.forEach(item => {
+    item.element.classList.toggle('hidden', !item.checkbox.checked);
+    item.checkbox.addEventListener('change', () => {
+        item.element.classList.toggle('hidden', !item.checkbox.checked);
+    });
+  });
 });
 
 // ===============================================================================

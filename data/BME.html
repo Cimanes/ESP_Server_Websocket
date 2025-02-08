@@ -27,7 +27,7 @@
     <script src="main.js"></script> <!-- generic functions -->
   </head>
 
-  <body>
+  <body id="BMEpage">
     <!-- Navigation links at the top -->
     <div class="topnav">
       <ul>
@@ -44,16 +44,25 @@
     <div class="content">
       <!-- button card to show tools (refresh data, view table, delete data) -->
       <div class="card config-card">
-        <form id="chartSelection">
+        <form class="selection">
           <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Select Chart/s to display:</p>
           <label class="checkbox">
-            <input type="checkbox" id="showHighcharts">Highcharts
+            <input type="checkbox" id="checkHighcharts">Highcharts
           </label>
           <label class="checkbox">
-            <input type="checkbox" id="showChartsJS">Charts.js
+            <input type="checkbox" id="checkChartsJS">Charts.js
           </label>
           <label class="checkbox">
-            <input type="checkbox" id="showPlotly" checked>Plotly
+            <input type="checkbox" id="checkPlotly" checked>Plotly
+          </label>
+        </form>
+        <form class="selection">
+          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Select data display mode:</p>
+          <label class="checkbox">
+            <input type="checkbox" id="checkCards">Data cards
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="checkTable" checked>Data table
           </label>
         </form>
         <form id="numPointsForm">
@@ -68,8 +77,8 @@
         <button onclick="fileDELETE('/data-file')" class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button>
       </div>
       
-      <!-- Display current readings in individual cards  -->
-      <div class="card-grid">
+      <!-- OPTIONÑ Display current readings in individual cards  -->
+      <div class="card-grid" id="BMECards">
         <div class="card">
           <p class="title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
           <p class="feedback"><span id="tBME">%TEMP%</span> &deg;C</p>
@@ -89,7 +98,7 @@
       </div>
 
       <!-- Display current readings in a table using a card grid -->
-        <div class="card">
+        <div class="card" id="BMETable">
           <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p>
           <table>
             <tr>  
