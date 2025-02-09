@@ -4,7 +4,8 @@
 #include "04_console.hpp"
 #include "05_bme.hpp"
 #include "06_config.hpp"
-#include "07_login.hpp"
+#include "07_websocket.hpp"
+#include "08_login.hpp"
 
 void setup() {
   Serial.begin(115200);
@@ -78,5 +79,7 @@ void setup() {
 
 void loop() {
   timer.run();
-  if(restart) { delay(5000); ESP.restart(); }
+  if(restart) { 
+    timer.setTimeout(5000, []() {ESP.restart();} ); 
+    restart = false;}
 }

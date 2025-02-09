@@ -183,6 +183,3 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     Serial.println(WiFi.localIP());
   }
 #endif
-
-
-

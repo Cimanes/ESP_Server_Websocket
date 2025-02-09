@@ -14,7 +14,7 @@
   Adafruit_BME280 bme;
   // Define NTP Client to get time (used in data file)
   WiFiUDP ntpUDP;
-  NTPClient timeClient(ntpUDP, "pool.ntp.org");  
+  NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
   // File name where readings will be saved, and maximum size (bytes)
   const char* dataPath = "/data.txt";
@@ -36,25 +36,26 @@
   // Store data from BME sensor in char* "feedbackChar"; JSON format.
   // ===============================================================================
   void readBME(){
+    // timeClient.update();                          // wait for time to be updated
     JSONVar jsonObj;                              // Create JSON object 
-    timeClient.update();                          // wait for time to be updated
-    if (Debug) { 
-      Serial.println(timeClient.update());        // Print time update to Serial
-      Serial.println(timeClient.getFormattedTime()); // Print time to Serial
-    }
+    // if (Debug) { 
+    //   Serial.println(timeClient.update());        // Print time update to Serial
+    //   Serial.println(timeClient.getFormattedTime()); // Print time to Serial
+    // }
     jsonObj["time"] = timeClient.getEpochTime();          // time key-value (epochtime in seconds)
     jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
     jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
     jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to mbars)
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);// Return JSON object as char array.
     if(Debug) Serial.println(feedbackChar);               // Print JSON object to Serial
-    appendToFile(LittleFS, dataPath, feedbackChar);    // Append new data to file
+    appendToFile(LittleFS, dataPath, feedbackChar);       // Append new data to file
   }
 
   // ===============================================================================
   // Callback function to be done periodically:
   // ===============================================================================
   void updateBME() { 
+    timeClient.update();                                      // Update time
     readBME();                                                // Read data from BME sensor
     eventsBME.send("ping", NULL, millis());                   // send ping to client
     eventsBME.send(feedbackChar, "newBMEreading", millis());  // Send event "newBMEreading" with last data to client
@@ -67,6 +68,7 @@
   void initDataFile() {
     // Create file and add one point if not existing:
     if (!LittleFS.exists(dataPath)) {
+      timeClient.update();              // Update time  
       if (Debug)  Serial.println(F("Creating file..."));
       readBME();                        // Update "feedbackChar" with new readings
     }

@@ -47,7 +47,7 @@
 #ifdef useAVAR                                        
   #define n_AVARS 2                                // Number of analog variables
   const char* AVAR[n_AVARS] = {"tSET", "rhSET"};   // Analog variable names 
-  int AVARval[n_AVARS] = {50, 0};                   // Analog variable initial values  
+  int AVARval[n_AVARS] = {50, 0};                  // Analog variable initial values  
 #endif
 
 
@@ -160,136 +160,73 @@ void updateVars() {
 }
 
 // ===============================================================================
-// MANAGE MESSAGES FROM CLIENTS (via WebSocket)
+//  FUNCTIONS TO HANDLE MESSAGES FROM CLIENTS (via WebSocket) 
 // ===============================================================================
-// Callback function to run when we receive new data from the clients via WebSocket protocol:
-// AwsFrameInfo provides information about the WebSocket frame being processed:
-// typedef struct { bool final; AwsFrameType opcode; bool isMasked; uint64_t payloadLength; uint8_t mask[4]; } AwsFrameInfo;
-// (AwsFrameInfo*)arg: It's converting the void* pointer arg to a pointer of type AwsFrameInfo*. This allows the function to access the WebSocket frame information stored in the arg parameter.
-void handleWSMessage(void *arg, uint8_t *data, size_t len) {
-  AwsFrameInfo *info = (AwsFrameInfo*)arg;
-  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) { 
-    data[len] = 0;
-    JSONVar jsonObj = JSON.parse((char*)data);
 
-    //------------------------------------------------------
-    // Refresh feedback for ALL outputs and variables (requested by JS when the page is loaded):
-    //------------------------------------------------------
-    // JS function onOpen(event)  --> msg = `{"all": ""}`  --> Error: the last type is not received by JS. need to split in two separate steps
-    if (jsonObj.hasOwnProperty("all")) {
-      updateOuts();                         // Update feedback from all outputs when page loads.
-      timer.setTimeout(500, updateVars);    // Update feedback from all variables when page loads. (timer to avoid error)
-    }
+// Refresh feedback for ALL outputs and variables (requested by JS when the page is loaded):
+// JS function onOpen(event)  --> msg = `{"all": ""}`  --> Error: the last type is not received by JS. need to split in two separate steps
+void wsAll(JSONVar jsonObj) {
+  updateOuts();
+  timer.setTimeout(500, updateVars);    // Update feedback from all variables when page loads. (timer to avoid error)
+}
 
-    //------------------------------------------------------
-    // Update BUTTON (operate D.O. in ESP and feedback to JS):
-    //------------------------------------------------------
-    // JS function press(element) --> msg {"but":"XXX"} (XXX is the button ID)
-    #ifdef useButton
-      else if (jsonObj.hasOwnProperty("but")) {
-        const char* butName =  jsonObj["but"];
-        if (strcmp(butName, "bON") == 0)  digitalWrite(statePin, 1);
-        else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
-        else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
-        else if (strcmp(butName, "bMAN") == 0)   digitalWrite(modePin, 0);      
-        wsConsole.textAll(butName+1);
-      }
-    #endif
+// Update BUTTON (operate D.O. in ESP and feedback to JS):
+// JS function press(element) --> msg {"but":"XXX"} (XXX is the button ID)
+void wsButton(JSONVar jsonObj) {
+  const char* butName =  jsonObj["but"];
+  if (strcmp(butName, "bON") == 0)  digitalWrite(statePin, 1);
+  else if (strcmp(butName, "bOFF") == 0)  digitalWrite(statePin, 0);
+  else if (strcmp(butName, "bAUTO") == 0)  digitalWrite(modePin, 1); 
+  else if (strcmp(butName, "bMAN") == 0)   digitalWrite(modePin, 0);      
+  wsConsole.textAll(butName+1);
+}
 
-    /*-------------------------------------------------------
-    Operate TOGGLE SWITCH (output in ESP and feedback to JS):
-    --------------------------------------------------------*/
-    // Digital output: JS function toggle(element) --> msg {"tog":"x"}
-    #ifdef useToggle
-      else if (jsonObj.hasOwnProperty("tog")) {
-        const byte DOchannel = byte(jsonObj["tog"]);
-        digitalWrite(DOchannel, !digitalRead(DOchannel));
-        // notifyClients(updateDO(DOchannel));
-        updateDO(DOchannel);
-      }
-    #endif
+// Update TOGGLE SWITCH (operate D.O. in ESP and feedback to JS):
+// Digital output: JS function toggle(element) --> msg {"tog":"x"}
+void wsToggle(JSONVar jsonObj) {
+  const byte DOchannel = byte(jsonObj["tog"]);
+  digitalWrite(DOchannel, !digitalRead(DOchannel));
+  // notifyClients(updateDO(DOchannel));
+  updateDO(DOchannel);
+}
 
-    /*-------------------------------------------------------
-    Set BOOLEAN VARIABLE (state in ESP and feedback to JS)
-    --------------------------------------------------------*/
-    // JS function bvar(element) --> msg {"bvar":"x"}
-    #ifdef useBVAR
-      else if (jsonObj.hasOwnProperty("bvar")) {
-        byte varIndex = 255;
-        const char* varName = jsonObj["bvar"];
-        for (byte i=0; i<n_BVARS; i++) {
-          if (strcmp(varName, BVAR[i]) == 0) { varIndex = i; break; }
-        }
-        if (varIndex == 255) return;
-        BVARval[varIndex] = !BVARval[varIndex];
-        updateBVAR(varIndex);
-      }
-    #endif  
-
-    /*-------------------------------------------------------
-    Tune PWM A.O. (tune output in ESP and feedback to JS):
-    --------------------------------------------------------*/
-    // JS function tune(element, value) --> msg {"pwm":"x", "value":"xx"}
-    #ifdef usePWM
-      else if (jsonObj.hasOwnProperty("pwm")) {
-        byte pwmIndex = 255;
-        const byte pwmOutput = byte(jsonObj["pwm"]);
-        for (byte i=0; i<n_PWMs; i++) {
-          if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
-        }
-        if (pwmIndex == 255) return;
-        PWMval[pwmIndex] = jsonObj["value"];  // update array PWMval with new value (keep 1 decimal place only)
-        analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
-        updatePWM(pwmIndex);         // Send feedback to JS.
-      }
-    #endif
-
-    /*-------------------------------------------------------
-    Set ANALOG VARIABLE (value in ESP and feedback to JS)
-    --------------------------------------------------------*/
-    // JS function avar(element, value) --> msg {"avar":"x", "value":"xx"}
-    #ifdef useAVAR
-      else if (jsonObj.hasOwnProperty("avar")) {
-        byte varIndex = 255;
-        const char* varName = jsonObj["avar"];
-        for (byte i=0; i<n_AVARS; i++) {
-          if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
-        }
-        if (varIndex == 255) return;
-        AVARval[varIndex] = (int)jsonObj["value"];
-        updateAVAR(varIndex);
-      }
-    #endif
+// Update BOOLEAN VARIABLE (state in ESP and feedback to JS)
+// JS function bvar(element) --> msg {"bvar":"x"}
+void wsBvar(JSONVar jsonObj) {
+  byte varIndex = 255;
+  const char* varName = jsonObj["bvar"];
+  for (byte i=0; i<n_BVARS; i++) {
+    if (strcmp(varName, BVAR[i]) == 0) { varIndex = i; break; }
   }
+  if (varIndex == 255) return;
+  BVARval[varIndex] = !BVARval[varIndex];
+  updateBVAR(varIndex);
 }
 
-// ===============================================================================
-// Handle events received via WebSocket:
-// ===============================================================================
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, 
-             void *arg, uint8_t *data, size_t len) {
-  switch (type) {
-    case WS_EVT_CONNECT:
-      if (Debug) Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
-      client->remoteIP().toString().c_str());
-      break;
-    case WS_EVT_DISCONNECT:
-      if (Debug) Serial.printf("WebSocket client #%u disconnected\n", client->id());
-      break;
-    case WS_EVT_DATA:
-      handleWSMessage(arg, data, len);
-      break;
-    case WS_EVT_PONG:
-    case WS_EVT_ERROR:
-      break;
+// Update PWM (tune output in ESP and feedback to JS):
+// JS function tune(element, value) --> msg {"pwm":"x", "value":"xx"}
+void wsPWM(JSONVar jsonObj) {
+  byte pwmIndex = 255;
+  const byte pwmOutput = byte(jsonObj["pwm"]);
+  for (byte i=0; i<n_PWMs; i++) {
+    if (pwmOutput == arrPWM[i][0]) { pwmIndex = i; break; }    // identify the output channel
   }
+  if (pwmIndex == 255) return;
+  PWMval[pwmIndex] = jsonObj["value"];  // update array PWMval with new value (keep 1 decimal place only)
+  analogWrite(pwmOutput, map(PWMval[pwmIndex], arrPWM[pwmIndex][1], arrPWM[pwmIndex][2], 0, 255));  // Change (mapped) output signal.
+  updatePWM(pwmIndex);         // Send feedback to JS.
 }
 
-// Callback function to periodically clean websocket clients:
-void clean() { wsConsole.cleanupClients();}
-
-// Function to initialize the websocket
-void initWebSocket() {
-  wsConsole.onEvent(onEvent);
-  server.addHandler(&wsConsole);
+// Update ANALOG VARIABLE (value in ESP and feedback to JS)
+// JS function avar(element, value) --> msg {"avar":"x", "value":"xx"}
+void wsAvar(JSONVar jsonObj) {
+  byte varIndex = 255;
+  const char* varName = jsonObj["avar"];
+  for (byte i=0; i<n_AVARS; i++) {
+    if (strcmp(varName, AVAR[i]) == 0) { varIndex = i; break; }
+  }
+  if (varIndex == 255) return;
+  AVARval[varIndex] = (int)jsonObj["value"];
+  updateAVAR(varIndex);
 }
+

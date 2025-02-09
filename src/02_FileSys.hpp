@@ -50,12 +50,12 @@ void initFS() {
 void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
-    if (Debug) Serial.println("no file");
+    if (Debug) Serial.println(F("no file"));
     // strncpy(buffer, "", strlen(buffer));
     buffer[0] = '\0'; // Ensure the buffer is null-terminated
     return;
   }
-  if (Debug) Serial.println("Yes file");
+  if (Debug) Serial.println(F("Yes file"));
   size_t i = 0;
   while (file.available() && i < paramSize - 1) {
     buffer[i++] = (char)file.read();
@@ -70,11 +70,9 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
 void deleteFile(fs::FS &fs, const char * path){
   if (Debug)  Serial.printf("Deleting file: %s\r\n", path);
   if(fs.remove(path)) {
-    if (Debug)  Serial.println(F("- file deleted"));
+    // if (Debug)  Serial.println(F("- file deleted"));
   }
-  else {
-    if (Debug)  Serial.println(F("- delete failed"));
-  }  
+  else { if (Debug)  Serial.println(F("- delete failed")); }  
 }
 
 // ===============================================================================
@@ -86,10 +84,10 @@ const unsigned int getFileSize(fs::FS &fs, const char * path){
     if (Debug)  Serial.println(F("Failed to open file for checking size"));
     return 0;
   }
-  if (Debug) {
-    Serial.print(F("File size: "));
-    Serial.println(file.size());
-  }
+  // if (Debug) {
+  //   Serial.print(F("File size: "));
+  //   Serial.println(file.size());
+  // }
   return file.size();
 }
 
@@ -104,7 +102,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     return;
   }
   if(file.print(message)) {
-    if (Debug) Serial.println(F("- file written"));
+    // if (Debug) Serial.println(F("- file written"));
     return;
   }
   else { 
@@ -117,7 +115,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 // Append data to file in LittleFS
 // ===============================================================================
 void appendToFile(fs::FS &fs, const char * path, const char * message) {
-  if (Debug)  Serial.printf("Appending to file: %s\r\n", path);
+  if (Debug)  Serial.printf("Appending to : %s\r\n", path);
   File file = fs.open(path, "a");
   if(!file){
     if (Debug)  Serial.println(F("- failed to open file for appending"));
