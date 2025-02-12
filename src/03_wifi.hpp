@@ -147,7 +147,7 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
           Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str()); 
         }
       }
-      restart = true;
+      reboot = true;
       request->send(200, "text/plain", "Done. ESP rebooting, connect to your router. ESP IP address: " + String(ip));
     });
   }

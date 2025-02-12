@@ -9,7 +9,9 @@
   --bgColor: #999;
   --gridColor: #666;
 }
-
+.feedback {
+  margin-bottom: 1rem; /* Increase the margin below the feedback element */
+}
 /* =====================
 Style the readings
 =====================  */
@@ -22,21 +24,22 @@ Style the readings
 Style the table
 =====================  */
 table {
-  margin: 0 auto 1rem auto;
-  padding-bottom: 2%;
+  margin: 1rem auto 0 auto;
+  padding: 1rem 0;
   width: 90%;
   table-layout: auto;
 }
 th, td {
   text-align: center;
-  padding: 8px;
+  padding: 0.5rem;
   width: auto;
   border-radius: .5rem;
 }
 tr {
   background-color: var(--colorOFF);
-  color: #eee;
+  color: var(--colorCard);
 }
+
 tr:hover {
   background-color: var(--hoverOFF);
 }  
@@ -49,6 +52,11 @@ th {
 /* =====================
 Style the Chart
 =====================  */
+#charts {
+  display: flex;
+  flex-direction: column; /* Arrange items in a column */
+}
+
 .chart-container {
   border-radius: 1rem;
 	min-width: 250px;
@@ -67,9 +75,11 @@ Style the Chart
 .hidden { display: none; }
 
 /* =====================
-Style the labels for the input fields
+Style the input fields
 ===================== */
 label { width: 100%; }
+
+#nPoints { max-width: 10rem; }
 
 .checkbox { 
   background-color: var(--colorON);
@@ -77,6 +87,7 @@ label { width: 100%; }
   padding: 0.2rem;
   border-radius: 0.5rem;
   cursor: pointer;
+  padding: 0.5rem;
 }
 
 .selection label {

@@ -23,21 +23,29 @@
 
     <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-    <script src="main.js"></script> <!-- generic functions -->
+    <script src="fileManager.js"></script> <!-- generic functions -->
+    <script src='main.js'></script> <!-- generic functions -->
   </head>
 
-  <body id="BMEpage">
+  <body>
     <!-- Navigation links at the top -->
-    <div class="topnav">
-      <ul>
-        <a href="home.html"><li>Index</li></a>
-        <a href="config.html"><li>Config</li></a>
-        <a href="BME.html"><li>BME Sensor</li></a>
-        <a href="console.html"><li>Control Console</li></a>
-        <a href="grid.html"><li>Grid Template</li></a>
-      </ul>
-      <a href="logout.html"><button class="button-red"><i class="fas fa-user-slash"></i> Logout</button></a>
+    <div class='header'>
+      <div class="navBar">
+        <a href="javascript:void(0);" class="icon" onclick="handleNavBar()"><i class="fa fa-bars"></i>
+        </a>        
+        <h4 class="webTitle">ESP Web Server</h4>
+        <div id="listTop" class="listTop">
+          <a href='home.html'>Index</a>
+          <a href='config.html'>Config</a>
+          <a href='console.html'>Console</a>
+          <a href='grid.html'>Grid</a>
+          <a href='BME.html'>BME Sensor</a>
+        </div>
+      </div>
+        <div id="headerButtons">
+        <button class="button-red" onclick="logoutButton()"><i class="fas fa-user-slash"></i> Logout</button>
+        <button class="button-red" onclick="reboot()"><i class="fa-solid fa-power-off"></i></i> Reboot</button>
+      </div>
       <h1><i class="fa-solid fa-gauge-high"></i> BME Sensor <i class="fa-solid fa-chart-line"></i></h1>
     </div>
 
@@ -45,7 +53,7 @@
       <!-- button card to show tools (refresh data, view table, delete data) -->
       <div class="card config-card">
         <form class="selection">
-          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Select Chart/s to display:</p>
+          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Chart/s to display:</p>
           <label class="checkbox">
             <input type="checkbox" id="checkHighcharts">Highcharts
           </label>
@@ -57,7 +65,7 @@
           </label>
         </form>
         <form class="selection">
-          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Select data display mode:</p>
+          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Current data display mode:</p>
           <label class="checkbox">
             <input type="checkbox" id="checkCards">Data cards
           </label>
@@ -77,7 +85,8 @@
         <button onclick="fileDELETE('/data-file')" class="button-red"><i class="fa-solid fa-trash-can"></i> Delete Data</button>
       </div>
       
-      <!-- OPTIONÑ Display current readings in individual cards  -->
+      
+      <!-- OPTION: Display current readings in a card grid  -->
       <div class="card-grid" id="BMECards">
         <div class="card">
           <p class="title"><i class="fa-solid fa-temperature-half temperature"></i> Temp: </p>
@@ -97,9 +106,9 @@
         </div>
       </div>
 
-      <!-- Display current readings in a table using a card grid -->
+      <!-- OPTION: Display current readings in a table  -->
+      <!-- <div class="card-grid" id="BMETable"> -->
         <div class="card" id="BMETable">
-          <p class="card-title"><i class="fa-solid fa-table-list" style="color: #333;"></i> Summary Table: </p>
           <table>
             <tr>  
               <th>READING</th>
@@ -123,28 +132,32 @@
             </tr>
           </table>
         </div>
+      <!-- </div> -->
 
-      <!-- Chart using Highcharts (SVG based) -->
-      <div class="card" id="highchartsCard">
-        <p class="card-title">BME HighCharts</p>
-        <div id="bmeHighchart" class="chart-container"></div>
-        <div class="chartMargin"></div>
-      </div>
-      <!-- Chart using Charts.js (canvas based) -->
-      <div class="card" id="chartsJSCard">
-        <p class="card-title">BME Charts.js</p>
-        <!-- The canvas needs to be within a div with following style: -->
-        <div class="chart-container" style="position: relative; height:98%; width:96%">
-          <canvas id="bmeChartJS"></canvas>
+      <div class="card-grid" id="charts">
+        <!-- Chart using Highcharts (SVG based) -->
+        <div class="card" id="highchartsCard">
+          <p class="card-title">BME HighCharts</p>
+          <div id="bmeHighchart" class="chart-container"></div>
+          <div class="chartMargin"></div>
         </div>
-        <div class="chartMargin"></div>
-      </div>
-    
-      <!-- Chart using Plotly (D3 based)-->
-      <div class="card" id="plotlyCard">
-        <p class="card-title">BME Plotly</p>
-        <div id="bmePlotly" class="chart-container"></div>
-        <div class="chartMargin"></div>
+        
+        <!-- Chart using Charts.js (canvas based) -->
+        <div class="card" id="chartsJSCard">
+          <p class="card-title">BME Charts.js</p>
+          <!-- The canvas needs to be within a div with following style: -->
+          <div class="chart-container" style="position: relative; height:98%; width:96%">
+            <canvas id="bmeChartJS"></canvas>
+          </div>
+          <div class="chartMargin"></div>
+        </div>
+      
+        <!-- Chart using Plotly (D3 based)-->
+        <div class="card" id="plotlyCard">
+          <p class="card-title">BME Plotly</p>
+          <div id="bmePlotly" class="chart-container"></div>
+          <div class="chartMargin"></div>
+        </div>
       </div>
     </div>
     <script src="BME.js"></script>

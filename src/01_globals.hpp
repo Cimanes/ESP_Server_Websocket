@@ -49,5 +49,5 @@ SimpleTimer timer;              // Setup timers for periodic tasks (websocket cl
 unsigned int BMEtimer;          // Variable to store the timer that runs periodically to retrieve BME readings.
 unsigned int usedBytes;         // Used memory in FS system.
 unsigned int totalBytes;        // Total memory in FS system.
-boolean Debug = true;           // true --> serial print output
-boolean restart = false;        // Command to restart the ESP
+boolean Debug = true;           // true --> enable serial print output
+boolean reboot = false;         // Command to reboot the ESP

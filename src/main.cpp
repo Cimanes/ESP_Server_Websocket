@@ -6,6 +6,7 @@
 #include "06_config.hpp"
 #include "07_websocket.hpp"
 #include "08_login.hpp"
+#include "09_reboot.hpp"
 
 void setup() {
   Serial.begin(115200);
@@ -39,16 +40,21 @@ void setup() {
   // ===============================================================================
   #if defined(wifiManager)
     getWiFi();                      // Get SSID, Password and IP from files
-    if(!initWiFi()) { defineWiFi(); }  // If SSID or Password were not stored, manage them and restart
+    if(!initWiFi()) { defineWiFi(); }  // If SSID or Password were not stored, manage them and reboot
   #else
     initWiFi();                     // Initialize Wifi with hardcoded values
   #endif
 
   // ===============================================================================
+  // Initialize reboot commandand periodically check for reboot command
+  // ===============================================================================
+  initReboot();
+
+  // ===============================================================================
   // Initialize WebSocket and setup timer: 
   // ===============================================================================
   initWebSocket();
-  timer.setInterval(cleanTimer, clean);
+  // timer.setInterval(cleanTimer, clean);    // moved to initWebSocket()
 
   // ===============================================================================
   // Load home page when the server is called (on root "/"). Optional Login
@@ -77,9 +83,5 @@ void setup() {
   #endif
 }
 
-void loop() {
-  timer.run();
-  if(restart) { 
-    timer.setTimeout(5000, []() {ESP.restart();} ); 
-    restart = false;}
-}
+
+void loop() { timer.run(); }

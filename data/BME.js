@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     item.element.classList.toggle('hidden', !item.checkbox.checked);
     item.checkbox.addEventListener('change', () => {
         item.element.classList.toggle('hidden', !item.checkbox.checked);
+        if (item.checkbox.checked) { plotBMEfile(); }
     });
   });
 });
@@ -348,11 +349,13 @@ function resizeChartJS() {
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 // ===============================================================================
 function plotBME(arr) {
-  highChartPlot(arr);   // Update chart (Highcharts)
-  plotlyPlot(arr);      // Update chart (Plotly)
-  chartJSPlot(arr);     // Update chart (Charts.js):
-  resizeChartJS();      // Update y scales
-  chartJS.update();     // Update the chart
+  if (document.getElementById('checkHighcharts').checked) highChartPlot(arr);   // Update chart (Highcharts)
+  if (document.getElementById('checkPlotly').checked) plotlyPlot(arr);          // Update chart (Plotly)
+  if (document.getElementById('checkChartsJS').checked) { 
+    chartJSPlot(arr);     // Update chart (Charts.js):
+    resizeChartJS();      // Update y scales
+    chartJS.update();     // Update the chart
+  }
 }
 
 // ============================================================================
@@ -400,8 +403,10 @@ function updateChart(processedData) {
       updateBME([time, t, rh, p]); // Update BME if it"s the last data point
     }
   });
-  resizeChartJS(); // Rescale Y axis
-  chartJS.update(); // Update the chart
+  if (document.getElementById('checkChartsJS').checked) { 
+    resizeChartJS();  // Rescale Y axis for Charts.JS
+    chartJS.update(); // Update the chart for Charts.JS
+  }
 }
 
 // ============================================================================

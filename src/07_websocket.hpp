@@ -68,4 +68,5 @@ void clean() { wsConsole.cleanupClients();}
 void initWebSocket() {
   wsConsole.onEvent(onEvent);
   server.addHandler(&wsConsole);
+  timer.setInterval(cleanTimer, clean);
 }

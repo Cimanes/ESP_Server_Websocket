@@ -4,20 +4,30 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>ESP Server - Grid Example</title>
+    <link rel='icon' type='image/png' href='grid.png'>
     <link rel='stylesheet' href='grid.css'>      
     <script src='https://kit.fontawesome.com/890c0c4dba.js' crossorigin='anonymous'></script>
+    <script src='main.js'></script> <!-- generic functions -->
   </head>
 
   <body>
-    <div class='topnav'>
-      <ul>
-        <a href='home.html'><li>Index</li></a>
-        <a href='config.html'><li>Config</li></a>
-        <a href='BME.html'><li>BME Sensor</li></a>
-        <a href='console.html'><li>Control Console</li></a>
-        <a href='grid.html'><li>Grid Template</li></a>
-      </ul>
-      <a href="logout.html"><button class="button-red"><i class="fas fa-user-slash"></i> Logout</button></a>
+    <div class='header'>
+      <div class="navBar">
+        <a href="javascript:void(0);" class="icon" onclick="handleNavBar()"><i class="fa fa-bars"></i>
+        </a>        
+        <h4 class="webTitle">ESP Web Server</h4>
+        <div id="listTop" class="listTop">
+          <a href='home.html'>Index</a>
+          <a href='config.html'>Config</a>
+          <a href='console.html'>Console</a>
+          <a href='grid.html'>Grid</a>
+          <a href='BME.html'>BME Sensor</a>
+        </div>
+      </div>
+        <div id="headerButtons">
+        <button class="button-red" onclick="logoutButton()"><i class="fas fa-user-slash"></i> Logout</button>
+        <button class="button-red" onclick="reboot()"><i class="fa-solid fa-power-off"></i></i> Reboot</button>
+      </div>
       <h1><i class='fa-solid fa-table'></i> Grid Template</h1>
     </div>
     <div class='content card-grid'>

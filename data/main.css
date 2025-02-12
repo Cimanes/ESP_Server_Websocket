@@ -8,8 +8,8 @@ Global color variables
   --hoverON: #116   ;   /* Standard button hover      */
   --colorRed: #911  ;   /* class = 'button-red'       */
   --hoverRed: #600  ;   /* hover class = 'button-red' */
-  --colorOFF: #777  ;   /* class = 'button-off'       */
-  --hoverOFF: #333  ;   /* hover class = 'button-off' */
+  --colorOFF: #666  ;   /* class = 'button-off'       */
+  --hoverOFF: #222  ;   /* hover class = 'button-off' */
   --colorCard: #ccc ;   /* B.G. class = 'card'        */
   --colorFback: #333;   /* class = 'feedback'         */
 }
@@ -28,47 +28,59 @@ body {
   margin: 0;
 }
 
-h1, p { 
-  text-align: center; 
-}
-
 a { text-decoration: none;  }
+
+/* h1, p { text-align: center; } */
 
 /* ======================
 Top navigation area
 ====================== */
-.topnav { 
-  padding: 0 0 10px 0;
+.header { 
+  display: flex;
+  overflow:hidden;
   background-color: var(--colorNav);
-  width: 50%;
+  width: 100%;
   min-width: 280px;
-  margin: 0 auto;
+  padding-bottom: 1rem;
   border-radius: 1rem;
+  flex-direction: column; /* Arrange items in a column */
 }
-
-ul {
-  width: 50%;
-  margin: 0 auto;
-  text-align:justify;
-  background-color: var(--colorNav);
-  padding: 0.5rem 3rem;
-  border-radius: 1rem;
-}
-
-li {
+.webTitle {
+  float: right;
+  margin: 0;
   padding: 0.5rem;
   color: var(--colorCard);
-  border-radius: 4px;
+  background-color: black;
+  border-radius: 0.5rem;
 }
+.navBar a {
+  float: right;
+  padding: 0.5rem;
+  color: var(--colorCard);
+  border-radius: 0.5rem;
+}
+.navBar .icon {float: left;}
 
-li:hover { background-color: var(--hoverON); }
+#listTop a { float: left ; }
+
+a:hover { background-color: var(--hoverON); }
+/* li {float: left; } */
 
 h1 {
+  width: 100%;
   font-size: 1.8rem; 
   color: var(--colorON);
-  margin: 0 auto;
+  margin: 0.5rem auto 0 auto;
   background-color: var(--colorCard);
 }
+
+/* When the screen is less than 600 pixels wide, hide all links, except for the f
+irst one.*/
+@media screen and (max-width: 600px) { .listTop a { display: none; } }
+
+/* The "responsive" class is added to the navigation bar with JavaScript when the user clicks on the icon. 
+This class makes the top line look good on small screens (display the links vertically instead of horizontally) */
+@media screen and (max-width: 600px) { .listTop { display: block; } } 
 
 /* ======================
 Main body
@@ -90,7 +102,8 @@ Main body
   border-radius: 1.5rem;
 }
  .card {
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   width: 100%;
   max-width: 900px;
   background-color: var(--colorCard); 
@@ -107,7 +120,7 @@ Main body
 .title { 
   display: inline-block;
   color: var(--colorON);
-  margin: 1rem 0 0.2rem 0;
+  margin: 1rem 0 0.1rem 0;
 }
 .feedback { 
   display: inline-block;
@@ -132,6 +145,7 @@ button {
   padding: 0.5rem 1rem;
   width: 40%;
   min-width: 150px;
+  max-width: 200px;
 }
 
 /* =====================

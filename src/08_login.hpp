@@ -5,6 +5,7 @@
   const char* http_username = "admin";
   const char* http_password = "admin";
 
+
   // =============================================
   // Setup the login page
   // =============================================
@@ -15,8 +16,8 @@
       }
       request->send(LittleFS, "/home.html", "text/html",false);
     });
-    server.on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
-      request->send(LittleFS, "/logout.html", "text/html",false);
+    server.on("/logged-out", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(LittleFS, "/logged-out.html", "text/html",false);
     });  
     server.on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send(401);     // Unauthorized
@@ -24,4 +25,3 @@
     server.serveStatic("/", LittleFS, "/").setAuthentication(http_username, http_password);
   }
 #endif
-
