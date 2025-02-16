@@ -89,7 +89,7 @@ void initConfig() {
     request->send(200, "application/json", feedbackChar);
   });
 
-  server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
+  server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
     int params = request->params();
     for(int i = 0 ; i < params ; i++){
       const AsyncWebParameter* p = request->getParam(i);

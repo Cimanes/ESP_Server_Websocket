@@ -40,7 +40,7 @@
         <!-- ===================================================  -->
         <!-- the id's of the elements are used in JS -->
         <div class='card'>
-          <form action='/' method='POST'>
+          <form action='/config' method='POST'>
             <label for='t1' class='title'><i class="fa-solid fa-bug-slash"></i> t1 - Debug (Y/N):</label>
             <select id='t1' name='t1'>        <!-- Select Debug Yes / No -->
               <option value='Y'>Y</option>
@@ -51,7 +51,7 @@
             <!-- optional: use input instead of button to perform Submit: -->
             <!-- <input type ='submit' value ='Submit'> -->
           </form>        
-          <form action='/' method='POST'>
+          <form action='/config' method='POST'>
             <label for='t2' class='title'><i class='fa-solid fa-lightbulb fa-fade'></i> t2 - Text Field:</label>
             <input type='text' id='t2' name='t2'>
             <button type='submit' value='Submit'>Submit</button>
@@ -62,12 +62,12 @@
         <!-- ===================================================  -->
         <!-- the id's of the elements are used in JS -->
         <div class='card'>
-          <form action='/' method='POST'>
+          <form action='/config' method='POST'>
             <label for='n1' class='title'><i class="fa-solid fa-hourglass-half"></i> n1 - BME period (mins)</label>
             <input type='number' id='n1' name='n1' min=1 max=180>
             <button type='submit' value='Submit'>Submit</button>
           </form>
-          <form action='/' method='POST'>
+          <form action='/config' method='POST'>
             <label for='n2' class='title'><i class="fa-solid fa-memory"></i> n2 - File limit (KB)</label>
             <input type='number' id='n2' name='n2' min=0 max=100>
             <button type='submit' value='Submit'>Submit</button>
