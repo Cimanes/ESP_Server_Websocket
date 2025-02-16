@@ -41,10 +41,12 @@ function logoutButton() {
  * Reboots the device by sending a GET request to the "/reboot" endpoint.
  */
 function reboot() {
-  fetch("/reboot", { method: "GET" })
-    .then(response => {
-      if (response.status === 200) alert("Rebooting device. Refresh  page after a few seconds.");
-      else console.error("Reboot failed:", response.statusText);
-    })
-    .catch(error => console.error("Error during reboot:", error) );
+  if (confirm("Confirm to reboot ESP / Cancel to abort")){
+    fetch("/reboot", { method: "GET" })
+      .then(response => {
+        if (response.status === 200) alert("Rebooting ESP. Refresh page after a few seconds.");
+        else console.error("Reboot failed:", response.statusText);
+      })
+      .catch(error => console.error("Error during reboot:", error) );
+  }
 }

@@ -10,7 +10,7 @@
   #include <ESP8266WiFi.h>
   #include <ESPAsyncTCP.h>
 #endif
-
+#include <AsyncElegantOTA.h>
 // =============================================
 // VARIABLES
 // =============================================
@@ -81,8 +81,11 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     if (Debug) Serial.println(WiFi.localIP());
     // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
     server.serveStatic("/", LittleFS, "/");
-    // Start the server.
-    server.begin();     return true;
+    #ifdef OTA
+      AsyncElegantOTA.begin(&server); // Start OTA
+    #endif
+    server.begin(); // Start the server.    
+    return true;
   }
 
   void getWiFi() {
@@ -92,6 +95,8 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     fileToCharPtr(LittleFS, routerPath, router);  // Search for stored router IP
   }
 
+
+
   void defineWiFi() {    // Connect to ESP Wi-Fi network with SSID and password
     Serial.println(F("Setting AP")); 
     // Remove the password parameter (=NULL), if you want the AP (Access Point) to be open 
@@ -100,10 +105,6 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     IPAddress IP = WiFi.softAPIP();
     Serial.print(F("AP local IP: "));
     Serial.println(IP);
-
-    // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
-    server.serveStatic("/", LittleFS, "/");
-    server.begin(); // Start the server.
 
     // Web Server Root URL
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -150,6 +151,13 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
       reboot = true;
       request->send(200, "text/plain", "Done. ESP rebooting, connect to your router. ESP IP address: " + String(ip));
     });
+    
+    // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
+    server.serveStatic("/", LittleFS, "/");
+    #ifdef OTA
+      AsyncElegantOTA.begin(&server); // Start OTA
+    #endif
+    server.begin(); // Start the server.
   }
 #else
   // =============================================
@@ -178,8 +186,10 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     }
     // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
     server.serveStatic("/", LittleFS, "/");
-    // Start the server.
-    server.begin();  
+    #ifdef OTA
+      AsyncElegantOTA.begin(&server); // Start OTA
+    #endif
+    server.begin();                   // Start the server.
     Serial.println(WiFi.localIP());
   }
 #endif

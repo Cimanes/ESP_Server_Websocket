@@ -11,9 +11,9 @@
 #define useFbk          // Use Feedback fields (receive usedBytes and totalBytes)
 #define useAVAR         // Use floating control variables
 #define useBME          // Use BME sensor
-#define useConfig       // Use input fields (text & numbers using POST method)
 #define useLogin        // Use HTTP Authentication
 #define wifiManager     // Use wifi manager with selection of SSID & IP address
+#define OTA             // Use OTA updates
 
 // =============================================
 // LIBRARIES

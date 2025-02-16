@@ -5,7 +5,9 @@
 #include "05_bme.hpp"
 #include "06_config.hpp"
 #include "07_websocket.hpp"
-#include "08_login.hpp"
+#ifdef useLogin
+  #include "08_login.hpp"
+#endif
 #include "09_reboot.hpp"
 
 void setup() {
@@ -46,15 +48,14 @@ void setup() {
   #endif
 
   // ===============================================================================
-  // Initialize reboot commandand periodically check for reboot command
+  // Initialize periodic check for reboot command
   // ===============================================================================
   initReboot();
 
   // ===============================================================================
-  // Initialize WebSocket and setup timer: 
+  // Initialize WebSocket
   // ===============================================================================
   initWebSocket();
-  // timer.setInterval(cleanTimer, clean);    // moved to initWebSocket()
 
   // ===============================================================================
   // Load home page when the server is called (on root "/"). Optional Login
@@ -67,21 +68,22 @@ void setup() {
     });
   #endif
 
-  #ifdef useConfig
-    initConfig();
-  #endif
-  
+  // ===============================================================================
+  // Initialize Configuration options
+  // ===============================================================================
+  initConfig();
+ 
   // ===============================================================================
   // Tasks related with BME sensor
   // ===============================================================================
-  #ifdef useBME       
+  #ifdef useBME
+    // initNTP();
     initBME();
-    initDataFile();
-    initBMErequests();
+    initDataFile();    
+    initBMErequests();    
     BMEtimer = timer.setInterval(BMEperiod, updateBME);
-    initBMEevents(); 
+    initBMEevents();
   #endif
 }
-
 
 void loop() { timer.run(); }
