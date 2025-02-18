@@ -38,16 +38,11 @@
   void readBME(){
     // timeClient.update();                          // wait for time to be updated
     JSONVar jsonObj;                              // Create JSON object 
-    // if (Debug) { 
-    //   Serial.println(timeClient.update());        // Print time update to Serial
-    //   Serial.println(timeClient.getFormattedTime()); // Print time to Serial
-    // }
     jsonObj["time"] = timeClient.getEpochTime();          // time key-value (epochtime in seconds)
     jsonObj["t"]  = int(bme.readTemperature() * aFactor); // Temperature key-value (ºC float 1 decimal to int)
     jsonObj["rh"] = int(bme.readHumidity() * aFactor);    // Humidity key-value (% float 1 decimal to int)
     jsonObj["p"]  = int(bme.readPressure() / 10);         // Pressure key-value (Pascals to mbars)
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);// Return JSON object as char array.
-    if(Debug) Serial.println(feedbackChar);               // Print JSON object to Serial
     appendToFile(LittleFS, dataPath, feedbackChar);       // Append new data to file
   }
 

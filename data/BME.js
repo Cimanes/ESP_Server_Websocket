@@ -7,8 +7,14 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
       gridColor = getComputedStyle(document.documentElement).getPropertyValue("--gridColor"),
       gridWidth = 0.5;
 
- var   numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
-
+ let numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
+  const cardItem =    { checkbox: document.getElementById('checkCards'), element: document.getElementById('BMECards') },
+        tableItem =   { checkbox: document.getElementById('checkTable'), element: document.getElementById('BMETable') },
+        HChartItem =  { checkbox: document.getElementById('checkHighcharts'), element: document.getElementById('highchartsCard') },
+        ChartsJSItem =  { checkbox: document.getElementById('checkChartsJS'), element: document.getElementById('chartsJSCard') },
+        PlotlyItem =    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard')};
+  const dataItems = [ cardItem, tableItem ];
+  const chartItems = [ HChartItem, ChartsJSItem , PlotlyItem ];
 // ===============================================================================
 // Update number of points displayed in charts
 // ===============================================================================
@@ -20,25 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Number of Points set to: ${numPoints}`);
         // You can now use the numPoints variable as needed
     });
-});
 
-// ===============================================================================
-// Update the displayed / hidden charts based on the selected checkboxes
-// ===============================================================================
-document.addEventListener('DOMContentLoaded', () => {
-  const items = [
-    { checkbox: document.getElementById('checkCards'), element: document.getElementById('BMECards') },
-    { checkbox: document.getElementById('checkTable'), element: document.getElementById('BMETable') },
-    { checkbox: document.getElementById('checkHighcharts'), element: document.getElementById('highchartsCard') },
-    { checkbox: document.getElementById('checkChartsJS'), element: document.getElementById('chartsJSCard') },
-    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard') }
-  ];
-
-  items.forEach(item => {
+  // // ===============================================================================
+  // // Update the displayed / hidden charts based on the selected checkboxes
+  // // ===============================================================================
+  dataItems.forEach(item => {
     item.element.classList.toggle('hidden', !item.checkbox.checked);
     item.checkbox.addEventListener('change', () => {
         item.element.classList.toggle('hidden', !item.checkbox.checked);
-        if (item.checkbox.checked) { plotBMEfile(); }
+    });
+  });
+
+  chartItems.forEach(item => {
+    item.element.classList.toggle('hidden', !item.checkbox.checked);
+    item.checkbox.addEventListener('change', () => {
+        item.element.classList.toggle('hidden', !item.checkbox.checked);
     });
   });
 });
@@ -314,16 +316,15 @@ function formatTime(time) {
  */
 function updateBME(arr) {
   // Update data cards
-  document.getElementById("timeBME").textContent = formatTime(arr[0]);
-  document.getElementById("tBME").textContent = arr[1];
-  document.getElementById("rhBME").textContent = arr[2];
-  document.getElementById("pBME").textContent = arr[3];
-
+    document.getElementById("timeBME").textContent = formatTime(arr[0]);
+    document.getElementById("tBME").textContent = arr[1];
+    document.getElementById("rhBME").textContent = arr[2];
+    document.getElementById("pBME").textContent = arr[3];
   // Update Table
-  document.getElementById("timeBMEtable").textContent = formatTime(arr[0]);
-  document.getElementById("tBMEtable").textContent = arr[1];
-  document.getElementById("rhBMEtable").textContent = arr[2];
-  document.getElementById("pBMEtable").textContent = arr[3];
+    document.getElementById("timeBMEtable").textContent = formatTime(arr[0]);
+    document.getElementById("tBMEtable").textContent = arr[1];
+    document.getElementById("rhBMEtable").textContent = arr[2];
+    document.getElementById("pBMEtable").textContent = arr[3];
 }
 
 // ===============================================================================
@@ -349,13 +350,11 @@ function resizeChartJS() {
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 // ===============================================================================
 function plotBME(arr) {
-  if (document.getElementById('checkHighcharts').checked) highChartPlot(arr);   // Update chart (Highcharts)
-  if (document.getElementById('checkPlotly').checked) plotlyPlot(arr);          // Update chart (Plotly)
-  if (document.getElementById('checkChartsJS').checked) { 
-    chartJSPlot(arr);     // Update chart (Charts.js):
-    resizeChartJS();      // Update y scales
-    chartJS.update();     // Update the chart
-  }
+  highChartPlot(arr);   // Update chart (Highcharts)
+  chartJSPlot(arr);     // Update chart (Charts.js):
+  resizeChartJS();      // Update y scales
+  chartJS.update();     // Update the chart  
+  plotlyPlot(arr);      // Update chart (Plotly)
 }
 
 // ============================================================================
@@ -396,17 +395,17 @@ function processBMEData(jsonArray, numPoints) {
  *                                - p {number}: The pressure value.
  */
 function updateChart(processedData) {
-  processedData.forEach(row => {
+    processedData.forEach(row => {
     const [time, t, rh, p] = row;
     plotBME([time, t, rh, p]); // Plot the BME data
     if (processedData.indexOf(row) === processedData.length - 1) {
       updateBME([time, t, rh, p]); // Update BME if it"s the last data point
     }
   });
-  if (document.getElementById('checkChartsJS').checked) { 
-    resizeChartJS();  // Rescale Y axis for Charts.JS
-    chartJS.update(); // Update the chart for Charts.JS
-  }
+  // if (document.getElementById('checkChartsJS').checked) { 
+  //   resizeChartJS();  // Rescale Y axis for Charts.JS
+  //   chartJS.update(); // Update the chart for Charts.JS
+  // }
 }
 
 // ============================================================================
@@ -414,8 +413,8 @@ function updateChart(processedData) {
 // ============================================================================
 function plotBMEfile() {
   fetchAndFixJSON("/data-file")         // Fetch the BME data-file
-    .then(jsonArray => processBMEData(jsonArray, numPoints)) // Process the data (apply conversions and filter the number of points)
-    .then(processedData => updateChart(processedData)) // Update the chart with the processed data
+    .then(jsonArray =>  processBMEData(jsonArray, numPoints) )  // Process the data (apply conversions and filter the number of points)
+    .then(processedData => updateChart(processedData) ) // Update the chart with the processed data
     .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }
 
@@ -438,7 +437,9 @@ function BMErefresh(reading) {
         rh = (objBME.rh / 10).toFixed(1),
         p = (objBME.p / 10).toFixed(1);
   updateBME([time, t, rh, p]);
+  // chartItems.forEach (item => item.update = item.checkbox.checked );
   plotBME([time, t, rh, p]);
+  // chartItems.forEach (item => item.update = false );
 }
 
 // ============================================================================
