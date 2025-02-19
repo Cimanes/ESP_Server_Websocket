@@ -10,9 +10,9 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
  let numPoints = 60;   // Max number of points displayed in charts (limit memory usage)
   const cardItem =    { checkbox: document.getElementById('checkCards'), element: document.getElementById('BMECards') },
         tableItem =   { checkbox: document.getElementById('checkTable'), element: document.getElementById('BMETable') },
-        HChartItem =  { checkbox: document.getElementById('checkHighcharts'), element: document.getElementById('highchartsCard') },
-        ChartsJSItem =  { checkbox: document.getElementById('checkChartsJS'), element: document.getElementById('chartsJSCard') },
-        PlotlyItem =    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard')};
+        HChartItem =  { checkbox: document.getElementById('checkHighcharts'), element: document.getElementById('highchartsCard'), update: false, fileLoaded: false },
+        ChartsJSItem =  { checkbox: document.getElementById('checkChartsJS'), element: document.getElementById('chartsJSCard'), update: false, fileLoaded: false },
+        PlotlyItem =    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard'), update: false, fileLoaded: false };
   const dataItems = [ cardItem, tableItem ];
   const chartItems = [ HChartItem, ChartsJSItem , PlotlyItem ];
 // ===============================================================================
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
         numPoints = document.getElementById('nPoints').value;
-        console.log(`Number of Points set to: ${numPoints}`);
+        console.log(`Number of Points: ${numPoints}`);
         // You can now use the numPoints variable as needed
     });
 
@@ -40,7 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
   chartItems.forEach(item => {
     item.element.classList.toggle('hidden', !item.checkbox.checked);
     item.checkbox.addEventListener('change', () => {
-        item.element.classList.toggle('hidden', !item.checkbox.checked);
+      item.element.classList.toggle('hidden', !item.checkbox.checked);
+      if (item.checkbox.checked && !item.fileLoaded)  {
+        item.fileLoaded = true;
+        item.update = true;
+        createChart(item);
+      }
     });
   });
 });
@@ -349,14 +354,22 @@ function resizeChartJS() {
 // ===============================================================================
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 // ===============================================================================
-function plotBME(arr) {
-  highChartPlot(arr);   // Update chart (Highcharts)
-  chartJSPlot(arr);     // Update chart (Charts.js):
-  resizeChartJS();      // Update y scales
-  chartJS.update();     // Update the chart  
-  plotlyPlot(arr);      // Update chart (Plotly)
+function createPlot(item, arr) {
+
 }
 
+// ===============================================================================
+// Function to add a new point (arr = [time, t, rh, p]) on the charts
+// ===============================================================================
+function updatePlot(arr) {
+  if (HChartItem.update)  highChartPlot(arr);   // Update chart (Highcharts)
+  if (ChartsJSItem.update) { 
+    chartJSPlot(arr);     // Update chart (Charts.js):
+    resizeChartJS();      // Update y scales
+    chartJS.update();     // Update the chart  
+  }
+  if (PlotlyItem.update)  plotlyPlot(arr);      // Update chart (Plotly)
+}
 // ============================================================================
 // Process BME data-file received and limit numPoints
 // ============================================================================
@@ -394,13 +407,19 @@ function processBMEData(jsonArray, numPoints) {
  *                                - rh {number}: The relative humidity value.
  *                                - p {number}: The pressure value.
  */
-function updateChart(processedData) {
+function updateChart(item, processedData) {
     processedData.forEach(row => {
     const [time, t, rh, p] = row;
-    plotBME([time, t, rh, p]); // Plot the BME data
-    if (processedData.indexOf(row) === processedData.length - 1) {
-      updateBME([time, t, rh, p]); // Update BME if it"s the last data point
+    if (item == HChartItem)  highChartPlot(row);   // Update chart (Highcharts)
+    else if (item == ChartsJSItem) { 
+      chartJSPlot(row);     // Update chart (Charts.js):
+      resizeChartJS();      // Update y scales
+      chartJS.update();     // Update the chart  
     }
+    else if (item == PlotlyItem)  plotlyPlot(row);      // Update chart (Plotly)
+    // if (processedData.indexOf(row) === processedData.length - 1) {
+    //   updateBME([time, t, rh, p]); // Update BME if it"s the last data point
+    // }
   });
   // if (document.getElementById('checkChartsJS').checked) { 
   //   resizeChartJS();  // Rescale Y axis for Charts.JS
@@ -411,10 +430,18 @@ function updateChart(processedData) {
 // ============================================================================
 // Complete process: retrieve file, process the data and update the charts
 // ============================================================================
-function plotBMEfile() {
+/**
+ * 1. Fetch BME data file from the server.
+ * 2. Process the data by applying necessary conversions and filtering the number of points.
+ * 3. Updates the chart with the processed data.
+ * 4. Handles any errors that occur during the process.
+ * @function createChart
+ * @returns {void}
+ */
+function createChart(item) {
   fetchAndFixJSON("/data-file")         // Fetch the BME data-file
     .then(jsonArray =>  processBMEData(jsonArray, numPoints) )  // Process the data (apply conversions and filter the number of points)
-    .then(processedData => updateChart(processedData) ) // Update the chart with the processed data
+    .then(processedData => updateChart(item, processedData) ) // Update the chart with the processed data
     .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }
 
@@ -422,7 +449,7 @@ function plotBMEfile() {
 //  Function to update data and charts when a new reading is received
 // ===============================================================================
 /**
- * Refreshes BME sensor data by parsing the reading, extracting relevant values,
+ * Refresh BME sensor data by parsing the reading, extracting relevant values,
  * and updating and plotting the data.
  * @param {string} reading - The JSON string containing BME sensor data.
  * @property {number} time - The timestamp of the reading in seconds.
@@ -438,7 +465,7 @@ function BMErefresh(reading) {
         p = (objBME.p / 10).toFixed(1);
   updateBME([time, t, rh, p]);
   // chartItems.forEach (item => item.update = item.checkbox.checked );
-  plotBME([time, t, rh, p]);
+  updatePlot([time, t, rh, p]);
   // chartItems.forEach (item => item.update = false );
 }
 
@@ -448,7 +475,7 @@ function BMErefresh(reading) {
 // We send a "GET" request with URL= "/refresh" --> get single point
 // And process response with "refresh" + "plot" to update values and charts
 /**
- * Sends an asynchronous GET request to the "/refresh" endpoint to update data.
+ * Send an asynchronous GET request to the "/refresh" endpoint to update data.
  * Displays an alert message "Data updated" when the request is successfully completed.
  */
 function refresh() {
@@ -461,10 +488,39 @@ function refresh() {
 }
 
 // ============================================================================
+// When page loads, get the latest reading and update displayed data
+// ============================================================================
+/**
+ * Extracts the last row of data from a JSON array and converts the values.
+ * @param {Array} jsonArray - The array of JSON objects containing sensor data.
+ * @param {number} jsonArray[].time - The epoch time in seconds.
+ * @param {number} jsonArray[].t - The temperature value multiplied by 10.
+ * @param {number} jsonArray[].rh - The relative humidity value multiplied by 10.
+ * @param {number} jsonArray[].p - The pressure value multiplied by 10.
+ * @returns {Array} An array with the converted time in ms, temperature, RH%, and pressure.
+ */
+function lastReading(jsonArray) {
+  const len = jsonArray.length,
+        time = jsonArray[len-1].time * 1000,      // Convert epoch (seconds) to milliseconds
+        t = (jsonArray[len-1].t / 10).toFixed(1),
+        rh = (jsonArray[len-1].rh / 10).toFixed(1),
+        p = (jsonArray[len-1].p / 10).toFixed(1);
+  updateBME([time, t, rh, p]);
+}
+
+function onLoad() {
+  fetchAndFixJSON("/data-file")         // Fetch the BME data-file
+    .then(jsonArray =>  lastReading(jsonArray) )  // Process the data (apply conversions and filter the number of points)
+    .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
+}
+// ============================================================================
 // Handle data received via events
 // ============================================================================
-// run function plotBMEfile() when the page is loaded
-window.addEventListener("load", plotBMEfile);
+// OPTION: run function createChart() when the page is loaded (slow when many points)
+// window.addEventListener("load", createChart);
+
+// OPTION: run function onload() when page is loaded (faster)
+window.addEventListener("load", onload);
 
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
