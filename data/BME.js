@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault(); // Prevent the default form submission behavior
         numPoints = document.getElementById('nPoints').value;
         console.log(`Number of Points: ${numPoints}`);
-        // You can now use the numPoints variable as needed
     });
 
   // // ===============================================================================
@@ -417,14 +416,7 @@ function updateChart(item, processedData) {
       chartJS.update();     // Update the chart  
     }
     else if (item == PlotlyItem)  plotlyPlot(row);      // Update chart (Plotly)
-    // if (processedData.indexOf(row) === processedData.length - 1) {
-    //   updateBME([time, t, rh, p]); // Update BME if it"s the last data point
-    // }
   });
-  // if (document.getElementById('checkChartsJS').checked) { 
-  //   resizeChartJS();  // Rescale Y axis for Charts.JS
-  //   chartJS.update(); // Update the chart for Charts.JS
-  // }
 }
 
 // ============================================================================
@@ -464,9 +456,7 @@ function BMErefresh(reading) {
         rh = (objBME.rh / 10).toFixed(1),
         p = (objBME.p / 10).toFixed(1);
   updateBME([time, t, rh, p]);
-  // chartItems.forEach (item => item.update = item.checkbox.checked );
   updatePlot([time, t, rh, p]);
-  // chartItems.forEach (item => item.update = false );
 }
 
 // ============================================================================
@@ -516,10 +506,6 @@ function onLoad() {
 // ============================================================================
 // Handle data received via events
 // ============================================================================
-// OPTION: run function createChart() when the page is loaded (slow when many points)
-// window.addEventListener("load", createChart);
-
-// OPTION: run function onload() when page is loaded (faster)
 window.addEventListener("load", onload);
 
 // Create an Event Source to listen for events.
