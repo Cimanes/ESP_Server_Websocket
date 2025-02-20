@@ -23,13 +23,22 @@
   unsigned int BMEperiod; // Time interval between BME samples.
   unsigned int fileLimit; // Data-file size limit for BME readings.
 
+  // ===============================================================================
+  // Initialize the NTP (Network Time Protocol) client and synchronizes the time.
+  // ===============================================================================
+  void initNTP() {
+    timeClient.begin();
+    while(!timeClient.update()) { delay(500); }
+    Serial.println(F("NTP Client synchronized"));
+  }  
+  
   // Function to initialize BME280 sensor
-  void initBME(){
+  void initBME() {
     if (!bme.begin(0x76)) { 
       if (Debug) Serial.println(F("BME280 not Found")); 
       while (1);
     }
-    else if (Debug) Serial.println(F("BME280 found"));
+    Serial.println(F("BME280 found"));
   }
 
   // ===============================================================================

@@ -5,9 +5,7 @@
 #include "05_bme.hpp"
 #include "06_config.hpp"
 #include "07_websocket.hpp"
-#ifdef useLogin
-  #include "08_login.hpp"
-#endif
+#include "08_login.hpp"
 #include "09_reboot.hpp"
 
 void setup() {
@@ -77,7 +75,7 @@ void setup() {
   // Tasks related with BME sensor
   // ===============================================================================
   #ifdef useBME
-    // initNTP();
+    initNTP();
     initBME();
     initDataFile();    
     initBMErequests();    

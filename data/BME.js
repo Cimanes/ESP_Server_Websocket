@@ -1,3 +1,6 @@
+// ===============================================================================
+// GLOBAL VARIABLES
+// ===============================================================================
 // Configuration: Retrieve color variables from defined in CSS:
 const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tColor"),
       rhColor = getComputedStyle(document.documentElement).getPropertyValue("--rhColor"),
@@ -15,6 +18,7 @@ const tColor = getComputedStyle(document.documentElement).getPropertyValue("--tC
         PlotlyItem =    { checkbox: document.getElementById('checkPlotly'), element: document.getElementById('plotlyCard'), update: false, fileLoaded: false };
   const dataItems = [ cardItem, tableItem ];
   const chartItems = [ HChartItem, ChartsJSItem , PlotlyItem ];
+
 // ===============================================================================
 // Update number of points displayed in charts
 // ===============================================================================
@@ -41,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     item.checkbox.addEventListener('change', () => {
       item.element.classList.toggle('hidden', !item.checkbox.checked);
       if (item.checkbox.checked && !item.fileLoaded)  {
-        item.fileLoaded = true;
-        item.update = true;
         createChart(item);
+        item.fileLoaded = true;   // change "fileLoaded" property so the chart is not created anymore for this item
+        item.update = true;       // enable update for next new readings
       }
     });
   });
@@ -237,7 +241,8 @@ const layout = {
 	margin: { t: 20, b: 20, l: 20, r: 80}, 
 	paper_bgcolor: bgColor,
 	plot_bgcolor: bgColor,
-  xaxis: {type: "date", domain: [x0, 1],
+  xaxis: {
+    type: "date", domain: [x0, 1],
     showline: true, linecolor: "#222"
   },
 	yaxis: {
@@ -353,13 +358,6 @@ function resizeChartJS() {
 // ===============================================================================
 // Function to add a new point (arr = [time, t, rh, p]) on the charts
 // ===============================================================================
-function createPlot(item, arr) {
-
-}
-
-// ===============================================================================
-// Function to add a new point (arr = [time, t, rh, p]) on the charts
-// ===============================================================================
 function updatePlot(arr) {
   if (HChartItem.update)  highChartPlot(arr);   // Update chart (Highcharts)
   if (ChartsJSItem.update) { 
@@ -398,15 +396,13 @@ function processBMEData(jsonArray, numPoints) {
 // Update the charts with the processed data
 // ============================================================================
 /**
- * Updates the chart with the given processed data.
- * @param {Array} processedData - An array of arrays, where each inner array contains:
- *                                [time, temperature, relative humidity, pressure].
- *                                - time {number}: The timestamp of the data point.
- *                                - t {number}: The temperature value.
- *                                - rh {number}: The relative humidity value.
- *                                - p {number}: The pressure value.
+ * Fills a specific chart with processed data.
+ * Iterate through the processed data and update the specified chart type with each data point.
+ * @param {Object} item - The chart item object to be updated. Expected to be one of: HChartItem, ChartsJSItem, or PlotlyItem.
+ * @param {Array<Array<number|string>>} processedData - An array of data points, where each point is an array containing [time, temperature, relative humidity, pressure].
+ * @returns {void} This function doesn't return a value; it updates the chart as a side effect.
  */
-function updateChart(item, processedData) {
+function fillChart(item, processedData) {
     processedData.forEach(row => {
     const [time, t, rh, p] = row;
     if (item == HChartItem)  highChartPlot(row);   // Update chart (Highcharts)
@@ -433,7 +429,7 @@ function updateChart(item, processedData) {
 function createChart(item) {
   fetchAndFixJSON("/data-file")         // Fetch the BME data-file
     .then(jsonArray =>  processBMEData(jsonArray, numPoints) )  // Process the data (apply conversions and filter the number of points)
-    .then(processedData => updateChart(item, processedData) ) // Update the chart with the processed data
+    .then(processedData => fillChart(item, processedData) ) // Update the chart with the processed data
     .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }
 
@@ -498,16 +494,19 @@ function lastReading(jsonArray) {
   updateBME([time, t, rh, p]);
 }
 
+// ============================================================================
+// Update readings when page loads
+// ============================================================================
 function onLoad() {
-  fetchAndFixJSON("/data-file")         // Fetch the BME data-file
-    .then(jsonArray =>  lastReading(jsonArray) )  // Process the data (apply conversions and filter the number of points)
-    .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
+fetchAndFixJSON("/data-file")                     // Fetch the BME data-file
+    .then(jsonArray =>  lastReading(jsonArray) )    // Process the data (apply conversions and filter the number of points)
+    .catch(error => console.error("Error retrieving BME data:", error));    // Handle any errors
 }
-// ============================================================================
-// Handle data received via events
-// ============================================================================
-window.addEventListener("load", onload);
+window.addEventListener("load", onLoad);  
 
+// ============================================================================
+// Handle data received via Server-Sent Events
+// ============================================================================
 // Create an Event Source to listen for events.
 // The condition checks if the browser supports Server-Sent Events (SSE) by testing the existence of window.EventSource
 if (!!window.EventSource) {
