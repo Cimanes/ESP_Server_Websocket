@@ -1,4 +1,13 @@
 // =============================================
+// LIBRARIES
+// =============================================
+#if defined(ESP32)
+  #include "SPIFFS.h"         // OPTIONAL: available for SPIFFS in ESP32 only
+#elif defined(ESP8266)
+  #include <LittleFS.h>       // OPTIONAL: Little file system for ESP8266
+#endif
+
+// =============================================
 // VARIABLES
 // =============================================
   FSInfo fs_info;             // FSInfo is a structure (defined in LittleFS library) that holds information about the file system
@@ -9,7 +18,7 @@
 // =============================================
 void initFS() {
   if (!LittleFS.begin()) {
-    if (Debug) Serial.println(F("Error mounting File System"));
+    if (Debug) Serial.println(F("File System mount - FAIL"));
   }
   // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
   else {
@@ -51,11 +60,10 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
   File file = fs.open(path, "r");
   if (!file || file.isDirectory()) {
     if (Debug) Serial.println(F("no file"));
-    // strncpy(buffer, "", strlen(buffer));
     buffer[0] = '\0'; // Ensure the buffer is null-terminated
     return;
   }
-  if (Debug) Serial.println(F("Yes file"));
+  if (Debug) Serial.println(F("File"));
   size_t i = 0;
   while (file.available() && i < paramSize - 1) {
     buffer[i++] = (char)file.read();
@@ -68,10 +76,8 @@ void fileToCharPtr(fs::FS &fs, const char* path, char* buffer) {
 // Delete File from LittleFS
 // ===============================================================================
 void deleteFile(fs::FS &fs, const char * path){
-  if (Debug)  Serial.printf("Deleting file: %s\r\n", path);
-  if(fs.remove(path)) {
-    // if (Debug)  Serial.println(F("- file deleted"));
-  }
+  if (Debug) { Serial.print(F("Deleting: ")); Serial.println(path); }
+  if(fs.remove(path)) { if (Debug)  Serial.println(F("- file deleted")); }
   else { if (Debug)  Serial.println(F("- delete failed")); }  
 }
 
@@ -81,13 +87,9 @@ void deleteFile(fs::FS &fs, const char * path){
 const unsigned int getFileSize(fs::FS &fs, const char * path){
   File file = fs.open(path, "r");
   if(!file){
-    if (Debug)  Serial.println(F("Failed to open file for checking size"));
+    if (Debug)  Serial.println(F("Open file to check size - FAIL"));
     return 0;
   }
-  // if (Debug) {
-  //   Serial.print(F("File size: "));
-  //   Serial.println(file.size());
-  // }
   return file.size();
 }
 
@@ -95,19 +97,14 @@ const unsigned int getFileSize(fs::FS &fs, const char * path){
 // Write file to LittleFS
 // ===============================================================================
 void writeFile(fs::FS &fs, const char * path, const char * message){
-  if (Debug) Serial.printf("Writing file: %s\r\n", path);
+  if (Debug) { Serial.print(F("Write file: ")); Serial.println(path); }
   File file = fs.open(path, "w");
-  if(!file){
-    if (Debug) Serial.println(F("- failed to open file for writing"));
+  if (!file) {
+    if (Debug) Serial.println(F("Open file to write - FAIL"));
     return;
   }
-  if(file.print(message)) {
-    // if (Debug) Serial.println(F("- file written"));
-    return;
-  }
-  else { 
-    if (Debug) Serial.println(F("- write failed"));
-    return;
+  if (!file.print(message))  { 
+    if (Debug) Serial.println(F("Write - FAIL"));
   }
 }
 
@@ -115,17 +112,17 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 // Append data to file in LittleFS
 // ===============================================================================
 void appendToFile(fs::FS &fs, const char * path, const char * message) {
-  if (Debug)  Serial.printf("Appending to : %s\r\n", path);
+  if (Debug)  Serial.print(F("Appending to: ")); Serial.println(path);
   File file = fs.open(path, "a");
-  if(!file){
-    if (Debug)  Serial.println(F("- failed to open file for appending"));
+  if (!file) {
+    if (Debug)  Serial.println(F("Open file to append - FAIL"));
     return;
   }
-  if(file.print(message) && file.print(",")) {
+  if (file.print(message) && file.print(",")) {
     if (Debug)  Serial.println(F("- msg. appended"));
   }
   else { 
-    if (Debug) Serial.println(F("- append failed")); 
+    if (Debug) Serial.println(F("Append - FAIL")); 
   }
   file.close();
 }

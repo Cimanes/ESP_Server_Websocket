@@ -377,7 +377,7 @@ function updatePlot(arr) {
  * @returns {Array<Array<number|string>>} - Array of processed data points, each containing:
  *   [time (ms), temperature (°C), relative humidity (%), pressure (hPa)].
  */
-function processBMEData(jsonArray, numPoints) {
+function processBMEFile(jsonArray, numPoints) {
   const len = jsonArray.length,
         i0 = Math.max(0, len - numPoints),      // Extract the last `numPoints` data points
         processedData = [];
@@ -428,7 +428,7 @@ function fillChart(item, processedData) {
  */
 function createChart(item) {
   fetchAndFixJSON("/data-file")         // Fetch the BME data-file
-    .then(jsonArray =>  processBMEData(jsonArray, numPoints) )  // Process the data (apply conversions and filter the number of points)
+    .then(jsonArray =>  processBMEFile(jsonArray, numPoints) )  // Process the data (apply conversions and filter the number of points)
     .then(processedData => fillChart(item, processedData) ) // Update the chart with the processed data
     .catch(error => console.error("Error retrieving BME data:", error)); // Handle any errors
 }

@@ -1,7 +1,6 @@
 // =============================================
 // VARIABLES 
 // =============================================
-unsigned int rebootPeriod = 1000; // Time interval to check for restart required.
 unsigned int rebootTimer;
 
 // =============================================
@@ -9,8 +8,13 @@ unsigned int rebootTimer;
 // =============================================
 void checkReboot() {
   if(reboot) { 
-    timer.setTimeout(5000, []() {ESP.restart();} ); 
+    if (Debug) Serial.println(F("rebooting"));
     reboot = false;
+  #if defined(ESP32)  
+    timer.setTimeout(5000, []() { esp_restart(); } );
+  #elif defined(ESP8266)
+    timer.setTimeout(5000, []() { ESP.restart(); } );
+  #endif
   }
 }
 
@@ -19,6 +23,5 @@ void initReboot() { // Request to delete data file
     reboot = true;
     request->send(200);
   });
-  rebootTimer = timer.setInterval(rebootPeriod, checkReboot);
+  rebootTimer = timer.setInterval(1000, checkReboot);
 }
-

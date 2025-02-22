@@ -22,9 +22,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
     <!-- Plotly -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="fileManager.js"></script> <!-- generic functions -->
-    <script src='main.js'></script> <!-- generic functions -->
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+
+    <!-- generic functions -->
+    <script src="fileManager.js"></script> 
+    <script src='main.js'></script> 
   </head>
 
   <body>
@@ -33,7 +36,7 @@
       <div class="navBar">
         <a href="javascript:void(0);" class="icon" onclick="handleNavBar()"><i class="fa fa-bars"></i>
         </a>        
-        <h4 class="webTitle">ESP Web Server</h4>
+        <h4 class="webTitle"><img src="server.png" alt="Server Icon"> ESP Web Server</h4>
         <div id="listTop" class="listTop">
           <a href='home.html'>Index</a>
           <a href='BME.html'>BME Sensor</a>
@@ -54,7 +57,16 @@
       <!-- button card to show tools (refresh data, view table, delete data) -->
       <div class="card config-card">
         <form class="selection">
-          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Chart/s to display:</p>
+          <p class="title wide"><i class="fa-solid fa-table-list"></i> Current data display:</p>
+          <label class="checkbox">
+            <input type="checkbox" id="checkCards">Data cards
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="checkTable" checked>Data table
+          </label>
+        </form>        
+        <form class="selection">
+          <p class="title wide"><i class="fa-solid fa-chart-line"></i> Charts to display:</p>
           <label class="checkbox">
             <input type="checkbox" id="checkHighcharts">Highcharts
           </label>
@@ -65,21 +77,13 @@
             <input type="checkbox" id="checkPlotly">Plotly
           </label>
         </form>
-        <form class="selection">
-          <p class="title" style="width: 100%;"><i class="fa-solid fa-chart-line"></i> Current data display mode:</p>
-          <label class="checkbox">
-            <input type="checkbox" id="checkCards">Data cards
-          </label>
-          <label class="checkbox">
-            <input type="checkbox" id="checkTable" checked>Data table
-          </label>
-        </form>
+
         <form id="numPointsForm">
           <label for="n1" class="title"><i class="fa-solid fa-ruler-horizontal"></i> Max Number of chart points:</label>
           <input type="number" id="nPoints" name="nPoints" min=1 max=600 value="60" required>
           <button type="submit">Submit</button>
         </form>
-        <p class="title" style="width: 100%;">Data handling:</p>
+        <p class="title wide">Data handling:</p>
         <button onclick="refresh()" id="refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
         <a href="data-file"><button id="data-file"><i class="fa-solid fa-file-export"></i> View Data</button></a>
         <button onclick="downloadCSV(10)"><i class="fa-solid fa-download"></i> Export CSV</button>

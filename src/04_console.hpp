@@ -56,8 +56,7 @@
 // ===============================================================================
 #ifdef useButton
   // function "updateButton()": Replace placeholders found in HTML (%STATE%, %MODE%...) with their current value
-
-void updateButton(const char var[]) {
+  void updateButton(const char var[]) {
     if (strcmp(var, "STATE") == 0) {
         strcpy(feedbackChar, digitalRead(statePin) ? "ON" : "OFF");
     }
@@ -66,7 +65,14 @@ void updateButton(const char var[]) {
     }
     else feedbackChar[0] = '\0';    
     wsConsole.textAll(feedbackChar);
-}
+  }
+
+  void initButton() {
+    pinMode(statePin, OUTPUT);
+    pinMode(modePin, OUTPUT);
+    digitalWrite(statePin, 0);
+    digitalWrite(modePin, 1);    
+  }
 #endif
 
 // ===============================================================================
@@ -87,6 +93,10 @@ void updateButton(const char var[]) {
     jsonObj["state"] = digitalRead(gpio);   // 0 or 1
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     wsConsole.textAll(feedbackChar);
+  }
+
+  void initToggle() {
+    for (byte i =0; i<n_DOs; i++) { pinMode(arrDO[i], OUTPUT); }
   }
 #endif
 
@@ -115,6 +125,13 @@ void updateButton(const char var[]) {
     jsonObj["value"] = PWMval[index];     // converted value fo the A.O. in that channel
     JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
     wsConsole.textAll(feedbackChar);
+  }
+
+  void  initPWM() {
+    for (byte i =0; i<n_PWMs; i++) { 
+      pinMode(arrPWM[i][0], OUTPUT);
+      analogWrite(arrPWM[i][0], 0);
+    }
   }
 #endif
 

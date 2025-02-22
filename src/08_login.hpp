@@ -22,4 +22,5 @@ void serverLogin() {
     request->send(401);     // Unauthorized
   });
   server.serveStatic("/", LittleFS, "/").setAuthentication(http_username, http_password);
+  Serial.println(F("ServerLogin done"));
 }

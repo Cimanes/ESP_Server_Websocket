@@ -10,7 +10,9 @@
   #include <ESP8266WiFi.h>
   #include <ESPAsyncTCP.h>
 #endif
-#include <AsyncElegantOTA.h>
+#ifdef useOTA
+  #include <AsyncElegantOTA.h>
+#endif
 // =============================================
 // VARIABLES
 // =============================================
@@ -54,14 +56,17 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     // Option: required for static IP address
     //------------------------------------------------------------------------
     IPAddress subnet(255, 255, 0, 0);
-    // IPAddress localIP(192, 168, 1, 200); // Option: Hard coded IP address
-    // IPAddress gateway(192, 168, 1, 254); // Option: Hard coded gateway
-    // IPAddress dns(192, 168, 1, 254);     // Option: Hard coded IP address
+
+    // Option: Hard coded IP address:-------------------------
+    // IPAddress localIP(192, 168, 1, 200); 
+    // IPAddress gateway(192, 168, 1, 254);
+    // IPAddress dns(192, 168, 1, 254);
+    
+    // Option: user entry IP address:-------------------------
     IPAddress localIP;
     IPAddress gateway;
     IPAddress dns;    
-
-    localIP.fromString(ip);
+    localIP.fromString(ip);       // Option: 
     gateway.fromString(router);
     dns.fromString(router);
 
@@ -81,10 +86,11 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     if (Debug) Serial.println(WiFi.localIP());
     // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
     server.serveStatic("/", LittleFS, "/");
-    #ifdef OTA
+    #ifdef useOTA
       AsyncElegantOTA.begin(&server); // Start OTA
     #endif
     server.begin(); // Start the server.    
+    Serial.println(F("initWifi done"));
     return true;
   }
 
@@ -94,8 +100,6 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     fileToCharPtr(LittleFS, ipPath, ip);          // Search for stored local IP
     fileToCharPtr(LittleFS, routerPath, router);  // Search for stored router IP
   }
-
-
 
   void defineWiFi() {    // Connect to ESP Wi-Fi network with SSID and password
     Serial.println(F("Setting AP")); 
@@ -148,16 +152,17 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
           Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str()); 
         }
       }
-      reboot = true;
       request->send(200, "text/plain", "Done. ESP rebooting, connect to your router. ESP IP address: " + String(ip));
+      reboot = true;
     });
     
     // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
     server.serveStatic("/", LittleFS, "/");
-    #ifdef OTA
-      AsyncElegantOTA.begin(&server); // Start OTA
-    #endif
+    // #ifdef useOTA
+    //   AsyncElegantOTA.begin(&server); // Start OTA
+    // #endif
     server.begin(); // Start the server.
+    Serial.println(F("defineWifi done"));
   }
 #else
   // =============================================
@@ -186,7 +191,7 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
     }
     // Serve files (JS, CSS and favicon) from LittleFS when requested by the root URL. 
     server.serveStatic("/", LittleFS, "/");
-    #ifdef OTA
+    #ifdef useOTA
       AsyncElegantOTA.begin(&server); // Start OTA
     #endif
     server.begin();                   // Start the server.

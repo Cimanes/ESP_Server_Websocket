@@ -39,11 +39,16 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
              void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
-      if (Debug) Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
-      client->remoteIP().toString().c_str());
+      if (Debug) {
+        Serial.print(F("W.S. client connected: #"));
+        Serial.printf("%u from %s\n", client->id(), client->remoteIP().toString().c_str());
+      }
       break;
     case WS_EVT_DISCONNECT:
-      if (Debug) Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      if (Debug) {
+        Serial.print(F("W.S. client disconnected: #"));
+        Serial.println(client->id());
+      }
       break;
     case WS_EVT_DATA:
       handleWSMessage(arg, data, len);
@@ -53,10 +58,6 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
       break;
   }
 }
-
-
-
-
 
 // ===============================================================================
 // Function to notify all clients with a message (JSON object)
@@ -69,4 +70,5 @@ void initWebSocket() {
   wsConsole.onEvent(onEvent);
   server.addHandler(&wsConsole);
   timer.setInterval(cleanTimer, clean);
+  Serial.println(F("initWS done"));
 }

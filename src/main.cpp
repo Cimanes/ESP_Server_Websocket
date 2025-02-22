@@ -12,76 +12,49 @@ void setup() {
   Serial.begin(115200);
 
   // ===============================================================================
-  // Set GPIO modes and initial values
+  // Set GPIO modes and initial values 
   // ===============================================================================
   #ifdef useButton
-    pinMode(statePin, OUTPUT);
-    pinMode(modePin, OUTPUT);
-    digitalWrite(statePin, 0);
-    digitalWrite(modePin, 1);
+    initButton();
   #endif
   #ifdef useToggle
-    for (byte i =0; i<n_DOs; i++) { pinMode(arrDO[i], OUTPUT); }
+    initToggle();
   #endif
   #ifdef usePWM
-    for (byte i =0; i<n_PWMs; i++) { 
-      pinMode(arrPWM[i][0], OUTPUT);
-      analogWrite(arrPWM[i][0], 0);
+    initPWM();
+  #endif
+
+  // ===============================================================================
+  // Initialize all auxiliary systems
+  // ===============================================================================
+  initFS();         // Initialize file system
+  initReboot();     // Initialize periodic check for reboot command
+
+  #if defined(wifiManager)  // Initialize Wifi, optional use wifiManager 
+    getWiFi();              // Get SSID, Password and IP from files
+    if(!initWiFi()) {       // If SSID or Password were not stored, manage them and reboot
+      defineWiFi();
+      return; 
     }
-  #endif
-
-  // ===============================================================================
-  // Initialize file system
-  // ===============================================================================
-  initFS();
-
-  // ===============================================================================
-  // Initialize Wifi, optional use wifiManager 
-  // ===============================================================================
-  #if defined(wifiManager)
-    getWiFi();                      // Get SSID, Password and IP from files
-    if(!initWiFi()) { defineWiFi(); }  // If SSID or Password were not stored, manage them and reboot
   #else
-    initWiFi();                     // Initialize Wifi with hardcoded values
+    initWiFi();     // Initialize Wifi with hardcoded values
   #endif
 
-  // ===============================================================================
-  // Initialize periodic check for reboot command
-  // ===============================================================================
-  initReboot();
+  initWebSocket();  // Initialize WebSocket
+  initConfig();     // Initialize Configuration options
 
-  // ===============================================================================
-  // Initialize WebSocket
-  // ===============================================================================
-  initWebSocket();
-
-  // ===============================================================================
-  // Load home page when the server is called (on root "/"). Optional Login
-  // ===============================================================================
-  #ifdef useLogin
-    serverLogin();
+  #ifdef useLogin   // Load home page when the server is called (on root "/"). Optional Login
+    serverLogin();  
   #else
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send(LittleFS, "/home.html", "text/html",false);
     });
   #endif
-
-  // ===============================================================================
-  // Initialize Configuration options
-  // ===============================================================================
-  initConfig();
- 
-  // ===============================================================================
-  // Tasks related with BME sensor
-  // ===============================================================================
+  
   #ifdef useBME
-    initNTP();
-    initBME();
-    initDataFile();    
-    initBMErequests();    
-    BMEtimer = timer.setInterval(BMEperiod, updateBME);
-    initBMEevents();
+    initBME();    // Tasks related with BME sensor
   #endif
+  Serial.println(F("Setup done"));
 }
 
 void loop() { timer.run(); }

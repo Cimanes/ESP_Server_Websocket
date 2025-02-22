@@ -38,6 +38,8 @@
     "string_view": "cpp",
     "ratio": "cpp",
     "string": "cpp",
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "simpletimer.h": "c",
+    "cstddef": "cpp"
   }
 }

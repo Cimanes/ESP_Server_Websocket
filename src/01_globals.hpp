@@ -13,7 +13,7 @@
 #define useBME          // Use BME sensor
 #define useLogin        // Use HTTP Authentication
 #define wifiManager     // Use wifi manager with selection of SSID & IP address
-#define OTA             // Use OTA updates
+#define useOTA          // Use OTA updates
 
 // =============================================
 // LIBRARIES
@@ -21,11 +21,6 @@
 #include <Arduino.h>
 #include <SimpleTimer.h>
 #include <Arduino_JSON.h>
-#if defined(ESP32)
-  #include "SPIFFS.h"         // OPTIONAL: available for SPIFFS in ESP32 only
-#elif defined(ESP8266)
-  #include <LittleFS.h>       // OPTIONAL: Little file system for ESP8266
-#endif
 
 // =============================================
 // PIN DEFINITIONS 

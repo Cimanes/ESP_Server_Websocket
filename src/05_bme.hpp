@@ -33,7 +33,7 @@
   }  
   
   // Function to initialize BME280 sensor
-  void initBME() {
+  void initBMEsensor() {
     if (!bme.begin(0x76)) { 
       if (Debug) Serial.println(F("BME280 not Found")); 
       while (1);
@@ -106,11 +106,24 @@
   void initBMEevents() {
     eventsBME.onConnect([](AsyncEventSourceClient *client){
       if(client->lastId()){
-        if (Debug)  Serial.printf("Client reconnected! Last msg ID: %u\n", client->lastId());
+        if (Debug) { 
+          Serial.print(F("Client reconnected! Last msg ID: ")); 
+          Serial.println(client->lastId()); 
+        }
       }
       client->send("hello!", NULL, millis(), 1000);
     });
     server.addHandler(&eventsBME);
+  }
+
+  void initBME() {
+    initNTP();
+    initBMEsensor();
+    initDataFile();    
+    initBMErequests();    
+    BMEtimer = timer.setInterval(BMEperiod, updateBME);
+    initBMEevents();
+    Serial.println(F("initBME done"));
   }
 #endif
 

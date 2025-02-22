@@ -7,12 +7,12 @@
 // Navigation bar
 // ============================================================================
 /**
- * Toggles the "responsive" class on the navigation bar element with the ID "myTopnav".
+ * Toggles the "responsive" class on the navigation bar element with the ID "listTop".
  * When the "responsive" class is added, the navigation bar is displayed in a responsive mode.
  * When the "responsive" class is removed, the navigation bar is displayed in its default mode.
  */
 function handleNavBar() {
-  var x = document.getElementById("listTop");
+  let x = document.getElementById("listTop");
   if (x.className === "listTop") { x.className -= " responsive"; } 
   else { x.className = "listTop"; }
 } 

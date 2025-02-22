@@ -132,4 +132,5 @@ void initConfig() {
     }
     request->send(LittleFS, "/config.html", "text/html");
   });
+  Serial.println(F("initConfig done"));
 }
