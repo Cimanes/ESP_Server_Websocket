@@ -13,6 +13,7 @@
 #ifdef useOTA
   #include <AsyncElegantOTA.h>
 #endif
+
 // =============================================
 // VARIABLES
 // =============================================
@@ -20,29 +21,29 @@
 AsyncWebServer server(80)               ;   // Required for HTTP 
 AsyncEventSource eventsBME("/eventsBME");   // Required for SERVER SENT EVENTS
 AsyncWebSocket wsConsole("/wsConsole")  ;   // Required for WEBSOCKETS
-const int cleanTimer = 2000UL           ;   // Timer to periodically clean websocket
+const unsigned int cleanTimer = 2000UL  ;   // Timer to periodically clean websocket
 
 #if defined(wifiManager)
   // =============================================
   // Wifi Manager: set SSID, Password and IP address
   // =============================================
   // Search for parameter in HTTP POST request
-  const char* PARAM_INPUT_1 = "ssid";
-  const char* PARAM_INPUT_2 = "pass";
-  const char* PARAM_INPUT_3 = "ip";
+  const char* PARAM_INPUT_1 = "ssid"  ;
+  const char* PARAM_INPUT_2 = "pass"  ;
+  const char* PARAM_INPUT_3 = "ip"    ;
   const char* PARAM_INPUT_4 = "router";
   // const char* PARAM_INPUTS[4] = { "ssid", "pass", "ip", "router" };
 
   //Variables to save values from HTML form
-  char ssid[paramSize];
-  char pass[paramSize];
-  char ip[paramSize];
+  char ssid[paramSize]  ;
+  char pass[paramSize]  ;
+  char ip[paramSize]    ;
   char router[paramSize];
 
   // File paths to save input values permanently
-  const char* ssidPath = "/ssid.txt";
-  const char* passPath = "/pass.txt";
-  const char* ipPath = "/ip.txt";
+  const char* ssidPath = "/ssid.txt"    ;
+  const char* passPath = "/pass.txt"    ;
+  const char* ipPath = "/ip.txt"        ;
   const char* routerPath = "/router.txt";
   // const char* paramPaths[4] = { "/ssid.txt", "/pass.txt", "/ip.txt", "/router.txt" };
 
@@ -53,8 +54,7 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
       return false;
     }  
     
-    // Option: required for static IP address
-    //------------------------------------------------------------------------
+    // Option: required for static IP address-----------------
     IPAddress subnet(255, 255, 0, 0);
 
     // Option: Hard coded IP address:-------------------------
@@ -95,13 +95,22 @@ const int cleanTimer = 2000UL           ;   // Timer to periodically clean webso
   }
 
   void getWiFi() {
-    fileToCharPtr(LittleFS, ssidPath, ssid);      // Search for stored SSID
-    fileToCharPtr(LittleFS, passPath, pass);      // Search for stored Password
-    fileToCharPtr(LittleFS, ipPath, ip);          // Search for stored local IP
-    fileToCharPtr(LittleFS, routerPath, router);  // Search for stored router IP
+    fileToCharPtr(LittleFS, ssidPath, ssid)     ; // Search for stored SSID
+    fileToCharPtr(LittleFS, passPath, pass)     ; // Search for stored Password
+    fileToCharPtr(LittleFS, ipPath, ip)         ; // Search for stored local IP
+    fileToCharPtr(LittleFS, routerPath, router) ; // Search for stored router IP
   }
 
-  void defineWiFi() {    // Connect to ESP Wi-Fi network with SSID and password
+  // =============================================
+  // Function to allow user to enter ssid and password
+  // =============================================
+  // @details This function is used to connect to an ESP Wi-Fi network with a given SSID and password. 
+  //          It also starts a web server to allow the user to input these values.
+  //          The values are stored in the LittleFS file system of the ESP. If the values are not defined, 
+  //          the ESP will start a Wi-Fi network with the name "ESP-WIFI-MANAGER" and no password.
+  //          The user can then connect to this network and open the web page at the IP address of the ESP (usually 192.168.4.1)
+  //          to input the values. The ESP will then reboot and connect to the Wi-Fi network with the given values.
+  void defineWiFi() {
     Serial.println(F("Setting AP")); 
     // Remove the password parameter (=NULL), if you want the AP (Access Point) to be open 
     WiFi.softAP("ESP-WIFI-MANAGER", NULL);

@@ -37,38 +37,25 @@ void handleWSMessage(void *arg, uint8_t *data, size_t len) {
 // ===============================================================================
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, 
              void *arg, uint8_t *data, size_t len) {
-  switch (type) {
-    case WS_EVT_CONNECT:
-      if (Debug) {
-        Serial.print(F("W.S. client connected: #"));
-        Serial.printf("%u from %s\n", client->id(), client->remoteIP().toString().c_str());
-      }
-      break;
-    case WS_EVT_DISCONNECT:
-      if (Debug) {
-        Serial.print(F("W.S. client disconnected: #"));
-        Serial.println(client->id());
-      }
-      break;
-    case WS_EVT_DATA:
-      handleWSMessage(arg, data, len);
-      break;
-    case WS_EVT_PONG:
-    case WS_EVT_ERROR:
-      break;
+  if (type == WS_EVT_DATA) {
+    handleWSMessage(arg, data, len);
+  }
+  else if (Debug) {
+    if (type == WS_EVT_CONNECT) {
+      Serial.print(F("W.S. client connected: "));
+      Serial.printf("#%u from %s\n", client->id(), client->remoteIP().toString().c_str());
+    } 
+    else if (type == WS_EVT_DISCONNECT) {
+      Serial.print(F("W.S. client disconnected: "));
+      Serial.printf("#%u\n", client->id());
+    }
   }
 }
-
-// ===============================================================================
-// Function to notify all clients with a message (JSON object)
-// ===============================================================================
-// Callback function to periodically clean websocket clients:
-void clean() { wsConsole.cleanupClients();}
 
 // Function to initialize the websocket
 void initWebSocket() {
   wsConsole.onEvent(onEvent);
   server.addHandler(&wsConsole);
-  timer.setInterval(cleanTimer, clean);
-  Serial.println(F("initWS done"));
+  timer.setInterval(cleanTimer, [](){ wsConsole.cleanupClients(); });
+  Serial.println(F("WebSocket initialized"));
 }

@@ -1,4 +1,7 @@
-//  #include "04_console.hpp"
+// GPIO's used for I2C communication with BME sensor:
+// ESP32:   SDA 21  /  SCL 22
+// ESP8266: SDA 4 (D2 in Wemos D1 Mini)  /  SCL 5 (D1 in Wemos D1 Mini)
+
 // =============================================
 // LIBRARIES
 // =============================================
@@ -34,7 +37,7 @@
   
   // Function to initialize BME280 sensor
   void initBMEsensor() {
-    if (!bme.begin(0x76)) { 
+    if (!bme.begin(0x76)) {
       if (Debug) Serial.println(F("BME280 not Found")); 
       while (1);
     }

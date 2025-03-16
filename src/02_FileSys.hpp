@@ -23,8 +23,8 @@ void initFS() {
   // if (!SPIFFS.begin(true)) Serial.println("Error mounting File System");      // particular for SPIFFS in ESP32 only
   else {
     if (Debug) Serial.println(F("File System mounted"));
-    LittleFS.info(fs_info);                                   // Populates fs_info structure with info about LittleFS
-    totalBytes = fs_info.totalBytes/1000;  // Total memory in LittleFS
+    LittleFS.info(fs_info); // Populates fs_info structure with info about LittleFS
+    // totalBytes = fs_info.totalBytes/1000;  // Total memory in LittleFS
   }
 }
 
@@ -103,7 +103,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     if (Debug) Serial.println(F("Open file to write - FAIL"));
     return;
   }
-  if (!file.print(message))  { 
+  if (!file.print(message))  {
     if (Debug) Serial.println(F("Write - FAIL"));
   }
 }
@@ -112,7 +112,8 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 // Append data to file in LittleFS
 // ===============================================================================
 void appendToFile(fs::FS &fs, const char * path, const char * message) {
-  if (Debug)  Serial.print(F("Appending to: ")); Serial.println(path);
+  if (Debug)   { Serial.print(F("Appending to: ")); Serial.println(path); }
+  
   File file = fs.open(path, "a");
   if (!file) {
     if (Debug)  Serial.println(F("Open file to append - FAIL"));
@@ -122,7 +123,8 @@ void appendToFile(fs::FS &fs, const char * path, const char * message) {
     if (Debug)  Serial.println(F("- msg. appended"));
   }
   else { 
-    if (Debug) Serial.println(F("Append - FAIL")); 
+    if (Debug)  Serial.println(F("Append - FAIL")); 
   }
   file.close();
 }
+

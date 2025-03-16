@@ -143,7 +143,7 @@ if (useAVAR) {
 }
 
 //===============================================================================
-// MANAGE MESSAGES FROM ESP SERVER (function "notifyClients" in main.cpp)
+// MANAGE MESSAGES FROM ESP SERVER (function "wsConsole.textAll(feedbackChar)" in main.cpp)
 //===============================================================================
 // Update feedback of affected element:
 function onMessage(event) {

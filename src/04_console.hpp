@@ -17,15 +17,15 @@
     int PWMval[n_PWMs] = {0, 0};   // Store and report PWM values
   #endif
 #elif defined(ESP8266)
-  #ifdef useButton                       // Config. D.O. GPIO's used by buttons (ON/OFF, AUTO/MAN)
-    #define statePin 0  // 
+  #ifdef useButton                      // Config. D.O. GPIO's used by buttons (ON/OFF, AUTO/MAN)
+    #define statePin 0
     #define modePin 2
   #endif
-  #ifdef useToggle                       // Config. toggle switches
+  #ifdef useToggle                      // Config. toggle switches
     #define n_DOs 2                     // Number of toggle switches
     const byte arrDO[n_DOs] = {12, 14}; // D.O. GPIO's used by toggle switches
   #endif
-  #ifdef usePWM                          // Config. PWM analog outputs
+  #ifdef usePWM                         // Config. PWM analog outputs
     #define n_PWMs 2                    // Number of analog outputs
     // Config PWM. Format "{channel, rangeMin, rangeMax}" (match ranges with JS and )
     const int arrPWM[n_PWMs][4] = {{13, 0, 1000}, {15, 0, 2000}};
@@ -80,13 +80,6 @@
 // ===============================================================================
 #ifdef useToggle
   // Update toggle switch: return JSON object {"dfb":12, "state":1}
-  // const char* updateDO(byte gpio){   // const char* function and return pointer
-    // JSONVar jsonObj;
-    // jsonObj["dfb"] = gpio;                  // Number of the GPIO
-    // jsonObj["state"] = digitalRead(gpio);   // 0 or 1
-    // JSON.stringify(jsonObj).toCharArray(feedbackChar, fbkLength);
-    // return feedbackChar;                    // JSON object converted into a String.
-  // }
   void updateDO(byte gpio){                 // Use void function and send feedback
     JSONVar jsonObj;
     jsonObj["dfb"] = gpio;                  // Number of the GPIO
@@ -152,15 +145,13 @@
 // ===============================================================================
 // FUNCTIONS TO UPDATE VALUES OF VARIABLES AND OUTPUTS
 // ===============================================================================
-// Function to notify all clients with a message (JSON object)
-// void notifyClients(const char* msg) { wsConsole.textAll(msg); }
+// Functions to notify all clients with a message (JSON object)
 void updateOuts() {
   #ifdef useButton
     updateButton("STATE");   // update Button field "state".
     updateButton("MODE");    // update Button field "mode".
   #endif             
   #ifdef useToggle
-    // for (byte i:arrDO) { notifyClients(updateDO(i)); } // --> using "const char* function" updateDO
     for (byte i:arrDO) { updateDO(i); }                   // using "void function" updateDO
   #endif
   #ifdef usePWM
@@ -203,7 +194,6 @@ void wsButton(JSONVar jsonObj) {
 void wsToggle(JSONVar jsonObj) {
   const byte DOchannel = byte(jsonObj["tog"]);
   digitalWrite(DOchannel, !digitalRead(DOchannel));
-  // notifyClients(updateDO(DOchannel));
   updateDO(DOchannel);
 }
 

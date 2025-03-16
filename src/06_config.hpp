@@ -8,8 +8,8 @@ const byte inputLength = 5;    // Length of the input messages
   #define n_TxIn 2
   const char* TxName[n_TxIn] = {"t1", "t2"};
   const char* TxPath[n_TxIn] = {"t1.txt", "t2.txt"};
-  const char* TxDefault[n_TxIn] = {"Y", "t2"};      // { BME period minutes, File size limit in KB }
-  char TxVal[n_TxIn][inputLength];  // Initialize here
+  const char* TxDefault[n_TxIn] = {"Y", "t2"};  // { Serial.print Debug option, dummy value }
+  char TxVal[n_TxIn][inputLength];              // Initialize here
 #endif
 
 // Config. numeric inputs (number, names, file paths and variable with values)
@@ -33,7 +33,6 @@ const byte inputLength = 5;    // Length of the input messages
 // Prepare feedbackChar with current input values 
 // =============================================
 void getCurrentValues(){
-  // memoryCheck();
   JSONVar values;
   #ifdef useTxIn                                      
     for (byte i = 0; i < n_TxIn; i++) { values[TxName[i]] = TxVal[i]; }
@@ -42,7 +41,8 @@ void getCurrentValues(){
     for (byte i = 0; i < n_NumIn; i++) { values[NumName[i]] = NumVal[i]; }
   #endif
   #ifdef useFbk
-    values[FbkName[0]] = totalBytes;
+  // LittleFS.info(fs_info);
+    values[FbkName[0]] = fs_info.totalBytes/1000;
     values[FbkName[1]] = fs_info.usedBytes/1000;
     values[FbkName[2]] = getFileSize(LittleFS, dataPath) * 100 / fileLimit;
   #endif
@@ -63,6 +63,9 @@ void updateBMEinterval() {
   }
 }
 
+// =============================================
+// Function to initialize config. variables
+// =============================================
 void initConfig() {
   #ifdef useTxIn                                      
     for (byte i = 0; i < n_TxIn; i++) {   
@@ -84,11 +87,17 @@ void initConfig() {
     fileLimit = 1000 * atoi(NumVal[1]);
   #endif
 
+  // =============================================
+  // Return current input values to user
+  // =============================================
   server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
     getCurrentValues();
     request->send(200, "application/json", feedbackChar);
   });
 
+  // =============================================
+  // Update input values posted by user
+  // =============================================
   server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
     int params = request->params();
     for(int i = 0 ; i < params ; i++){
@@ -104,7 +113,7 @@ void initConfig() {
             }
             if (Debug) {
               Serial.print(TxName[i]);
-              Serial.print(F("set to: "));
+              Serial.print(F(" set to: "));
               Serial.println(TxVal[i]);
               Serial.print(F("Debug: "));
               Serial.println(Debug);
@@ -119,7 +128,7 @@ void initConfig() {
             NumVal[i][sizeof(NumVal[i]) - 1] = '\0';
             if (Debug) {
               Serial.print(NumName[i]);
-              Serial.print(F("set to: "));
+              Serial.print(F(" set to: "));
               Serial.println(NumVal[i]);
             }
             writeFile(LittleFS, NumPath[i], NumVal[i]);
